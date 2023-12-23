@@ -3,7 +3,6 @@ import { defineStore } from 'pinia'
 
 export const useEmployeesStore = defineStore('EmployeesStore', {
   actions: {
-    // 👉 Fetch all Countries
     fetchEmployees(params) {
       return axios.get('users', { params })
     },

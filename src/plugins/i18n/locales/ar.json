@@ -226,6 +226,8 @@
     "order_subtotal": "المجموع الفرعي للطلب",
     "payment_type_name": "طريقة الدفع",
     "total_amount_after_discount": "المبلغ الإجمالي بعدالخصم",
+    "paid_amount": "المبلغ المدفوع",
+    "remain_amount": "المبلغ المتبقي",
     "description": "الوصف",
     "product_images": "صور المنتج",
     "avatar": "الصورة",
