@@ -3,8 +3,8 @@ import { useSkins } from '@core/composable/useSkins'
 import { useThemeConfig } from '@core/composable/useThemeConfig'
 
 // @layouts plugin
-import { AppContentLayoutNav } from '@layouts/enums'
 import { useSettingsStore } from "@/store/Settings"
+import { AppContentLayoutNav } from '@layouts/enums'
 
 const DefaultLayoutWithHorizontalNav = defineAsyncComponent(() => import('./components/DefaultLayoutWithHorizontalNav.vue'))
 const DefaultLayoutWithVerticalNav = defineAsyncComponent(() => import('./components/DefaultLayoutWithVerticalNav.vue'))
@@ -24,7 +24,9 @@ injectSkinClasses()
 
 <template>
   <div>
-    <Alert :is-show="settings.isAlertShow" @change-status="settings.isAlertShow = !settings.isAlertShow" :color="settings.alertColor" :message="settings.alertMessage"></Alert>
+    <div class="position-fixed" style="left: 10px;top: 10px;z-index: 99;">
+      <Alert :is-show="settings.isAlertShow" @change-status="settings.isAlertShow = !settings.isAlertShow" :color="settings.alertColor" :message="settings.alertMessage"></Alert>
+    </div>
     <template v-if="appContentLayoutNav === AppContentLayoutNav.Vertical">
       <DefaultLayoutWithVerticalNav v-bind="layoutAttrs" />
     </template>
