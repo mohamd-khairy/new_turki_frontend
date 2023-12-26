@@ -213,21 +213,51 @@ const dialogModelValueUpdate = val => {
                 :rules="[requiredValidator]"
               />
             </VCol>
+            <VCol cols="12"
+              md="6"
+              class="d-flex gap-9"
+            >
+              <v-checkbox label="الشلوطة"
+              v-model="itemData.shalwata"
+              :false-value="0" :true-value="1"
+              ></v-checkbox>
+              <v-checkbox label="كرشة"
+              v-model="itemData.is_karashah"
+              :false-value="0" :true-value="1"
+              ></v-checkbox>
+            </VCol>
+            <VCol cols="12"
+            md="6"
+              class="d-flex gap-9"
+            >
+              <v-checkbox label="كوارع"
+              v-model="itemData.is_kwar3"
+              :false-value="0" :true-value="1"
+              ></v-checkbox>
+              <v-checkbox label="لية"
+              v-model="itemData.is_lyh"
+              :false-value="0" :true-value="1"
+              ></v-checkbox>
+              <v-checkbox label="رأس"
+              v-model="itemData.is_Ras"
+              :false-value="0" :true-value="1"
+              ></v-checkbox>
+            </VCol>
             <VCol
               cols="12"
-              class="text-center"
+              class="text-center mt-8"
             >
               <VBtn
                 v-if="!isLoading"
                 type="submit"
-                class="me-3"
+                class="me-3 px-8"
               >
                 {{ t('buttons.save') }}
               </VBtn>
               <VBtn
                 v-else
                 type="submit"
-                class="position-relative me-3"
+                class="position-relative me-3 px-8"
               >
                 <VIcon
                   icon="mingcute:loading-line"
@@ -240,6 +270,7 @@ const dialogModelValueUpdate = val => {
                 variant="tonal"
                 color="secondary"
                 @click="resetForm"
+                class="px-8"
               >
                 {{ t('buttons.cancel') }}
               </VBtn>

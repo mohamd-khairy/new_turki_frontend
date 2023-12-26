@@ -1,12 +1,10 @@
 <script setup>
-import { useI18n } from "vue-i18n"
-import {
-  requiredValidator,
-} from '@validators'
-import { useCitiesStore } from "@/store/Cities"
-import { useCategoriesStore } from "@/store/Categories"
 import { useProductsStore } from "@/store/Products"
 import { useSettingsStore } from "@/store/Settings"
+import {
+requiredValidator,
+} from '@validators'
+import { useI18n } from "vue-i18n"
 
 const props = defineProps({
   isAddOpen: {
@@ -42,6 +40,8 @@ const settingsListStore = useSettingsStore()
 const { t } = useI18n()
 
 const refForm = ref(null)
+const productSizes = ref([])
+const isLoadingSpecifications = ref(false)
 
 const itemData = reactive({
   order_id: null,
@@ -52,6 +52,25 @@ const itemData = reactive({
   preparation_ids: [],
 })
 
+const getProductSpecifications = (productId) => {
+  if(!productId) {
+    productSizes.value = [];
+    return
+  }
+  
+  isLoadingSpecifications.value = true
+  productsListStore.fetchProduct(productId).then(response => {
+    // productPreparations.value = response.data.data.preparations
+    productSizes.value = response.data.data.sizes
+    // productCuts.value = response.data.data.cuts
+    // isLoadingCuts.value = false
+    // isLoadingSizes.value = false
+    // isLoadingPreparations.value = false
+  }).finally(() => {
+    isLoadingSpecifications.value = false
+  })
+} 
+
 onUpdated(() => {
   itemData.order_id = props.order ? props.order.id : 0
 })
@@ -60,6 +79,8 @@ onMounted(() => {
   productsListStore.fetchProducts({ per_page: -1 }).then(response => {
     products.value = response.data.data
   })
+
+  
 })
 
 const products = ref([])
@@ -73,6 +94,11 @@ const resetForm = () => {
   itemData.cut_ids = null
   itemData.size_ids = null
   itemData.preparation_ids = null
+  itemData.shalwata = 0
+  itemData.is_karashah = 0
+  itemData.is_kwar3 = 0
+  itemData.is_lyh = 0
+  itemData.is_Ras = 0
   emit('update:isAddOpen', false)
 }
 
@@ -162,6 +188,7 @@ const dialogModelValueUpdate = val => {
                 item-title="name_ar"
                 item-value="id"
                 :rules="[requiredValidator]"
+                @update:modelValue="getProductSpecifications"
               />
             </VCol>
             <VCol cols="12"
@@ -187,11 +214,12 @@ const dialogModelValueUpdate = val => {
             >
               <VSelect
                 v-model="itemData.size_ids"
-                :items="props.sizes"
+                :items="productSizes"
                 :label="t('forms.product_size')"
                 item-title="name_ar"
                 item-value="id"
                 :rules="[requiredValidator]"
+                :loading="isLoadingSpecifications"
               />
             </VCol>
             <VCol cols="12"
@@ -205,21 +233,55 @@ const dialogModelValueUpdate = val => {
                 item-value="id"
               />
             </VCol>
+            <VCol cols="12"
+              md="6"
+            >
+              <v-checkbox label="الشلوطة"
+              v-model="itemData.shalwata"
+              :false-value="0" :true-value="1"
+              ></v-checkbox>
+            </VCol>
+            <VCol cols="12"
+            md="6"
+              class="d-flex gap-9"
+            >
+              <v-checkbox label="كرشة"
+              v-model="itemData.is_karashah"
+              :false-value="0" :true-value="1"
+              ></v-checkbox>
+              <v-checkbox label="كوارع"
+              v-model="itemData.is_kwar3"
+              :false-value="0" :true-value="1"
+              ></v-checkbox>
+              <v-checkbox label="لية"
+              v-model="itemData.is_lyh"
+              :false-value="0" :true-value="1"
+              ></v-checkbox>
+            </VCol>
+            <VCol cols="12"
+            md="6"
+            class="d-flex gap-10"
+            >
+              <v-checkbox label="رأس"
+              v-model="itemData.is_Ras"
+              :false-value="0" :true-value="1"
+              ></v-checkbox>
+            </VCol>
             <VCol
               cols="12"
-              class="text-center"
+              class="text-center mt-8"
             >
               <VBtn
                 v-if="!isLoading"
                 type="submit"
-                class="me-3"
+                class="me-3 px-8"
               >
                 {{ t('buttons.save') }}
               </VBtn>
               <VBtn
                 v-else
                 type="submit"
-                class="position-relative me-3"
+                class="position-relative me-3 px-8"
               >
                 <VIcon icon="mingcute:loading-line" class="loading" size="32"></VIcon>
               </VBtn>
@@ -228,6 +290,7 @@ const dialogModelValueUpdate = val => {
                 variant="tonal"
                 color="secondary"
                 @click="resetForm"
+                class="px-8"
               >
                 {{ t('buttons.cancel') }}
               </VBtn>

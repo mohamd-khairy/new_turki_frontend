@@ -38,13 +38,20 @@ const itemData = ref({
   order_state_id: null,
 })
 
-const openProductEdit = item => {
+const openProductEdit = (item) => {
   selectedProductItem.value = item
   isEditProductOpen.value = true
 }
 
-const AddNewProductOpen = item => {
-  selectedProductItem.value = item
+const AddNewProductOpen = (item) => {
+  selectedProductItem.value = {
+    ...item,
+    shalwata: item.shalwata ? 1 : 0,
+    is_karashah: item.is_karashah ? 1 : 0,
+    is_kwar3: item.is_kwar3 ? 1 : 0,
+    is_lyh: item.is_lyh ? 1 : 0,
+    is_Ras: item.is_Ras ? 1 : 0,
+  }
   isAddProductOpen.value = true
 }
 
@@ -64,6 +71,14 @@ const formatDateTime = data => {
 }
 
 const getOrderDetails = () => {
+  selectedProductItem.value = {
+    shalwata: 0,
+    is_karashah: 0,
+    is_kwar3: 0,
+    is_lyh: 0,
+    is_Ras: 0,
+  };
+
   const id = route.params.id
 
   isLoading.value = true
