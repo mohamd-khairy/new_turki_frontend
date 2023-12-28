@@ -1,7 +1,7 @@
 <script setup>
-import { useTheme } from 'vuetify'
 import { useThemeConfig } from '@core/composable/useThemeConfig'
 import { hexToRgb } from '@layouts/utils'
+import { useTheme } from 'vuetify'
 
 const {
   syncInitialLoaderTheme,
@@ -24,3 +24,9 @@ syncConfigThemeWithVuetifyTheme()
     </VApp>
   </VLocaleProvider>
 </template>
+
+<style lang="scss">
+.whitespace-nowrap {
+  white-space: nowrap;
+}
+</style>

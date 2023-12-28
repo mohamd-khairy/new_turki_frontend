@@ -1,16 +1,15 @@
 <script setup>
-import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
-import { VNodeRenderer } from './VNodeRenderer'
 import {
-  injectionKeyIsVerticalNavHovered,
-  useLayouts,
+injectionKeyIsVerticalNavHovered,
+useLayouts,
 } from '@layouts'
 import {
-  VerticalNavGroup,
-  VerticalNavLink,
-  VerticalNavSectionTitle,
+VerticalNavGroup,
+VerticalNavLink,
+VerticalNavSectionTitle,
 } from '@layouts/components'
 import { config } from '@layouts/config'
+import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
 
 const props = defineProps({
   tag: {
@@ -144,7 +143,7 @@ const handleNavScroll = evt => {
       </slot>
     </div>
     <slot name="before-nav-items">
-      <div class="vertical-nav-items-shadow"/>
+      <!-- <div class="vertical-nav-items-shadow"/> -->
     </slot>
     <slot
       name="nav-items"

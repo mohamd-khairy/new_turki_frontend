@@ -5,6 +5,8 @@ requiredValidator,
 } from '@validators'
 import { useI18n } from "vue-i18n"
 
+import { hasRole } from '@/helpers'
+import { useAuthStore } from "@/store/Auth"
 import { useCitiesStore } from "@/store/Cities"
 import { useEmployeesStore } from "@/store/Employees"
 import { useOrdersStore } from "@/store/Orders"
@@ -43,6 +45,7 @@ const settingsListStore = useSettingsStore()
 const ordersListStore = useOrdersStore()
 const citiesListStore = useCitiesStore()
 const customersListStore = useEmployeesStore()
+const authStore = useAuthStore()
 
 
 const { t } = useI18n()
@@ -69,6 +72,8 @@ const itemData = reactive({
   discount_code: null,
   notes: null,
   products: [],
+  boxes_count: null,
+  dishes_count: null,
 })
 
 const savedProduct = reactive({
@@ -466,6 +471,28 @@ onMounted(() => {
                     <span>{{ pd.name_ar }}</span>
                   </VChip>
                 </div>
+              </VCol>
+              <VCol
+                cols="12"
+                v-if="hasRole('admin')"
+              >
+                <VTextField
+                  v-model="itemData.boxes_count"
+                  type="number"
+                  min="0"
+                  label="عدد الكراتين"
+                />
+              </VCol>
+              <VCol
+                cols="12"
+                v-if="hasRole('admin')"
+              >
+                <VTextField
+                  v-model="itemData.dishes_count"
+                  type="number"
+                  min="0"
+                  label="عدد الأطباق"
+                />
               </VCol>
               <VCol
                 cols="12"

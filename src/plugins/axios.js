@@ -6,6 +6,7 @@ const axiosIns = axios.create({
 // You can add your headers here
 // ================================
   baseURL: 'https://najdiya.com.sa/laravel/public/api/api/v2',
+  // baseURL: 'https://turki.almaraacompany.com/admin/api/v2',
   headers: {
     Accept: "application/json",
     Authorization: `Bearer ${token}`,

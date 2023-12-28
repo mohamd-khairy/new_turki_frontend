@@ -1,7 +1,9 @@
 <script setup>
+import { hasRole } from '@/helpers'
 import AddNewProduct from "@/pages/orders/[id]/AddNewProduct.vue"
 import AddProductCoupon from "@/pages/orders/[id]/AddProductCoupon.vue"
 import { useCouponsStore } from "@/store/Coupons"
+import { useCustomersStore } from "@/store/Customers"
 import { useEmployeesStore } from "@/store/Employees"
 import { useOrdersStore } from "@/store/Orders"
 import { useSettingsStore } from "@/store/Settings"
@@ -14,6 +16,7 @@ const ordersListStore = useOrdersStore()
 const settingsListStore = useSettingsStore()
 const couponsStore = useCouponsStore()
 const employeesStore = useEmployeesStore()
+const customersStore = useCustomersStore()
 const route = useRoute()
 const { t } = useI18n()
 
@@ -34,8 +37,10 @@ const paymentTypes = ref([])
 const employees = ref([])
 const refForm = ref(null)
 const orderStatus = ref([])
+const customerAddresses = ref([])
 const itemData = ref({
   order_state_id: null,
+  address_id: null,
 })
 
 const openProductEdit = (item) => {
@@ -70,6 +75,12 @@ const formatDateTime = data => {
   return { date, time }
 }
 
+const getCustomerAddresses = (customerId) => {
+  customersStore.getAddresses(customerId).then(response => {
+    customerAddresses.value = response.data?.data || [];
+  })
+}
+
 const getOrderDetails = () => {
   selectedProductItem.value = {
     shalwata: 0,
@@ -85,6 +96,11 @@ const getOrderDetails = () => {
   ordersListStore.fetchOrder(id).then(response => {
     order.value = response?.data.data
     const orderDetails = response?.data?.data?.order;
+
+    if(orderDetails.customer) {
+      getCustomerAddresses(orderDetails.customer.id)
+    }
+
     if(orderDetails) {
       itemData.value = orderDetails;
       itemData.value.address = orderDetails?.selected_address?.address || null;
@@ -491,9 +507,16 @@ onMounted(() => {
                   cols="12"
                   md="6"
                 >
-                  <VTextField
+                  <!-- <VTextField
                     v-model="itemData.address"
                     label="عنوان التوصيل"
+                  /> -->
+                  <VSelect
+                    v-model="itemData.address_id"
+                    label="عنوان التوصيل"
+                    :items="customerAddresses"
+                    item-title="label"
+                    item-value="id"
                   />
                 </VCol>
                 <VCol
@@ -505,6 +528,30 @@ onMounted(() => {
                     min="0"
                     v-model="itemData.delivery_fee"
                     label="مصاريف التوصيل"
+                  />
+                </VCol>
+                <VCol
+                  cols="12"
+                  md="6"
+                  v-if="hasRole('admin')"
+                >
+                  <VTextField
+                    v-model="itemData.boxes_count"
+                    type="number"
+                    min="0"
+                    label="عدد الكراتين"
+                  />
+                </VCol>
+                <VCol
+                  cols="12"
+                  md="6"
+                  v-if="hasRole('admin')"
+                >
+                  <VTextField
+                    v-model="itemData.dishes_count"
+                    type="number"
+                    min="0"
+                    label="عدد الأطباق"
                   />
                 </VCol>
                 <VCol
@@ -624,52 +671,54 @@ onMounted(() => {
                       <td>{{ product.shalwata ? "مع شلوطة" : "بدون" }}</td>
                   
                       <td class="px-2">
-                        <span class="text-success font-weight-bold">
+                        <span class="text-success whitespace-nowrap font-weight-bold">
                           {{ product.size ? ConvertToArabicNumbers(Intl.NumberFormat().format(product.size.sale_price * product.quantity)) : "غير معروف" }} ريال
                         </span>
                       </td>
                       <td>
-                        <VTooltip text="تعديل المنتج">
-                          <template #activator="{ props }">
-                            <VBtn
-                              v-bind="props"
-                              icon
-                              variant="plain"
-                              color="default"
-                              size="x-small"
-                              @click="openProductEdit(product)"
-                            >
-                              <VIcon
-                                :size="22"
-                                icon="ph:pencil-line"
-                              />
-                            </VBtn>
-                          </template>
-                        </VTooltip>
-                        <VTooltip text="حذف المنتج">
-                          <template #activator="{ props }">
-                            <VBtn
-                              v-bind="props"
-                              icon
-                              variant="plain"
-                              color="default"
-                              size="x-small"
-                              @click="deleteProduct(product)"
-                            >
-                              <VIcon
-                                v-if="!isDeleteing"
-                                :size="22"
-                                icon="mingcute:delete-line"
-                              />
-                              <VIcon
-                                v-else
-                                icon="mingcute:loading-line"
-                                class="loading"
-                                size="32"
-                              />
-                            </VBtn>
-                          </template>
-                        </VTooltip>
+                        <div class="d-flex align-center gap-2">
+                          <VTooltip text="تعديل المنتج">
+                            <template #activator="{ props }">
+                              <VBtn
+                                v-bind="props"
+                                icon
+                                variant="plain"
+                                color="default"
+                                size="x-small"
+                                @click="openProductEdit(product)"
+                              >
+                                <VIcon
+                                  :size="22"
+                                  icon="ph:pencil-line"
+                                />
+                              </VBtn>
+                            </template>
+                          </VTooltip>
+                          <VTooltip text="حذف المنتج">
+                            <template #activator="{ props }">
+                              <VBtn
+                                v-bind="props"
+                                icon
+                                variant="plain"
+                                color="default"
+                                size="x-small"
+                                @click="deleteProduct(product)"
+                              >
+                                <VIcon
+                                  v-if="!isDeleteing"
+                                  :size="22"
+                                  icon="mingcute:delete-line"
+                                />
+                                <VIcon
+                                  v-else
+                                  icon="mingcute:loading-line"
+                                  class="loading"
+                                  size="32"
+                                />
+                              </VBtn>
+                            </template>
+                          </VTooltip>
+                        </div>
                       </td>
                     </tr>
                   </tbody>
