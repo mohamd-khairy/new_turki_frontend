@@ -10,6 +10,9 @@ export const useOrdersStore = defineStore('OrdersStore', {
     fetchOrderStatus() {
       return axios.get('order-status')
     },
+    fetchAllOrderStatus() {
+      return axios.get('all-order-status')
+    },
 
     // 👉 Fetch single banner
     storeOrder(data) {

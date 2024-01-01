@@ -37,6 +37,7 @@ const paymentTypes = ref([])
 const employees = ref([])
 const refForm = ref(null)
 const orderStatus = ref([])
+const allOrderStatus = ref([])
 const customerAddresses = ref([])
 const itemData = ref({
   order_state_id: null,
@@ -186,6 +187,10 @@ onMounted(() => {
   getOrderDetails()
   ordersListStore.fetchOrderStatus().then(response => {
     orderStatus.value = response.data.data
+  })
+
+  ordersListStore.fetchAllOrderStatus().then(response => {
+    allOrderStatus.value = response.data.data
   })
 
   employeesStore.fetchEmployees({ pageSize: -1, role_id: 7 }).then(response => {
@@ -395,7 +400,7 @@ onMounted(() => {
                 >
                   <VSelect
                     v-model="itemData.order_state_id"
-                    :items="orderStatus"
+                    :items="allOrderStatus"
                     :label="t('forms.order_state')"
                     item-title="customer_state_ar"
                     item-value="code"
