@@ -158,6 +158,20 @@ onMounted(() => {
                   {{ order.order.delivery_period ? order.order.delivery_period.name_ar : "لا يوجد" }}  
                 </h4>
               </VCol>
+              <VCol v-if="order.order && order.order.boxes_count"
+              cols="6" class="d-flex align-center gap-3">
+                <h4>عدد الكراتين </h4>
+                <h4 class="text-primary">
+                  {{ order.order.boxes_count }}  
+                </h4>
+              </VCol>
+              <VCol v-if="order.order && order.order.dishes_count" 
+              cols="6" class="d-flex align-center gap-3">
+                <h4>عدد الأطباق</h4>
+                <h4 class="text-primary">
+                  {{ order.order.dishes_count }}  
+                </h4>
+              </VCol>
           </VRow>
         </VCol>
         <VCol cols="12" class="mb-4">

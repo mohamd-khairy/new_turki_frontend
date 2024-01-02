@@ -1,4 +1,5 @@
 <script setup>
+import { useAuthStore } from "@/store/Auth"
 import { useCitiesStore } from "@/store/Cities"
 import { useCountriesStore } from "@/store/Countries"
 import { useCouponsStore } from "@/store/Coupons"
@@ -8,11 +9,13 @@ import { usePaymentTypesStore } from "@/store/PaymentTypes"
 import { useProductsStore } from "@/store/Products"
 import { useSettingsStore } from "@/store/Settings"
 import moment from "moment"
+import { ref } from "vue"
 import { useI18n } from "vue-i18n"
 
 
 const { t } = useI18n()
 const router = useRouter()
+const authStore = useAuthStore()
 
 const ordersListStore = useOrdersStore()
 const citiesListStore = useCitiesStore()
@@ -38,6 +41,7 @@ const products = ref([])
 const coupons = ref([])
 const deliveryPeriods = ref([])
 const orderStatuses = ref([])
+const allOrderStatuses = ref([])
 const dataFrom = ref(1)
 const dataTo = ref(1)
 const selectedRows = ref([])
@@ -72,6 +76,11 @@ onMounted(() => {
   ordersListStore.fetchOrderStatus().then(response => {
     orderStatuses.value = response.data.data
   })
+
+  ordersListStore.fetchAllOrderStatus().then(response => {
+    allOrderStatuses.value = response.data.data
+  })
+
   countriesListStore.fetchCountries().then(response => {
     countries.value = response.data.data
   })
@@ -97,6 +106,7 @@ onMounted(() => {
   employeesStore.fetchEmployees({role_name: 'store_manager'}).then(response => {
     salesRepresentatives.value = response.data?.data?.data || [];
   })
+
 })
 
 watch(() => filters.country_ids, (newVal, oldVal) => {
@@ -187,6 +197,17 @@ const changeStatus = data => {
   // })
 }
 
+const activeActionOrderId = ref(null)
+const takeOrder = (order) => {
+  try {
+    activeActionOrderId.value = order.id;
+  } catch (error) {
+    console.error(error);
+  } finally {
+    activeActionOrderId.value = null
+  }
+}
+
 const filterOrders = () => {
   isFiltered.value = true
   getOrders()
@@ -242,6 +263,7 @@ const formatDateTime = data => {
 
   return { date, time }
 }
+
 </script>
 
 <template>
@@ -316,7 +338,7 @@ const formatDateTime = data => {
                 </div>
                 <VSelect
                   v-model="filters.order_state_ids"
-                  :items="orderStatuses"
+                  :items="allOrderStatuses"
                   label="حالة الطلب"
                   item-title="state_ar"
                   item-value="code"
@@ -776,30 +798,61 @@ const formatDateTime = data => {
                 </td>
               -->
               <td>
-                <VBtn
-                  icon
-                  variant="plain"
-                  color="default"
-                  size="x-small"
-                  @click="openInvoice(order)"
-                >
-                  <VIcon
-                    :size="22"
-                    icon="iconamoon:invoice-thin"
-                  />
-                </VBtn>
-                <VBtn
-                  icon
-                  variant="plain"
-                  color="default"
-                  size="x-small"
-                  @click="openDetails(order)"
-                >
-                  <VIcon
-                    :size="22"
-                    icon="tabler-eye"
-                  />
-                </VBtn>
+                <div class="d-flex align-center gap-2">
+                  <VTooltip text="تفاصيل الطلب">
+                    <template #activator="{ props }">
+                      <VBtn
+                        v-bind="props"
+                        icon
+                        variant="plain"
+                        color="default"
+                        size="x-small"
+                        @click="openDetails(order)"
+                      >
+                        <VIcon
+                          :size="22"
+                          icon="tabler-eye"
+                        />
+                      </VBtn>
+                    </template>
+                  </VTooltip>
+                  <VTooltip text="طباعة الفاتورة">
+                    <template #activator="{ props }">
+                    <VBtn
+                      v-bind="props"
+                      icon
+                      variant="plain"
+                      color="default"
+                      size="x-small"
+                      @click="openInvoice(order)"
+                    >
+                      <VIcon
+                        :size="22"
+                        icon="iconamoon:invoice-thin"
+                      />
+                    </VBtn>
+                    </template>
+                  </VTooltip>
+                  <VTooltip text="اخذ الطلب">
+                    <template #activator="{ props }">
+                      <VBtn
+                        v-bind="props"
+                        icon
+                        variant="plain"
+                        color="default"
+                        size="x-small"
+                        :loading="activeActionOrderId == order.id"
+                        :disabled="activeActionOrderId == order.id || activeActionOrderId"
+                        @click="takeOrder(order)"
+                        >
+                        <VIcon
+                          :size="22"
+                          icon="material-symbols:swipe-down-outline"
+                        />
+                      </VBtn>
+                    </template>
+                  </VTooltip>
+                </div>
               </td>
             </tr>
           </tbody>

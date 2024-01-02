@@ -1,7 +1,9 @@
 <script setup>
+import { hasRole } from '@/helpers'
 import AddNewProduct from "@/pages/orders/[id]/AddNewProduct.vue"
 import AddProductCoupon from "@/pages/orders/[id]/AddProductCoupon.vue"
 import { useCouponsStore } from "@/store/Coupons"
+import { useCustomersStore } from "@/store/Customers"
 import { useEmployeesStore } from "@/store/Employees"
 import { useOrdersStore } from "@/store/Orders"
 import { useSettingsStore } from "@/store/Settings"
@@ -14,6 +16,7 @@ const ordersListStore = useOrdersStore()
 const settingsListStore = useSettingsStore()
 const couponsStore = useCouponsStore()
 const employeesStore = useEmployeesStore()
+const customersStore = useCustomersStore()
 const route = useRoute()
 const { t } = useI18n()
 
@@ -34,16 +37,20 @@ const paymentTypes = ref([])
 const employees = ref([])
 const refForm = ref(null)
 const orderStatus = ref([])
+const allOrderStatus = ref([])
+const customerAddresses = ref([])
+
 const itemData = ref({
   order_state_id: null,
+  address_id: null,
 })
 
-const openProductEdit = (item) => {
+const openProductEdit = item => {
   selectedProductItem.value = item
   isEditProductOpen.value = true
 }
 
-const AddNewProductOpen = (item) => {
+const AddNewProductOpen = item => {
   selectedProductItem.value = {
     ...item,
     shalwata: item.shalwata ? 1 : 0,
@@ -70,6 +77,12 @@ const formatDateTime = data => {
   return { date, time }
 }
 
+const getCustomerAddresses = customerId => {
+  customersStore.getAddresses(customerId).then(response => {
+    customerAddresses.value = response.data?.data || []
+  })
+}
+
 const getOrderDetails = () => {
   selectedProductItem.value = {
     shalwata: 0,
@@ -77,20 +90,26 @@ const getOrderDetails = () => {
     is_kwar3: 0,
     is_lyh: 0,
     is_Ras: 0,
-  };
+  }
 
   const id = route.params.id
 
   isLoading.value = true
   ordersListStore.fetchOrder(id).then(response => {
     order.value = response?.data.data
-    const orderDetails = response?.data?.data?.order;
+
+    const orderDetails = response?.data?.data?.order
+
+    if(orderDetails.customer) {
+      getCustomerAddresses(orderDetails.customer.id)
+    }
+
     if(orderDetails) {
-      itemData.value = orderDetails;
-      itemData.value.address = orderDetails?.selected_address?.address || null;
+      itemData.value = orderDetails
+      itemData.value.address = orderDetails?.selected_address?.address || null
     }
   }).catch(error => {
-    console.error(error);
+    console.error(error)
   }).finally (() => {
     isLoading.value = false
   })
@@ -126,7 +145,7 @@ const onFormSubmit = async () => {
   const res = await refForm.value.validate()
   if (res.valid) {
     ordersListStore.editOrder(itemData.value).then(response => {
-      getOrderDetails();
+      getOrderDetails()
       settingsListStore.alertColor = "success"
       settingsListStore.alertMessage = "تم تعديل حالة الطلب بنجاح"
       settingsListStore.isAlertShow = true
@@ -151,7 +170,7 @@ const onFormSubmit = async () => {
         settingsListStore.alertMessage = ""
       }, 2000)
     }).finally(() => {
-      isSubmitting.value = false;
+      isSubmitting.value = false
     })
   }
   else {
@@ -170,6 +189,10 @@ onMounted(() => {
   getOrderDetails()
   ordersListStore.fetchOrderStatus().then(response => {
     orderStatus.value = response.data.data
+  })
+
+  ordersListStore.fetchAllOrderStatus().then(response => {
+    allOrderStatus.value = response.data.data
   })
 
   employeesStore.fetchEmployees({ pageSize: -1, role_id: 7 }).then(response => {
@@ -216,7 +239,7 @@ onMounted(() => {
             <span>طلب رقم</span>
             <span> - </span>
             <span dir="ltr">
-              #{{ order ? order.order.ref_no :  '*******'}}
+              #{{ order ? order.order.ref_no : '*******' }}
             </span>
           </h2>
         </VCol>
@@ -242,7 +265,10 @@ onMounted(() => {
         <VCard class="mb-8">
           <VCardText>
             <h2 class="py-2 mb-6">
-              <VIcon color="primary" icon="arcticons:destiny-item-manager" />
+              <VIcon
+                color="primary"
+                icon="arcticons:destiny-item-manager"
+              />
               <span class="ms-2">
                 تفاصيل الطلب
               </span>
@@ -254,19 +280,19 @@ onMounted(() => {
               >
                 <div class="">
                   <VIcon
-                  icon="ph:dot-duotone"
-                  color="primary"
-                  class="ml-2"
-                />
-                <span>
-                  تاريخ الطلب :
-                </span>
-                <VChip
-                  size="small"
-                  class="font-weight-bold"
-                >
-                  {{ ConvertToArabicNumbers(formatDateTime(order.order.created_at).date) }}
-                </VChip>
+                    icon="ph:dot-duotone"
+                    color="primary"
+                    class="ml-2"
+                  />
+                  <span>
+                    تاريخ الطلب :
+                  </span>
+                  <VChip
+                    size="small"
+                    class="font-weight-bold"
+                  >
+                    {{ ConvertToArabicNumbers(formatDateTime(order.order.created_at).date) }}
+                  </VChip>
                 </div>
               </VCol>
               <VCol
@@ -308,7 +334,7 @@ onMounted(() => {
                 cols="12"
                 md="4"
               >
-              <VIcon
+                <VIcon
                   icon="ph:dot-duotone"
                   color="primary"
                   class="ml-2"
@@ -328,7 +354,7 @@ onMounted(() => {
                 cols="12"
                 md="4"
               >
-              <VIcon
+                <VIcon
                   icon="ph:dot-duotone"
                   color="primary"
                   class="ml-2"
@@ -350,7 +376,7 @@ onMounted(() => {
                 cols="12"
                 md="4"
               >
-              <VIcon
+                <VIcon
                   icon="ph:dot-duotone"
                   color="primary"
                   class="ml-2"
@@ -412,9 +438,12 @@ onMounted(() => {
                         item-value="code"
                       />
                     </VCol>
-                    <VCol cols="1" class="px-0">
+                    <VCol
+                      cols="1"
+                      class="px-0"
+                    >
                       <VTooltip text="إزالة الكوبون من الطلب">
-                        <template v-slot:activator="{ props }">
+                        <template #activator="{ props }">
                           <VBtn
                             v-bind="props"
                             icon
@@ -491,9 +520,18 @@ onMounted(() => {
                   cols="12"
                   md="6"
                 >
-                  <VTextField
+                  <!--
+                    <VTextField
                     v-model="itemData.address"
                     label="عنوان التوصيل"
+                    /> 
+                  -->
+                  <VSelect
+                    v-model="itemData.address_id"
+                    label="عنوان التوصيل"
+                    :items="customerAddresses"
+                    item-title="label"
+                    item-value="id"
                   />
                 </VCol>
                 <VCol
@@ -501,10 +539,34 @@ onMounted(() => {
                   md="6"
                 >
                   <VTextField
+                    v-model="itemData.delivery_fee"
                     type="number"
                     min="0"
-                    v-model="itemData.delivery_fee"
                     label="مصاريف التوصيل"
+                  />
+                </VCol>
+                <VCol
+                  v-if="hasRole('admin')"
+                  cols="12"
+                  md="6"
+                >
+                  <VTextField
+                    v-model="itemData.boxes_count"
+                    type="number"
+                    min="0"
+                    label="عدد الكراتين"
+                  />
+                </VCol>
+                <VCol
+                  v-if="hasRole('admin')"
+                  cols="12"
+                  md="6"
+                >
+                  <VTextField
+                    v-model="itemData.dishes_count"
+                    type="number"
+                    min="0"
+                    label="عدد الأطباق"
                   />
                 </VCol>
                 <VCol
@@ -517,7 +579,7 @@ onMounted(() => {
                   />
                 </VCol>
                 <VCol
-                cols="12"
+                  cols="12"
                 >
                   <VBtn
                     v-if="isSubmitting"
@@ -530,7 +592,8 @@ onMounted(() => {
                       size="32"
                     />
                   </VBtn>
-                  <VBtn v-else
+                  <VBtn
+                    v-else
                     color="primary"
                     class="px-4 d-flex"
                     type="submit"
@@ -548,135 +611,140 @@ onMounted(() => {
         </VCard>
         <VCard>
           <VCardText>
-          <div class="order-products">
-            <div class="d-flex justify-space-between align-center flex-wrap mb-3">
-              <h2 class="py-2">
-                <VIcon color="primary" icon="arcticons:destiny-item-manager" />
-                <span class="ms-2">
-                  المنتجات
-                </span>
-              </h2>
-              <VBtn
-                color="primary"
-                @click="AddNewProductOpen(order.order)"
-              >
-                <VIcon
-                  :size="22"
-                  icon="lets-icons:add-light"
-                />
-                <span>إضافة منتج جديد</span>
-              </VBtn>
-            </div>
-            <div class="products-list">
-              <div class="product table-responsive">
-                <VTable class="table">
-                  <thead>
-                    <tr class="border-b-sm">
-                      <th>
-                        الاسم
-                      </th>
-                      <th>
-                        الأحجام
-                      </th>
-                      <th>
-                        التقطيع
-                      </th>
-                      <th>
-                        التجهيز
-                      </th>
-                      <th>
-                        الكمية
-                      </th>
-                      <th>الكرشة</th>
-                      <th>الكوارع</th>
-                      <th>اللية</th>
-                      <th>الرأس</th>
-                      <th>الشلوطة</th>
-                      <th>
-                        السعر
-                      </th>
-                      <th>
-                        الاجراءات
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr
-                      v-for="product in order.products"
-                      :key="product.id"
-                      style=" border-bottom: 1px solid;"
-                    >
-                      <td class="px-2">
-                        <span>{{ product.product ? product.product.name_ar : "لا يوجد اسم" }}</span>
-                      </td>
-                      <td>{{ product.size ? product.size.name_ar : "لا يوجد" }}</td>
-                      <td>{{ product.cut ? product.cut.name_ar : "لا يوجد" }}</td>
-                      <td>{{ product.preparation ? product.preparation.name_ar : "لا يوجد" }}</td>
-                      <td class="px-2">
-                        <span class="d-block  text-base">
-                          {{ ConvertToArabicNumbers(product.quantity) }}
-                        </span>
-                      </td>
-                      <td>{{ product.is_karashah ? "بدون" : "" }}</td>
-                      <td>{{ product.is_kwar3 ? "بدون" : "" }}</td>
-                      <td>{{ product.is_lyh ? "بدون" : "" }}</td>
-                      <td>{{ product.is_Ras ? "بدون" : "" }}</td>
-                      <td>{{ product.shalwata ? "مع شلوطة" : "بدون" }}</td>
+            <div class="order-products">
+              <div class="d-flex justify-space-between align-center flex-wrap mb-3">
+                <h2 class="py-2">
+                  <VIcon
+                    color="primary"
+                    icon="arcticons:destiny-item-manager"
+                  />
+                  <span class="ms-2">
+                    المنتجات
+                  </span>
+                </h2>
+                <VBtn
+                  color="primary"
+                  @click="AddNewProductOpen(order.order)"
+                >
+                  <VIcon
+                    :size="22"
+                    icon="lets-icons:add-light"
+                  />
+                  <span>إضافة منتج جديد</span>
+                </VBtn>
+              </div>
+              <div class="products-list">
+                <div class="product table-responsive">
+                  <VTable class="table">
+                    <thead>
+                      <tr class="border-b-sm">
+                        <th>
+                          الاسم
+                        </th>
+                        <th>
+                          الأحجام
+                        </th>
+                        <th>
+                          التقطيع
+                        </th>
+                        <th>
+                          التجهيز
+                        </th>
+                        <th>
+                          الكمية
+                        </th>
+                        <th>الكرشة</th>
+                        <th>الكوارع</th>
+                        <th>اللية</th>
+                        <th>الرأس</th>
+                        <th>الشلوطة</th>
+                        <th>
+                          السعر
+                        </th>
+                        <th>
+                          الاجراءات
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr
+                        v-for="product in order.products"
+                        :key="product.id"
+                        style=" border-bottom: 1px solid;"
+                      >
+                        <td class="px-2">
+                          <span>{{ product.product ? product.product.name_ar : "لا يوجد اسم" }}</span>
+                        </td>
+                        <td>{{ product.size ? product.size.name_ar : "لا يوجد" }}</td>
+                        <td>{{ product.cut ? product.cut.name_ar : "لا يوجد" }}</td>
+                        <td>{{ product.preparation ? product.preparation.name_ar : "لا يوجد" }}</td>
+                        <td class="px-2">
+                          <span class="d-block  text-base">
+                            {{ ConvertToArabicNumbers(product.quantity) }}
+                          </span>
+                        </td>
+                        <td>{{ product.is_karashah ? "بدون" : "" }}</td>
+                        <td>{{ product.is_kwar3 ? "بدون" : "" }}</td>
+                        <td>{{ product.is_lyh ? "بدون" : "" }}</td>
+                        <td>{{ product.is_Ras ? "بدون" : "" }}</td>
+                        <td>{{ product.shalwata ? "مع شلوطة" : "بدون" }}</td>
                   
-                      <td class="px-2">
-                        <span class="text-success font-weight-bold">
-                          {{ product.size ? ConvertToArabicNumbers(Intl.NumberFormat().format(product.size.sale_price * product.quantity)) : "غير معروف" }} ريال
-                        </span>
-                      </td>
-                      <td>
-                        <VTooltip text="تعديل المنتج">
-                          <template #activator="{ props }">
-                            <VBtn
-                              v-bind="props"
-                              icon
-                              variant="plain"
-                              color="default"
-                              size="x-small"
-                              @click="openProductEdit(product)"
-                            >
-                              <VIcon
-                                :size="22"
-                                icon="ph:pencil-line"
-                              />
-                            </VBtn>
-                          </template>
-                        </VTooltip>
-                        <VTooltip text="حذف المنتج">
-                          <template #activator="{ props }">
-                            <VBtn
-                              v-bind="props"
-                              icon
-                              variant="plain"
-                              color="default"
-                              size="x-small"
-                              @click="deleteProduct(product)"
-                            >
-                              <VIcon
-                                v-if="!isDeleteing"
-                                :size="22"
-                                icon="mingcute:delete-line"
-                              />
-                              <VIcon
-                                v-else
-                                icon="mingcute:loading-line"
-                                class="loading"
-                                size="32"
-                              />
-                            </VBtn>
-                          </template>
-                        </VTooltip>
-                      </td>
-                    </tr>
-                  </tbody>
-                </VTable>
+                        <td class="px-2">
+                          <span class="text-success whitespace-nowrap font-weight-bold">
+                            {{ product.size ? ConvertToArabicNumbers(Intl.NumberFormat().format(product.size.sale_price * product.quantity)) : "غير معروف" }} ريال
+                          </span>
+                        </td>
+                        <td>
+                          <div class="d-flex align-center gap-2">
+                            <VTooltip text="تعديل المنتج">
+                              <template #activator="{ props }">
+                                <VBtn
+                                  v-bind="props"
+                                  icon
+                                  variant="plain"
+                                  color="default"
+                                  size="x-small"
+                                  @click="openProductEdit(product)"
+                                >
+                                  <VIcon
+                                    :size="22"
+                                    icon="ph:pencil-line"
+                                  />
+                                </VBtn>
+                              </template>
+                            </VTooltip>
+                            <VTooltip text="حذف المنتج">
+                              <template #activator="{ props }">
+                                <VBtn
+                                  v-bind="props"
+                                  icon
+                                  variant="plain"
+                                  color="default"
+                                  size="x-small"
+                                  @click="deleteProduct(product)"
+                                >
+                                  <VIcon
+                                    v-if="!isDeleteing"
+                                    :size="22"
+                                    icon="mingcute:delete-line"
+                                  />
+                                  <VIcon
+                                    v-else
+                                    icon="mingcute:loading-line"
+                                    class="loading"
+                                    size="32"
+                                  />
+                                </VBtn>
+                              </template>
+                            </VTooltip>
+                          </div>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </VTable>
+                </div>
               </div>
             </div>
-          </div>
           </VCardText>
         </VCard>
       </div>
