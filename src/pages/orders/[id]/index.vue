@@ -34,7 +34,6 @@ const productPreparations = ref([])
 const deliveryPeriods = ref([])
 const coupons = ref([])
 const paymentTypes = ref([])
-const employees = ref([])
 const refForm = ref(null)
 const orderStatus = ref([])
 const customerAddresses = ref([])
@@ -42,6 +41,16 @@ const itemData = ref({
   order_state_id: null,
   address_id: null,
 })
+
+const canEditAllFields = computed(() => {
+  if(hasRole(['general_manager', 'store_manager', 'admin'])) {
+    return true
+  }
+
+  return false;
+});
+
+
 
 const openProductEdit = (item) => {
   selectedProductItem.value = item
@@ -186,10 +195,6 @@ onMounted(() => {
   getOrderDetails()
   ordersListStore.fetchOrderStatus().then(response => {
     orderStatus.value = response.data.data
-  })
-
-  employeesStore.fetchEmployees({ pageSize: -1, role_id: 7 }).then(response => {
-    employees.value = response.data.data
   })
 
   settingsListStore.fetchDelivery_Periods().then(response => {
@@ -392,6 +397,7 @@ onMounted(() => {
                 <VCol
                   cols="12"
                   md="6"
+                  v-if="canEditAllFields"
                 >
                   <VSelect
                     v-model="itemData.order_state_id"
@@ -402,24 +408,14 @@ onMounted(() => {
                     :rules="[requiredValidator]"
                   />
                 </VCol>
+                
                 <VCol
                   cols="12"
                   md="6"
-                >
-                  <VSelect
-                    v-model="itemData.user_id"
-                    :items="employees"
-                    :label="t('forms.user')"
-                    item-title="username"
-                    item-value="id"
-                  />
-                </VCol>
-                <VCol
-                  cols="12"
-                  md="6"
+                  v-if="canEditAllFields"
                 >
                   <VRow>
-                    <VCol cols="11">
+                    <VCol cols="12">
                       <VSelect
                         v-model="itemData.discount_code"
                         :label="t('forms.coupon')"
@@ -428,7 +424,7 @@ onMounted(() => {
                         item-value="code"
                       />
                     </VCol>
-                    <VCol cols="1" class="px-0">
+                    <!-- <VCol cols="1" class="px-0">
                       <VTooltip text="إزالة الكوبون من الطلب">
                         <template v-slot:activator="{ props }">
                           <VBtn
@@ -446,12 +442,13 @@ onMounted(() => {
                           </VBtn>
                         </template>
                       </VTooltip>
-                    </VCol>
+                    </VCol> -->
                   </VRow>
                 </VCol>
                 <VCol
                   cols="12"
                   md="6"
+                  v-if="canEditAllFields"
                 >
                   <VTextField
                     v-model="itemData.delivery_date"
@@ -462,6 +459,7 @@ onMounted(() => {
                 <VCol
                   cols="12"
                   md="6"
+                  v-if="canEditAllFields"
                 >
                   <VSelect
                     v-model="itemData.delivery_period"
@@ -474,6 +472,7 @@ onMounted(() => {
                 <VCol
                   cols="12"
                   md="6"
+                  v-if="canEditAllFields"
                 >
                   <VSelect
                     v-model="itemData.payment_type_id"
@@ -486,6 +485,7 @@ onMounted(() => {
                 <VCol
                   cols="12"
                   md="6"
+                  v-if="canEditAllFields"
                 >
                   <VSelect
                     v-model="itemData.paid"
@@ -506,6 +506,7 @@ onMounted(() => {
                 <VCol
                   cols="12"
                   md="6"
+                  v-if="canEditAllFields"
                 >
                   <!-- <VTextField
                     v-model="itemData.address"
@@ -522,6 +523,7 @@ onMounted(() => {
                 <VCol
                   cols="12"
                   md="6"
+                  v-if="canEditAllFields"
                 >
                   <VTextField
                     type="number"
@@ -533,7 +535,7 @@ onMounted(() => {
                 <VCol
                   cols="12"
                   md="6"
-                  v-if="hasRole('admin')"
+                  v-if="hasRole(['production_manager', 'admin'])"
                 >
                   <VTextField
                     v-model="itemData.boxes_count"
@@ -545,7 +547,7 @@ onMounted(() => {
                 <VCol
                   cols="12"
                   md="6"
-                  v-if="hasRole('admin')"
+                  v-if="hasRole(['production_manager', 'admin'])"
                 >
                   <VTextField
                     v-model="itemData.dishes_count"
@@ -556,6 +558,7 @@ onMounted(() => {
                 </VCol>
                 <VCol
                   cols="12"
+                  v-if="canEditAllFields"
                 >
                   <VTextarea
                     v-model="itemData.comment"
@@ -603,7 +606,7 @@ onMounted(() => {
                   المنتجات
                 </span>
               </h2>
-              <VBtn
+              <VBtn v-if="canEditAllFields"
                 color="primary"
                 @click="AddNewProductOpen(order.order)"
               >
@@ -642,7 +645,7 @@ onMounted(() => {
                       <th>
                         السعر
                       </th>
-                      <th>
+                      <th v-if="canEditAllFields">
                         الاجراءات
                       </th>
                     </tr>
@@ -675,7 +678,7 @@ onMounted(() => {
                           {{ product.size ? ConvertToArabicNumbers(Intl.NumberFormat().format(product.size.sale_price * product.quantity)) : "غير معروف" }} ريال
                         </span>
                       </td>
-                      <td>
+                      <td v-if="canEditAllFields">
                         <div class="d-flex align-center gap-2">
                           <VTooltip text="تعديل المنتج">
                             <template #activator="{ props }">

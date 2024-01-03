@@ -96,15 +96,16 @@ const handleNavScroll = evt => {
     ]"
   >
     <!-- 👉 Header -->
-    <div class="nav-header">
+    <div class="nav-header d-flex align-center justify-center position-relative">
       <slot name="nav-header">
         <RouterLink
           to="/"
-          class="app-logo d-flex align-center app-title-wrapper"
+          class="app-logo d-flex align-center justify-center"
         >
+        <!-- class="app-logo d-flex align-center justify-center app-title-wrapper" -->
           <!--          <VNodeRenderer :nodes="config.app.logo" />-->
 <!--          <VIcon icon="iconoir:n-square" size="36"></VIcon>-->
-          <img src="@/assets/images/logo.png" alt="najdiya" width="150">
+            <img class="d-inline-block mx-auto" src="@/assets/images/icon_small.png" alt="تركي للحوم" width="80">
 <!--          <Transition name="vertical-nav-app-title">-->
 <!--            <h1-->
 <!--              v-show="!hideTitleAndIcon"-->
@@ -201,8 +202,14 @@ const handleNavScroll = evt => {
   .nav-header {
     display: flex;
     align-items: center;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 
     .header-action {
+      position: absolute;
+      top: 50%;
+      left: 10px;
+      transform: translateY(-50%);
       cursor: pointer;
     }
   }
