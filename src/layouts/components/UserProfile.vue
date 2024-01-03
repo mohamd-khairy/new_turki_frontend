@@ -1,6 +1,6 @@
 <script setup>
-import avatar1 from '@images/avatars/avatar-1.png'
 import { useSettingsStore } from "@/store/Settings"
+import avatar1 from '@images/avatars/avatar-1.png'
 
 const user = JSON.parse(localStorage.getItem('najdUser'))
 const settingsListStore = useSettingsStore()
@@ -70,13 +70,13 @@ const logout = () => {
             </template>
 
             <VListItemTitle class="font-weight-semibold">
-              {{ user.username ?? "مستخدم نجدية" }}
+              {{ user.username ?? "مستخدم" }}
             </VListItemTitle>
             <VListItemSubtitle>
               <VIcon icon="octicon:dot-fill-24" :color="user.is_active == true || user.is_active == 1 ? '#008000' : '#f00000'" size="16"
               ></VIcon>
               <span class="mx-1">
-                {{ user.is_active == true || user.is_active == 1 ? 'نشط' : 'غير نشط' }}
+                {{ user.roles.length ? user.roles[0] : (user.is_active == true || user.is_active == 1 ? 'نشط' : 'غير نشط') }}
               </span>
             </VListItemSubtitle>
           </VListItem>

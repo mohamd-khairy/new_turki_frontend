@@ -1,6 +1,6 @@
 <script setup>
-import moment from "moment"
 import { useOrdersStore } from "@/store/Orders"
+import moment from "moment"
 
 const ordersListStore = useOrdersStore()
 const route = useRoute()
@@ -47,7 +47,7 @@ onMounted(() => {
 <template>
   <div>
     <div class="loader_wrap" v-if="isLoading">
-      <img src="@/assets/images/logo.png" alt="najdiya"/>
+      <img src="@/assets/images/logo.png" alt="turki"/>
       <p class="text-2xl">جاري جلب البيانات ...</p>
     </div>
     <div class="card-wrapper" v-else>

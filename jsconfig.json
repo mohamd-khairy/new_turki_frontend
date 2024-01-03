@@ -12,7 +12,7 @@
         "src/@iconify/*"
     ],
     "compilerOptions": {
-        "baseUrl":"",// "./laravel/public/",
+        "baseUrl":"",// "./dashboard/",
         "target": "esnext",
         "module": "esnext",
         "moduleResolution": "node",

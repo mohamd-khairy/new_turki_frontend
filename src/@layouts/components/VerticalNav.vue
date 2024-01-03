@@ -104,7 +104,7 @@ const handleNavScroll = evt => {
         >
           <!--          <VNodeRenderer :nodes="config.app.logo" />-->
 <!--          <VIcon icon="iconoir:n-square" size="36"></VIcon>-->
-          <img src="@/assets/images/logo.png" alt="najdiya" width="150">
+          <img src="@/assets/images/logo.png" alt="turki" width="150">
 <!--          <Transition name="vertical-nav-app-title">-->
 <!--            <h1-->
 <!--              v-show="!hideTitleAndIcon"-->

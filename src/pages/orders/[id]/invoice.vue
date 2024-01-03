@@ -74,7 +74,7 @@ onMounted(() => {
     >
       <img
         src="@/assets/images/logo.png"
-        alt="najdiya"
+        alt="turki"
       >
       <p class="text-2xl">
         جاري جلب بيانات الفاتورة ...
@@ -104,7 +104,7 @@ onMounted(() => {
           <div class="d-flex justify-space-between">
             <div>
               <h2 class="mb-2">
-                شركة لحوم نجدية للتجارة
+                شركة لحوم تركي للذبائح
               </h2>
               <h4 class="d-flex align-center gap-3 mb-2">
                 <span>رقم السجل الضريبي: </span>
@@ -121,9 +121,9 @@ onMounted(() => {
             </div>
             <img
               src="/src/assets/images/logo_c.png"
-              alt="نجدية"
+              alt="turki"
               width="225"
-              class="najdiya_logo"
+              class="turki_logo"
             >
           </div>
         </VCol>
@@ -328,7 +328,7 @@ onMounted(() => {
           <img
             v-else
             src="@/assets/images/logo.png"
-            alt="najdiya"
+            alt="turki"
             width="250"
             class="mx-auto"
           >
