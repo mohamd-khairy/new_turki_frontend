@@ -1,7 +1,7 @@
 <script setup>
+import { useEmployeesStore } from "@/store/Employees"
 import moment from "moment"
 import { useI18n } from "vue-i18n"
-import { useEmployeesStore } from "@/store/Employees"
 
 const { t } = useI18n()
 
@@ -45,10 +45,10 @@ const getCustomers = () => {
     search: searchQuery.value,
     wallet: filters.wallet,
   }).then(response => {
-    customers.value = response.data.data
-    totalPage.value = customers.value / rowPerPage
+    customers.value = response.data?.data?.data;
+    totalPage.value = response.data?.data?.total
     totalCities.value = customers.value.length
-    currentPage.value = 1
+    currentPage.value = response.data?.data?.current_page;
   }).catch(error => {
     console.log(error)
   })
