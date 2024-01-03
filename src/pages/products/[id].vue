@@ -359,7 +359,7 @@ onMounted(() => {
     >
       <img
         src="@/assets/images/logo.png"
-        alt="najdiya"
+        alt="turki"
         width="100"
       >
       <p class="text-2xl">

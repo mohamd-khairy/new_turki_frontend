@@ -1,20 +1,19 @@
 <script setup>
+import { useAuthStore } from "@/store/Auth"
+import { useSettingsStore } from "@/store/Settings"
+import axiosIns from "@axios"
 import { useGenerateImageVariant } from '@core/composable/useGenerateImageVariant'
-import { VNodeRenderer } from '@layouts/components/VNodeRenderer'
-import { themeConfig } from '@themeConfig'
-import {
-  emailValidator,
-  requiredValidator,
-} from '@validators'
 import authV2LoginIllustrationBorderedDark from '@images/pages/auth-v2-login-illustration-bordered-dark.png'
 import authV2LoginIllustrationBorderedLight from '@images/pages/auth-v2-login-illustration-bordered-light.png'
 import authV2LoginIllustrationDark from '@images/pages/auth-v2-login-illustration-dark.png'
 import authV2LoginIllustrationLight from '@images/pages/auth-v2-login-illustration-light.png'
 import authV2MaskDark from '@images/pages/misc-mask-dark.png'
 import authV2MaskLight from '@images/pages/misc-mask-light.png'
-import { useAuthStore } from "@/store/Auth"
-import axiosIns from "@axios"
-import { useSettingsStore } from "@/store/Settings"
+import { themeConfig } from '@themeConfig'
+import {
+emailValidator,
+requiredValidator,
+} from '@validators'
 
 const authThemeImg = useGenerateImageVariant(authV2LoginIllustrationLight, authV2LoginIllustrationDark, authV2LoginIllustrationBorderedLight, authV2LoginIllustrationBorderedDark, true)
 const authThemeMask = useGenerateImageVariant(authV2MaskLight, authV2MaskDark)
@@ -79,7 +78,7 @@ const loginUser = () => {
       <div class="position-relative auth-bg rounded-lg w-100 ma-8 me-0">
         <div class="app-logo d-flex align-center justify-center flex-column w-100 h-100">
 <!--          <VIcon icon="iconoir:n-square" size="128" color="primary"></VIcon>-->
-          <img src="@/assets/images/logo.png" alt="najdiya">
+          <img src="@/assets/images/logo.png" alt="turki">
           <h1 class="font-weight-bold text-6xl mt-3">
             مرحباً بك في {{ themeConfig.app.title }}
           </h1>
@@ -108,7 +107,7 @@ const loginUser = () => {
 <!--            :nodes="themeConfig.app.logo"-->
 <!--            class="mb-6"-->
 <!--          />-->
-          <img src="@/assets/images/logo.png" alt="najdiya"  width="100">
+          <img src="@/assets/images/logo.png" alt="turki"  width="100">
 
           <h5 class="text-h5 font-weight-semibold mb-1">
             مرحباً بك في {{ themeConfig.app.title }}! 👋🏻

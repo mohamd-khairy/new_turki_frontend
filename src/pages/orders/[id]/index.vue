@@ -252,7 +252,7 @@ onMounted(() => {
     >
       <img
         src="@/assets/images/logo.png"
-        alt="najdiya"
+        alt="turki"
       >
       <p class="text-2xl">
         جاري جلب البيانات ...

@@ -1,6 +1,6 @@
 <script setup>
-import { useI18n } from "vue-i18n"
 import moment from "moment"
+import { useI18n } from "vue-i18n"
 
 const props = defineProps({
   isOpen: {
@@ -88,7 +88,7 @@ const dialogModelValueUpdate = val => {
             <tbody>
             <tr>
               <td width="20%"><img
-                src="https://najdiya.com.sa/laravel/public/storage/category_images/img_vRF4ASftb5HbVvlzQGfHcJQhVoLGISeXjEBihSvg.png"
+                src="https://turki.almaraacompany.com/admin/public/storage/category_images/img_vRF4ASftb5HbVvlzQGfHcJQhVoLGISeXjEBihSvg.png"
                 width="90"
               ></td>
               <td width="60%"><span class="font-weight-bold">منتجات ألبان</span>

@@ -70,32 +70,33 @@ const filters = reactive({
   sales_representative_id: null,
 })
 
-const selectedOrders = computed(() => orders.value.filter(order => order.selected).map(order => order.id));
+const selectedOrders = computed(() => orders.value.filter(order => order.selected).map(order => order.id))
 
-const selectAllOrders = (selectedAll) => {
+const selectAllOrders = selectedAll => {
   orders.value = orders.value.map(order => {
-    order.selected = selectedAll;
-    return order;
-  });
+    order.selected = selectedAll
+    
+    return order
+  })
 }
 
-watch(selectedOrders, (value) => {
+watch(selectedOrders, value => {
   if(value.length < orders.value.length) {
-    allOrdersSelected.value = false;
+    allOrdersSelected.value = false
   }
-});
+})
 
 const resetSelections = () => {
-  allOrdersSelected.value = false;
+  allOrdersSelected.value = false
 }
 
 const openAssignDeligateDialog = () => {
   isAssignDeligateDialog.value = true
 }
 
-const authUser = computed(() => authStore.currentUser);
+const authUser = computed(() => authStore.currentUser)
 
-const canEditOrder = (order) => {
+const canEditOrder = order => {
   if(hasRole(['general_manager', 'production_manager', 'admin'])) {
     return true
   }
@@ -110,12 +111,12 @@ const canEditOrder = (order) => {
   return false
 }
 
-const canTakeOrder = (order) => {
+const canTakeOrder = order => {
   if(hasRole(['store_manager']) && !order.sales_representative_id) {
     return true
   }
 
-  return false;
+  return false
 }
 
 const canChangeOrderStatus = computed(() => hasRole(['production_manager', 'logistic_manager', 'admin', 'store_manager']));
@@ -150,7 +151,7 @@ const getOrders = () => {
 }
 
 watch(rowPerPage, () => {
-  getOrders();
+  getOrders()
 })
 
 watch(() => currentPage.value, (newVal,oldVal) => {
@@ -180,10 +181,11 @@ const paginationData = computed(() => {
 })
 
 const activeActionOrderId = ref(null)
-const takeOrder = (order) => {
-  activeActionOrderId.value = order.id;
+
+const takeOrder = order => {
+  activeActionOrderId.value = order.id
   ordersListStore.takeOrder(order.id).then(response => {
-    getOrders();
+    getOrders()
 
     settingsListStore.alertColor = "success"
     settingsListStore.alertMessage = "تم تعديل حالة الطلب بنجاح"
@@ -194,27 +196,27 @@ const takeOrder = (order) => {
       isLoading.value = false
     }, 1000)
   })
-  .catch(error => {
-    if (error.response.data.errors) {
-      const errs = Object.keys(error.response.data.errors)
+    .catch(error => {
+      if (error.response.data.errors) {
+        const errs = Object.keys(error.response.data.errors)
 
-      errs.forEach(err => {
-        settingsListStore.alertMessage = t(`errors.${err}`)
-      })
-    } else {
-      settingsListStore.alertMessage = "حدث خطأ ما !"
-    }
+        errs.forEach(err => {
+          settingsListStore.alertMessage = t(`errors.${err}`)
+        })
+      } else {
+        settingsListStore.alertMessage = "حدث خطأ ما !"
+      }
     
-    isLoading.value = false
-    settingsListStore.alertColor = "error"
-    settingsListStore.isAlertShow = true
-    setTimeout(() => {
-      settingsListStore.isAlertShow = false
-      settingsListStore.alertMessage = ""
-    }, 2000)
-  }).finally(() => {
-    activeActionOrderId.value = null
-  });
+      isLoading.value = false
+      settingsListStore.alertColor = "error"
+      settingsListStore.isAlertShow = true
+      setTimeout(() => {
+        settingsListStore.isAlertShow = false
+        settingsListStore.alertMessage = ""
+      }, 2000)
+    }).finally(() => {
+      activeActionOrderId.value = null
+    })
 
 }
 
@@ -242,18 +244,19 @@ const openDetails = order => {
   router.push(`orders/${order.ref_no}`)
 }
 
-const openInvoice = (order) => {
+const openInvoice = order => {
   router.push(`orders/${order.ref_no}/invoice`)
+
   // isPrinting.value = true
   // selectedOrder.value = order
 }
 
-const closePriniting = (order) => {
+const closePriniting = order => {
   isPrinting.value = false
   selectedOrder.value = {}
 }
 
-const openEdit = (order) => {
+const openEdit = order => {
   isEditOpen.value = true
   selectedOrder.value = order
 }
@@ -300,7 +303,6 @@ onMounted(() => {
   })
 
 })
-
 </script>
 
 <template>
@@ -440,8 +442,7 @@ onMounted(() => {
                   item-title="name_ar"
                   item-value="id"
                   :disabled="isLoading"
-                >
-                </VSelect>
+                />
               </VCol>
               <VCol
                 cols="12"
@@ -631,7 +632,8 @@ onMounted(() => {
               :disabled="isLoading"
             />
           </div>
-          <VBtn v-if="hasRole(['general_manager', 'admin'])"
+          <VBtn
+            v-if="hasRole(['general_manager', 'admin'])"
             prepend-icon="tabler-plus"
             :disabled="isLoading"
             @click="isAddOpen = true"
@@ -641,7 +643,10 @@ onMounted(() => {
 
           <div v-if="hasRole(['logistic_manager', 'admin'])">
             <Transition>
-              <div v-if="selectedOrders.length" class="d-flex gap-2 mx-4">
+              <div
+                v-if="selectedOrders.length"
+                class="d-flex gap-2 mx-4"
+              >
                 <VBtn @click="openAssignDeligateDialog">
                   تعيين مندوب
                 </VBtn>
@@ -653,22 +658,28 @@ onMounted(() => {
         </VCardText>
 
         <VDivider />
-        <!-- v-model="selected"
-        <v-data-table
-        :items="orders"
-        item-value="id"
-        show-select
-      ></v-data-table> -->
+        <!--
+          v-model="selected"
+          <v-data-table
+          :items="orders"
+          item-value="id"
+          show-select
+          ></v-data-table> 
+        -->
         <VTable 
-        class="text-no-wrap product-list-table text-center">
+          class="text-no-wrap product-list-table text-center"
+        >
           <thead>
             <tr>
-              <th v-if="hasRole(['logistic_manager', 'admin'])"
+              <th
+                v-if="hasRole(['logistic_manager', 'admin'])"
                 scope="col"
                 class="font-weight-semibold"
               >
-                <v-checkbox v-model="allOrdersSelected"
-                @update:modelValue="selectAllOrders"></v-checkbox>
+                <VCheckbox
+                  v-model="allOrdersSelected"
+                  @update:modelValue="selectAllOrders"
+                />
               </th>
               <th
                 scope="col"
@@ -717,8 +728,10 @@ onMounted(() => {
                 class="font-weight-semibold"
               >
                 {{ t('forms.order_state_ar') }} <br>
-                <span v-if="canChangeOrderStatus" 
-                class="text-primary">( {{ t('forms.click_change_status') }} )</span>
+                <span
+                  v-if="canChangeOrderStatus" 
+                  class="text-primary"
+                >( {{ t('forms.click_change_status') }} )</span>
               </th>
               <th
                 scope="col"
@@ -741,18 +754,18 @@ onMounted(() => {
                 {{ t('forms.payment_type_name') }}
               </th>
               
-                <th
+              <th
                 scope="col"
                 class="font-weight-semibold"
-                >
+              >
                 {{ t('forms.paid_amount') }}
-                </th>
-                <th
+              </th>
+              <th
                 scope="col"
                 class="font-weight-semibold"
-                >
+              >
                 {{ t('forms.remain_amount') }}
-                </th>
+              </th>
               <th
                 scope="col"
                 class="font-weight-semibold"
@@ -783,7 +796,7 @@ onMounted(() => {
               :key="order.id"
             >
               <td v-if="hasRole(['logistic_manager', 'admin'])">
-                <v-checkbox v-model="order.selected"></v-checkbox>
+                <VCheckbox v-model="order.selected" />
               </td>
               <td>
                 {{ order.ref_no }}
@@ -816,8 +829,10 @@ onMounted(() => {
                 {{ ConvertToArabicNumbers(formatDateTime(order.delivery_date).date) }}
               </td>
               <td>
-                <span v-if="canChangeOrderStatus" 
-                @click="openEdit(order)">
+                <span
+                  v-if="canChangeOrderStatus" 
+                  @click="openEdit(order)"
+                >
                   <VChip style="cursor: pointer;">
                     {{ order.order_state_ar }}
                   </VChip>
@@ -868,7 +883,10 @@ onMounted(() => {
               -->
               <td>
                 <div class="d-flex align-center gap-2">
-                  <VTooltip v-if="canEditOrder(order)" text="تفاصيل الطلب">
+                  <VTooltip
+                    v-if="canEditOrder(order)"
+                    text="تفاصيل الطلب"
+                  >
                     <template #activator="{ props }">
                       <VBtn
                         v-bind="props"
@@ -887,22 +905,25 @@ onMounted(() => {
                   </VTooltip>
                   <VTooltip text="طباعة الفاتورة">
                     <template #activator="{ props }">
-                    <VBtn
-                      v-bind="props"
-                      icon
-                      variant="plain"
-                      color="default"
-                      size="x-small"
-                      @click="openInvoice(order)"
-                    >
-                      <VIcon
-                        :size="22"
-                        icon="iconamoon:invoice-thin"
-                      />
-                    </VBtn>
+                      <VBtn
+                        v-bind="props"
+                        icon
+                        variant="plain"
+                        color="default"
+                        size="x-small"
+                        @click="openInvoice(order)"
+                      >
+                        <VIcon
+                          :size="22"
+                          icon="iconamoon:invoice-thin"
+                        />
+                      </VBtn>
                     </template>
                   </VTooltip>
-                  <VTooltip v-if="canTakeOrder(order)" text="اخذ الطلب">
+                  <VTooltip
+                    v-if="canTakeOrder(order)"
+                    text="اخذ الطلب"
+                  >
                     <template #activator="{ props }">
                       <VBtn
                         v-bind="props"
@@ -913,7 +934,7 @@ onMounted(() => {
                         :loading="activeActionOrderId == order.id"
                         :disabled="activeActionOrderId == order.id || activeActionOrderId"
                         @click="takeOrder(order)"
-                        >
+                      >
                         <VIcon
                           :size="22"
                           icon="material-symbols:swipe-down-outline"
@@ -957,7 +978,8 @@ onMounted(() => {
       </VCard>
     </div>
 
-    <OrderInvoice v-if="isPrinting"
+    <OrderInvoice
+      v-if="isPrinting"
       :order-details="selectedOrder"
       @close="closePriniting"
     />

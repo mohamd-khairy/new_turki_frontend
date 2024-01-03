@@ -4,7 +4,7 @@ import { useI18n } from "vue-i18n"
 
 const { t } = useI18n()
 
-const backend = 'https://najdiya.com.sa/laravel/public'
+const backend = 'https://turki.almaraacompany.com/admin'
 const bannersListStore = useBannersStore()
 const searchQuery = ref('')
 const selectedStatus = ref()
