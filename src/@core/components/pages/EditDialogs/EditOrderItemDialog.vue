@@ -96,7 +96,6 @@ const onFormSubmit = async () => {
       setTimeout(() => {
         settingsListStore.isAlertShow = false
         settingsListStore.alertMessage = ""
-        isLoading.value = false
       }, 1000)
     }).catch(error => {
       if (error.response.data.errors) {
@@ -108,13 +107,15 @@ const onFormSubmit = async () => {
       } else {
         settingsListStore.alertMessage = "حدث خطأ ما !"
       }
-      isLoading.value = false
       settingsListStore.alertColor = "error"
       settingsListStore.isAlertShow = true
       setTimeout(() => {
         settingsListStore.isAlertShow = false
         settingsListStore.alertMessage = ""
       }, 2000)
+    })
+    .finally(() => {
+      isLoading.value = false
     })
   } else {
     isLoading.value = false

@@ -7,7 +7,6 @@ import { useCouponsStore } from "@/store/Coupons"
 import { useEmployeesStore } from "@/store/Employees"
 import { useOrdersStore } from "@/store/Orders"
 import { usePaymentTypesStore } from "@/store/PaymentTypes"
-import { useProductsStore } from "@/store/Products"
 import { useSettingsStore } from "@/store/Settings"
 import moment from "moment"
 import { ref } from "vue"
@@ -21,7 +20,6 @@ const authStore = useAuthStore()
 const ordersListStore = useOrdersStore()
 const citiesListStore = useCitiesStore()
 const countriesListStore = useCountriesStore()
-const productsListStore = useProductsStore()
 const settingsListStore = useSettingsStore()
 const employeesStore = useEmployeesStore()
 const couponsListStore = useCouponsStore()
@@ -36,9 +34,7 @@ const totalOrders = ref(0)
 const orders = ref([])
 const cities = ref([])
 const customers = ref([])
-const customersCopy = ref([])
 const countries = ref([])
-const products = ref([])
 const coupons = ref([])
 const deliveryPeriods = ref([])
 const orderStatuses = ref([])
@@ -122,7 +118,7 @@ const canTakeOrder = (order) => {
   return false;
 }
 
-const canChangeOrderStatus = computed(() => hasRole(['production_manager', 'logistic_manager', 'admin']));
+const canChangeOrderStatus = computed(() => hasRole(['production_manager', 'logistic_manager', 'admin', 'store_manager']));
 
 
 watch(() => filters.country_ids, (newVal, oldVal) => {
@@ -161,20 +157,25 @@ watch(() => currentPage.value, (newVal,oldVal) => {
   getOrders()
 })
 
-const searchCustomer = e => {
-  if(!searchTerm.value){
-    customers.value = customersCopy.value
-  }
-  customers.value = customers.value.filter(customer => {
-    return customer.name.toLowerCase().indexOf(searchTerm.value.toLowerCase()) > -1 || customer.mobile.toLowerCase().indexOf(searchTerm.value.toLowerCase()) > -1
-  })
+const _timerId = ref(null)
+const isLoadingCustomers = ref(false)
+const searchCustomer = (e) => {
+  clearTimeout(_timerId.value)
+  _timerId.value = setTimeout(() => {
+    isLoadingCustomers.value = true
+    employeesStore.fetchCustomers({ search: e.target.value, wallet: "all" })
+    .then(response => {
+      customers.value = response.data?.data?.data || [];
+    })
+    .finally(() => {
+      isLoadingCustomers.value = false
+    })
+  }, 800);
 }
+
 
 // 👉 Computing pagination data
 const paginationData = computed(() => {
-  // const firstIndex = products.value.length ? (currentPage.value - 1) * rowPerPage.value + 1 : 0
-  // const lastIndex = firstIndex + (rowPerPage.value - 1) <= products.value.length ? firstIndex + (rowPerPage.value - 1) : totalProducts.value
-
   return ` عرض من ${ConvertToArabicNumbers(dataFrom.value)} إلي ${ConvertToArabicNumbers(dataTo.value)} من ${ConvertToArabicNumbers(totalOrders.value)} الإجمالي `
 })
 
@@ -284,24 +285,17 @@ onMounted(() => {
   settingsListStore.fetchDelivery_Periods().then(response => {
     deliveryPeriods.value = response.data.data
   })
-  productsListStore.fetchProductsAll().then(response => {
-    products.value = response.data.data
-  })
-  couponsListStore.fetchCoupons({ per_page: -1 }).then(response => {
+  couponsListStore.fetchCoupons({ per_page: 100 }).then(response => {
     coupons.value = response.data.data
-  })
-  employeesStore.fetchCustomers({ wallet: "all" }).then(response => {
-    customers.value = response.data.data
-    customersCopy.value = response.data.data
   })
  
   paymentTypesStore.getAll().then(response => {
     paymentTypes.value = response.data.data
   })
-  employeesStore.fetchEmployees({pageSize: -1, role_name: 'delegate'}).then(response => {
+  employeesStore.fetchEmployees({pageSize: 100, role_name: 'delegate'}).then(response => {
     salesAgents.value = response.data?.data?.data || [];
   })
-  employeesStore.fetchEmployees({pageSize: -1, role_name: 'store_manager'}).then(response => {
+  employeesStore.fetchEmployees({pageSize: 100, role_name: 'store_manager'}).then(response => {
     salesRepresentatives.value = response.data?.data?.data || [];
   })
 
@@ -405,7 +399,8 @@ onMounted(() => {
                   label="العميل"
                   item-title="name_mobile"
                   item-value="id"
-                  :disabled="isLoading"
+                  :disabled="isLoading || isLoadingCustomers"
+                  :loading="isLoadingCustomers"
                 >
                   <template #prepend-item>
                     <VTextField
@@ -827,7 +822,11 @@ onMounted(() => {
                     {{ order.order_state_ar }}
                   </VChip>
                 </span>
-                <span v-else>{{ order.order_state_ar }}</span>
+                <span v-else>
+                  <VChip>
+                    {{ order.order_state_ar }}
+                  </VChip>
+                </span>
               </td>
               <td>
                 <VChip
@@ -965,7 +964,6 @@ onMounted(() => {
     
     <AddOrdersDialog
       v-model:is-add-open="isAddOpen"
-      :products="products"
       :countries="countries"
       :cities="cities"
       :customers="customers"

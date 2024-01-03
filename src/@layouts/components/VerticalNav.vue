@@ -174,11 +174,11 @@ const handleNavScroll = evt => {
 @use "@configured-variables" as variables;
 @use "@layouts/styles/mixins";
 
-.v-theme--dark .app-logo {
-  img {
-    filter: brightness(0) invert(1);
-  }
-}
+// .v-theme--dark .app-logo {
+//   img {
+//     filter: brightness(0) invert(1);
+//   }
+// }
 
 .app-logo {
   img {

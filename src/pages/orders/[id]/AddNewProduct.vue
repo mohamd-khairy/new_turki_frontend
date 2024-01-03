@@ -75,14 +75,6 @@ onUpdated(() => {
   itemData.order_id = props.order ? props.order.id : 0
 })
 
-onMounted(() => {
-  productsListStore.fetchProducts({ per_page: -1 }).then(response => {
-    products.value = response.data.data
-  })
-
-  
-})
-
 const products = ref([])
 const isLoading = ref(false)
 
@@ -149,6 +141,21 @@ const onFormSubmit = async () => {
 const dialogModelValueUpdate = val => {
   emit('update:isAddOpen', val)
 }
+
+const _timerProductsId = ref(null)
+const isLoadingProducts = ref(false)
+const searchProduct = (e) => {
+  clearTimeout(_timerProductsId.value)
+  _timerProductsId.value = setTimeout(() => {
+    isLoadingProducts.value = true
+    productsListStore.fetchProducts({ search: e.target.value}).then(response => {
+      products.value = response.data?.data?.data || [];
+    })
+    .finally(() => {
+      isLoadingProducts.value = false
+    });
+  }, 800);
+}
 </script>
 
 <template>
@@ -187,9 +194,23 @@ const dialogModelValueUpdate = val => {
                 :label="t('forms.products')"
                 item-title="name_ar"
                 item-value="id"
+                clearable
                 :rules="[requiredValidator]"
+                :loading="isLoadingProducts"
                 @update:modelValue="getProductSpecifications"
-              />
+                >
+                  <template #prepend-item>
+                    <VListItem>
+                      <VListItemContent>
+                        <VTextField
+                          placeholder="البحث في المنتجات"
+                          @input="searchProduct"
+                        />
+                      </VListItemContent>
+                    </VListItem>
+                    <VDivider class="mt-2" />
+                  </template>
+                </VSelect>
             </VCol>
             <VCol cols="12"
                   md="6"

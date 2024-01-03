@@ -45,7 +45,7 @@ const theme = {
     dark: {
       dark: true,
       colors: {
-        'primary': localStorage.getItem(`${themeConfig.app.title}-darkThemePrimaryColor`) || '#7367F0',
+        'primary': localStorage.getItem(`${themeConfig.app.title}-darkThemePrimaryColor`) || '#6D1442',
         'on-primary': '#fff',
         'secondary': '#A8AAAE',
         'on-secondary': '#fff',

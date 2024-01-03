@@ -101,28 +101,28 @@ onMounted(() => {
           </div>
         </VCol> -->
         <VCol cols="12">
-          <div class="d-flex justify-space-between">
+          <div class="d-flex justify-space-between align-center">
             <div>
               <h2 class="mb-2">
-                شركة لحوم نجدية للتجارة
+                شركة تركي للذبائح
               </h2>
               <h4 class="d-flex align-center gap-3 mb-2">
                 <span>رقم السجل الضريبي: </span>
                 <span class="text-primary">
-                  {{ ConvertToArabicNumbers(311859965700003) }}
+                  {{ ConvertToArabicNumbers(310841577800003) }}
                 </span>
               </h4>
               <h4 class="d-flex align-center gap-3 mb-2">
                 <span>سجل تجاري: </span>
                 <span class="text-primary">
-                  {{ ConvertToArabicNumbers(1010938507) }}
+                  {{ ConvertToArabicNumbers(1010476540) }}
                 </span>
               </h4>
             </div>
             <img
-              src="/src/assets/images/logo_c.png"
-              alt="نجدية"
-              width="225"
+              src="/src/assets/images/logo.png"
+              alt="تركي للذبائح"
+              width="200"
               class="najdiya_logo"
             >
           </div>

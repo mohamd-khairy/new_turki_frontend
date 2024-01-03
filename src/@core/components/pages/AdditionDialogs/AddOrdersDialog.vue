@@ -10,16 +10,13 @@ import { useAuthStore } from "@/store/Auth"
 import { useCitiesStore } from "@/store/Cities"
 import { useEmployeesStore } from "@/store/Employees"
 import { useOrdersStore } from "@/store/Orders"
+import { useProductsStore } from "@/store/Products"
 import { useSettingsStore } from "@/store/Settings"
 import moment from "moment"
 
 const props = defineProps({
   isAddOpen: {
     type: Boolean,
-    required: true,
-  },
-  products: {
-    type: Array,
     required: true,
   },
   countries: {
@@ -45,6 +42,7 @@ const settingsListStore = useSettingsStore()
 const ordersListStore = useOrdersStore()
 const citiesListStore = useCitiesStore()
 const customersListStore = useEmployeesStore()
+const productsListStore = useProductsStore()
 const authStore = useAuthStore()
 
 
@@ -58,7 +56,7 @@ const delivery_date = ref(null)
 const cities = ref([])
 const selectedProducts = ref([])
 const customers = ref([])
-const customersCopy = ref([])
+const products = ref([])
 const searchTerm = ref('')
 
 const itemData = reactive({
@@ -88,6 +86,18 @@ const isAddCustomerOpen = ref(false)
 const isAddCustomerAddressOpen = ref(false)
 const addresses = ref([])
 
+const updateProducts = (products) => {
+  const selected = [];
+  selectedProducts.value  = products.filter(product => {
+    if(selected.includes(product.id)) {
+      return false;
+    }
+
+    selected.push(product.id);
+    return true;
+  })
+}
+
 const resetForm = () => {
   emit('update:isAddOpen', false)
 }
@@ -108,14 +118,6 @@ watch(() => itemData.country_id, (newVal, oldVal) => {
     cities.value = response.data.data
   })
 })
-
-const getCustomers = () => {
-  itemData.customer_id = null
-  customersListStore.fetchCustomers({ wallet: 'all' }).then(response => {
-    customers.value = response.data.data
-    customersCopy.value = response.data.data
-  })
-}
 
 const getAddresses = () => {
   let selected_customer = customers.value.filter(obj => obj.id === itemData.customer_id)
@@ -206,7 +208,6 @@ const dialogModelValueUpdate = val => {
 const closeModel = () => {
   emit('update:isAddOpen', false)
   itemData.customer_id = null
-  getCustomers()
 }
 
 const resetItem = () => {
@@ -252,18 +253,37 @@ const AddQuantity = data => {
   // resetItem()
 }
 
-const searchCustomer = e => {
-  if(!searchTerm.value){
-    customers.value = customersCopy.value
-  }
-  customers.value = customers.value.filter(customer => {    
-    return customer.name.toLowerCase().indexOf(searchTerm.value.toLowerCase()) > -1 || customer.mobile.toLowerCase().indexOf(searchTerm.value.toLowerCase()) > -1
-  })
+const _timerId = ref(null)
+const isLoadingCustomers = ref(false)
+const searchCustomer = (e) => {
+  clearTimeout(_timerId.value)
+  _timerId.value = setTimeout(() => {
+    isLoadingCustomers.value = true
+    customersListStore.fetchCustomers({ search: e.target.value, wallet: "all" })
+    .then(response => {
+      customers.value = response.data?.data?.data || [];
+    })
+    .finally(() => {
+      isLoadingCustomers.value = false
+    })
+  }, 800);
 }
 
-onMounted(() => {
-  getCustomers()
-})
+const _timerProductsId = ref(null)
+const isLoadingProducts = ref(false)
+const searchProduct = (e) => {
+  clearTimeout(_timerProductsId.value)
+  _timerProductsId.value = setTimeout(() => {
+    isLoadingProducts.value = true
+    productsListStore.fetchProducts({ search: e.target.value}).then(response => {
+      products.value = response.data?.data?.data || [];
+    })
+    .finally(() => {
+      isLoadingProducts.value = false
+    });
+  }, 800);
+}
+
 </script>
 
 <template>
@@ -315,6 +335,7 @@ onMounted(() => {
                       item-title="name_mobile"
                       item-value="id"
                       :rules="[requiredValidator]"
+                      :loading="isLoadingCustomers"
                     >
                       <template #prepend-item>
                         <VListItem>
@@ -450,15 +471,29 @@ onMounted(() => {
                 cols="12"
               >
                 <VSelect
-                  v-model="selectedProducts"
                   :items="products"
                   :label="t('Products')"
                   item-title="name_ar"
                   item-value="id"
                   return-object
                   multiple
+                  hide-selected
+                  :loading="isLoadingProducts"
                   :rules="[requiredValidator]"
-                />
+                  @update:modelValue="updateProducts"
+                >
+                  <template #prepend-item>
+                    <VListItem>
+                      <VListItemContent>
+                        <VTextField
+                          placeholder="البحث في المنتجات"
+                          @input="searchProduct"
+                        />
+                      </VListItemContent>
+                    </VListItem>
+                    <VDivider class="mt-2" />
+                  </template>
+                </VSelect>
                 <span class="text-sm mt-1 font-weight-bold">* إضغط علي المنتج لإستكمال البيانات (مطلوب)</span>
                 <div class="mt-2">
                   <VChip
@@ -474,7 +509,7 @@ onMounted(() => {
               </VCol>
               <VCol
                 cols="12"
-                v-if="hasRole(['production_manager', 'admin'])"
+                v-if="hasRole(['production_manager'])"
               >
                 <VTextField
                   v-model="itemData.boxes_count"
@@ -485,7 +520,7 @@ onMounted(() => {
               </VCol>
               <VCol
                 cols="12"
-                v-if="hasRole(['production_manager', 'admin'])"
+                v-if="hasRole(['production_manager'])"
               >
                 <VTextField
                   v-model="itemData.dishes_count"
@@ -556,7 +591,6 @@ onMounted(() => {
     />
     <AddCustomerDialog
       v-model:is-add-open="isAddCustomerOpen"
-      @refreshTable="getCustomers"
     />
     <AddCustomerAddressDialog
       v-model:is-add-open="isAddCustomerAddressOpen"
