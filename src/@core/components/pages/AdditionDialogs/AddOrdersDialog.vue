@@ -474,7 +474,7 @@ onMounted(() => {
               </VCol>
               <VCol
                 cols="12"
-                v-if="hasRole('admin')"
+                v-if="hasRole(['production_manager', 'admin'])"
               >
                 <VTextField
                   v-model="itemData.boxes_count"
@@ -485,7 +485,7 @@ onMounted(() => {
               </VCol>
               <VCol
                 cols="12"
-                v-if="hasRole('admin')"
+                v-if="hasRole(['production_manager', 'admin'])"
               >
                 <VTextField
                   v-model="itemData.dishes_count"

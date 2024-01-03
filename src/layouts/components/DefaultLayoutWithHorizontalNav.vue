@@ -9,7 +9,6 @@ import Footer from '@/layouts/components/Footer.vue'
 import NavbarThemeSwitcher from '@/layouts/components/NavbarThemeSwitcher.vue'
 import UserProfile from '@/layouts/components/UserProfile.vue'
 import { HorizontalNavLayout } from '@layouts'
-import { VNodeRenderer } from '@layouts/components/VNodeRenderer'
 
 const { appRouteTransition } = useThemeConfig()
 </script>
@@ -24,7 +23,8 @@ const { appRouteTransition } = useThemeConfig()
         to="/"
         class="app-logo d-flex align-center gap-x-3"
       >
-        <VNodeRenderer :nodes="themeConfig.app.logo" />
+        <!-- <VNodeRenderer :nodes="themeConfig.app.logo" /> -->
+        <img width="45" src="@/assets/images/icon_small.png" :alt="themeConfig.app.title">
 
         <h1 class="app-title font-weight-bold leading-normal text-xl">
           {{ themeConfig.app.title }}

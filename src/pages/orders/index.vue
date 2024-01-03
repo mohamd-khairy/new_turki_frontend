@@ -1,4 +1,5 @@
 <script setup>
+import { hasRole } from '@/helpers'
 import { useAuthStore } from "@/store/Auth"
 import { useCitiesStore } from "@/store/Cities"
 import { useCountriesStore } from "@/store/Countries"
@@ -56,6 +57,8 @@ const isFiltered = ref(false)
 const paymentTypes = ref([])
 const salesAgents = ref([])
 const salesRepresentatives = ref([])
+const isAssignDeligateDialog = ref(false)
+const allOrdersSelected = ref(false)
 
 const filters = reactive({
   city_ids: [],
@@ -71,43 +74,57 @@ const filters = reactive({
   sales_representative_id: null,
 })
 
-onMounted(() => {
-  getOrders()
-  ordersListStore.fetchOrderStatus().then(response => {
-    orderStatuses.value = response.data.data
-  })
+const selectedOrders = computed(() => orders.value.filter(order => order.selected).map(order => order.id))
 
-  ordersListStore.fetchAllOrderStatus().then(response => {
-    allOrderStatuses.value = response.data.data
+const selectAllOrders = selectedAll => {
+  orders.value = orders.value.map(order => {
+    order.selected = selectedAll
+    
+    return order
   })
+}
 
-  countriesListStore.fetchCountries().then(response => {
-    countries.value = response.data.data
-  })
-  settingsListStore.fetchDelivery_Periods().then(response => {
-    deliveryPeriods.value = response.data.data
-  })
-  productsListStore.fetchProductsAll().then(response => {
-    products.value = response.data.data
-  })
-  couponsListStore.fetchCoupons({ per_page: -1 }).then(response => {
-    coupons.value = response.data.data
-  })
-  employeesStore.fetchCustomers({ wallet: "all" }).then(response => {
-    customers.value = response.data.data
-    customersCopy.value = response.data.data
-  })
-  paymentTypesStore.getAll().then(response => {
-    paymentTypes.value = response.data.data
-  })
-  employeesStore.fetchEmployees({role_name: 'delegate'}).then(response => {
-    salesAgents.value = response.data?.data?.data || [];
-  })
-  employeesStore.fetchEmployees({role_name: 'store_manager'}).then(response => {
-    salesRepresentatives.value = response.data?.data?.data || [];
-  })
-
+watch(selectedOrders, value => {
+  if(value.length < orders.value.length) {
+    allOrdersSelected.value = false
+  }
 })
+
+const resetSelections = () => {
+  allOrdersSelected.value = false
+}
+
+const openAssignDeligateDialog = () => {
+  isAssignDeligateDialog.value = true
+}
+
+const authUser = computed(() => authStore.currentUser)
+
+const canEditOrder = order => {
+  if(hasRole(['general_manager', 'production_manager', 'admin'])) {
+    return true
+  }
+
+  if(
+    hasRole('store_manager') && 
+    order.sales_representative_id == authUser.value?.id
+  ) {
+    return true
+  }
+
+  return false
+}
+
+const canTakeOrder = order => {
+  if(hasRole(['store_manager']) && !order.sales_representative_id) {
+    return true
+  }
+
+  return false
+}
+
+const canChangeOrderStatus = computed(() => hasRole(['general_manager','production_manager', 'logistic_manager', 'admin']))
+
 
 watch(() => filters.country_ids, (newVal, oldVal) => {
   citiesListStore.fetchCitiesByCountry(filters.country_ids).then(response => {
@@ -129,41 +146,21 @@ const getOrders = () => {
     dataTo.value = response.data.data.to
     totalOrders.value = response.data.data.total
     isLoading.value = false
+    
+    resetSelections()
   }).catch(error => {
     isLoading.value = false
     console.log(error)
   })
 }
 
-// watchEffect(() => {
-//   getOrders()
-// })
-
-
-// 👉 Fetch Countrys
-watchEffect(() => {
-  if (rowPerPage.value) {
-    currentPage.value = 1
-  }
+watch(rowPerPage, () => {
+  getOrders()
 })
 
 watch(() => currentPage.value, (newVal,oldVal) => {
   getOrders()
 })
-
-const paginateOrders = computed(() => {
-  totalPage.value = Math.ceil(orders.value.length / rowPerPage.value)
-
-  return orders.value.filter((row, index) => {
-    let start = (currentPage.value - 1) * rowPerPage.value
-    let end = currentPage.value * rowPerPage.value
-    if (index >= start && index < end) return true
-  })
-})
-
-// const filteredItems = () => {
-//   return orders.value.filter(item => item.name.toLowerCase().includes(searchQuery.value.toString()))
-// }
 
 const searchCustomer = e => {
   if(!searchTerm.value){
@@ -174,15 +171,6 @@ const searchCustomer = e => {
   })
 }
 
-
-const nextPage = () => {
-  if ((currentPage.value * rowPerPage.value) < orders.value.length) currentPage.value
-}
-
-const prevPage = () => {
-  if (currentPage.value > 1) currentPage.value
-}
-
 // 👉 Computing pagination data
 const paginationData = computed(() => {
   // const firstIndex = products.value.length ? (currentPage.value - 1) * rowPerPage.value + 1 : 0
@@ -191,21 +179,44 @@ const paginationData = computed(() => {
   return ` عرض من ${ConvertToArabicNumbers(dataFrom.value)} إلي ${ConvertToArabicNumbers(dataTo.value)} من ${ConvertToArabicNumbers(totalOrders.value)} الإجمالي `
 })
 
-const changeStatus = data => {
-  // ordersListStore.changeCountryStatus(data).then(response => {
-  //   getOrders()
-  // })
-}
-
 const activeActionOrderId = ref(null)
-const takeOrder = (order) => {
-  try {
-    activeActionOrderId.value = order.id;
-  } catch (error) {
-    console.error(error);
-  } finally {
-    activeActionOrderId.value = null
-  }
+
+const takeOrder = order => {
+  activeActionOrderId.value = order.id
+  ordersListStore.takeOrder(order.id).then(response => {
+    getOrders()
+
+    settingsListStore.alertColor = "success"
+    settingsListStore.alertMessage = "تم تعديل حالة الطلب بنجاح"
+    settingsListStore.isAlertShow = true
+    setTimeout(() => {
+      settingsListStore.isAlertShow = false
+      settingsListStore.alertMessage = ""
+      isLoading.value = false
+    }, 1000)
+  })
+    .catch(error => {
+      if (error.response.data.errors) {
+        const errs = Object.keys(error.response.data.errors)
+
+        errs.forEach(err => {
+          settingsListStore.alertMessage = t(`errors.${err}`)
+        })
+      } else {
+        settingsListStore.alertMessage = "حدث خطأ ما !"
+      }
+    
+      isLoading.value = false
+      settingsListStore.alertColor = "error"
+      settingsListStore.isAlertShow = true
+      setTimeout(() => {
+        settingsListStore.isAlertShow = false
+        settingsListStore.alertMessage = ""
+      }, 2000)
+    }).finally(() => {
+      activeActionOrderId.value = null
+    })
+
 }
 
 const filterOrders = () => {
@@ -232,18 +243,19 @@ const openDetails = order => {
   router.push(`orders/${order.ref_no}`)
 }
 
-const openInvoice = (order) => {
+const openInvoice = order => {
   router.push(`orders/${order.ref_no}/invoice`)
+
   // isPrinting.value = true
   // selectedOrder.value = order
 }
 
-const closePriniting = (order) => {
+const closePriniting = order => {
   isPrinting.value = false
   selectedOrder.value = {}
 }
 
-const openEdit = (order) => {
+const openEdit = order => {
   isEditOpen.value = true
   selectedOrder.value = order
 }
@@ -264,6 +276,39 @@ const formatDateTime = data => {
   return { date, time }
 }
 
+onMounted(() => {
+  getOrders()
+  ordersListStore.fetchOrderStatus().then(response => {
+    orderStatuses.value = response.data.data
+  })
+  countriesListStore.fetchCountries().then(response => {
+    countries.value = response.data.data
+  })
+  settingsListStore.fetchDelivery_Periods().then(response => {
+    deliveryPeriods.value = response.data.data
+  })
+  productsListStore.fetchProductsAll().then(response => {
+    products.value = response.data.data
+  })
+  couponsListStore.fetchCoupons({ per_page: -1 }).then(response => {
+    coupons.value = response.data.data
+  })
+  employeesStore.fetchCustomers({ wallet: "all" }).then(response => {
+    customers.value = response.data.data
+    customersCopy.value = response.data.data
+  })
+ 
+  paymentTypesStore.getAll().then(response => {
+    paymentTypes.value = response.data.data
+  })
+  employeesStore.fetchEmployees({ pageSize: -1, role_name: 'delegate' }).then(response => {
+    salesAgents.value = response.data?.data?.data || []
+  })
+  employeesStore.fetchEmployees({ pageSize: -1, role_name: 'store_manager' }).then(response => {
+    salesRepresentatives.value = response.data?.data?.data || []
+  })
+
+})
 </script>
 
 <template>
@@ -402,8 +447,7 @@ const formatDateTime = data => {
                   item-title="name_ar"
                   item-value="id"
                   :disabled="isLoading"
-                >
-                </VSelect>
+                />
               </VCol>
               <VCol
                 cols="12"
@@ -594,6 +638,7 @@ const formatDateTime = data => {
             />
           </div>
           <VBtn
+            v-if="hasRole(['general_manager', 'admin'])"
             prepend-icon="tabler-plus"
             :disabled="isLoading"
             @click="isAddOpen = true"
@@ -601,14 +646,46 @@ const formatDateTime = data => {
             إضافة طلب
           </VBtn>
 
+          <div v-if="hasRole(['logistic_manager', 'admin'])">
+            <Transition>
+              <div
+                v-if="selectedOrders.length"
+                class="d-flex gap-2 mx-4"
+              >
+                <VBtn @click="openAssignDeligateDialog">
+                  تعيين مندوب
+                </VBtn>
+              </div>
+            </Transition>
+          </div>
+
           <VSpacer />
         </VCardText>
 
         <VDivider />
-
-        <VTable class="text-no-wrap product-list-table text-center">
+        <!--
+          v-model="selected"
+          <v-data-table
+          :items="orders"
+          item-value="id"
+          show-select
+          ></v-data-table> 
+        -->
+        <VTable 
+          class="text-no-wrap product-list-table text-center"
+        >
           <thead>
             <tr>
+              <th
+                v-if="hasRole(['logistic_manager', 'admin'])"
+                scope="col"
+                class="font-weight-semibold"
+              >
+                <VCheckbox
+                  v-model="allOrdersSelected"
+                  @update:modelValue="selectAllOrders"
+                />
+              </th>
               <th
                 scope="col"
                 class="font-weight-semibold"
@@ -643,7 +720,7 @@ const formatDateTime = data => {
                 scope="col"
                 class="font-weight-semibold"
               >
-                السائق
+                المندوب
               </th>
               <th
                 scope="col"
@@ -655,7 +732,11 @@ const formatDateTime = data => {
                 scope="col"
                 class="font-weight-semibold"
               >
-                {{ t('forms.order_state_ar') }} <br><span class="text-primary">( {{ t('forms.click_change_status') }} )</span>
+                {{ t('forms.order_state_ar') }} <br>
+                <span
+                  v-if="canChangeOrderStatus" 
+                  class="text-primary"
+                >( {{ t('forms.click_change_status') }} )</span>
               </th>
               <th
                 scope="col"
@@ -678,18 +759,18 @@ const formatDateTime = data => {
                 {{ t('forms.payment_type_name') }}
               </th>
               
-                <th
+              <th
                 scope="col"
                 class="font-weight-semibold"
-                >
+              >
                 {{ t('forms.paid_amount') }}
-                </th>
-                <th
+              </th>
+              <th
                 scope="col"
                 class="font-weight-semibold"
-                >
+              >
                 {{ t('forms.remain_amount') }}
-                </th>
+              </th>
               <th
                 scope="col"
                 class="font-weight-semibold"
@@ -719,11 +800,9 @@ const formatDateTime = data => {
               v-for="(order, i) in orders"
               :key="order.id"
             >
-              <!--
-                <td>
-                #{{ ConvertToArabicNumbers(Intl.NumberFormat().format(++i)) }}
-                </td>
-              -->
+              <td v-if="hasRole(['logistic_manager', 'admin'])">
+                <VCheckbox v-model="order.selected" />
+              </td>
               <td>
                 {{ order.ref_no }}
               </td>
@@ -754,10 +833,16 @@ const formatDateTime = data => {
               <td>
                 {{ ConvertToArabicNumbers(formatDateTime(order.delivery_date).date) }}
               </td>
-              <td @click="openEdit(order)">
-                <VChip style="cursor: pointer;">
-                  {{ order.order_state_ar }}
-                </VChip>
+              <td>
+                <span
+                  v-if="canChangeOrderStatus" 
+                  @click="openEdit(order)"
+                >
+                  <VChip style="cursor: pointer;">
+                    {{ order.order_state_ar }}
+                  </VChip>
+                </span>
+                <span v-else>{{ order.order_state_ar }}</span>
               </td>
               <td>
                 <VChip
@@ -799,7 +884,10 @@ const formatDateTime = data => {
               -->
               <td>
                 <div class="d-flex align-center gap-2">
-                  <VTooltip text="تفاصيل الطلب">
+                  <VTooltip
+                    v-if="canEditOrder(order)"
+                    text="تفاصيل الطلب"
+                  >
                     <template #activator="{ props }">
                       <VBtn
                         v-bind="props"
@@ -818,22 +906,25 @@ const formatDateTime = data => {
                   </VTooltip>
                   <VTooltip text="طباعة الفاتورة">
                     <template #activator="{ props }">
-                    <VBtn
-                      v-bind="props"
-                      icon
-                      variant="plain"
-                      color="default"
-                      size="x-small"
-                      @click="openInvoice(order)"
-                    >
-                      <VIcon
-                        :size="22"
-                        icon="iconamoon:invoice-thin"
-                      />
-                    </VBtn>
+                      <VBtn
+                        v-bind="props"
+                        icon
+                        variant="plain"
+                        color="default"
+                        size="x-small"
+                        @click="openInvoice(order)"
+                      >
+                        <VIcon
+                          :size="22"
+                          icon="iconamoon:invoice-thin"
+                        />
+                      </VBtn>
                     </template>
                   </VTooltip>
-                  <VTooltip text="اخذ الطلب">
+                  <VTooltip
+                    v-if="canTakeOrder(order)"
+                    text="اخذ الطلب"
+                  >
                     <template #activator="{ props }">
                       <VBtn
                         v-bind="props"
@@ -844,7 +935,7 @@ const formatDateTime = data => {
                         :loading="activeActionOrderId == order.id"
                         :disabled="activeActionOrderId == order.id || activeActionOrderId"
                         @click="takeOrder(order)"
-                        >
+                      >
                         <VIcon
                           :size="22"
                           icon="material-symbols:swipe-down-outline"
@@ -888,7 +979,8 @@ const formatDateTime = data => {
       </VCard>
     </div>
 
-    <OrderInvoice v-if="isPrinting"
+    <OrderInvoice
+      v-if="isPrinting"
       :order-details="selectedOrder"
       @close="closePriniting"
     />
@@ -903,9 +995,15 @@ const formatDateTime = data => {
       :coupons="coupons"
       @refreshTable="getOrders"
     />
-    <EditOrderDialog
+    <EditOrderStatusDialog
       v-model:is-edit-open="isEditOpen"
       :item="selectedOrder"
+      @refreshTable="getOrders"
+    />
+
+    <AssignOrderDeligationDialog
+      v-model:is-open="isAssignDeligateDialog"
+      :order-ids="selectedOrders"
       @refreshTable="getOrders"
     />
   </div>

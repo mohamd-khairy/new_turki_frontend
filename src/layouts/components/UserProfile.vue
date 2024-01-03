@@ -1,6 +1,6 @@
 <script setup>
+import avatar1 from '@/assets/images/icon_small.png'
 import { useSettingsStore } from "@/store/Settings"
-import avatar1 from '@images/avatars/avatar-1.png'
 
 const user = JSON.parse(localStorage.getItem('najdUser'))
 const settingsListStore = useSettingsStore()
@@ -36,9 +36,10 @@ const logout = () => {
       color="primary"
       variant="tonal"
     >
-      <VImg :src="user.avatar ?? avatar1" v-if="user.avatar"/>
-      <VIcon icon="iconoir:n-square" size="32" v-else></VIcon>
-
+      <VImg :src="user.avatar" v-if="user.avatar"/>
+      <VImg else :src="avatar1" />
+      <!-- <VIcon icon="iconoir:n-square" size="32" v-else></VIcon> -->
+      
       <!-- SECTION Menu -->
       <VMenu
         activator="parent"
@@ -62,8 +63,9 @@ const logout = () => {
                     color="primary"
                     variant="tonal"
                   >
-                    <VImg :src="user.avatar ?? avatar1" v-if="user.avatar"/>
-                    <VIcon icon="iconoir:n-square" size="32" v-else></VIcon>
+                    <VImg v-if="user.avatar" :src="user.avatar ?? avatar1" />
+                    <VImg v-else :src="avatar1" />
+                    <!-- <VIcon icon="iconoir:n-square" size="32" v-else></VIcon> -->
                   </VAvatar>
                 </VBadge>
               </VListItemAction>

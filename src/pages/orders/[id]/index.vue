@@ -34,22 +34,32 @@ const productPreparations = ref([])
 const deliveryPeriods = ref([])
 const coupons = ref([])
 const paymentTypes = ref([])
-const employees = ref([])
 const refForm = ref(null)
 const orderStatus = ref([])
 const allOrderStatus = ref([])
 const customerAddresses = ref([])
+
 const itemData = ref({
   order_state_id: null,
   address_id: null,
 })
+
+const canEditAllFields = computed(() => {
+  if(hasRole(['general_manager', 'store_manager', 'admin'])) {
+    return true
+  }
+
+  return false;
+});
+
+
 
 const openProductEdit = (item) => {
   selectedProductItem.value = item
   isEditProductOpen.value = true
 }
 
-const AddNewProductOpen = (item) => {
+const AddNewProductOpen = item => {
   selectedProductItem.value = {
     ...item,
     shalwata: item.shalwata ? 1 : 0,
@@ -76,9 +86,9 @@ const formatDateTime = data => {
   return { date, time }
 }
 
-const getCustomerAddresses = (customerId) => {
+const getCustomerAddresses = customerId => {
   customersStore.getAddresses(customerId).then(response => {
-    customerAddresses.value = response.data?.data || [];
+    customerAddresses.value = response.data?.data || []
   })
 }
 
@@ -89,25 +99,26 @@ const getOrderDetails = () => {
     is_kwar3: 0,
     is_lyh: 0,
     is_Ras: 0,
-  };
+  }
 
   const id = route.params.id
 
   isLoading.value = true
   ordersListStore.fetchOrder(id).then(response => {
     order.value = response?.data.data
-    const orderDetails = response?.data?.data?.order;
+
+    const orderDetails = response?.data?.data?.order
 
     if(orderDetails.customer) {
       getCustomerAddresses(orderDetails.customer.id)
     }
 
     if(orderDetails) {
-      itemData.value = orderDetails;
-      itemData.value.address = orderDetails?.selected_address?.address || null;
+      itemData.value = orderDetails
+      itemData.value.address = orderDetails?.selected_address?.address || null
     }
   }).catch(error => {
-    console.error(error);
+    console.error(error)
   }).finally (() => {
     isLoading.value = false
   })
@@ -143,7 +154,7 @@ const onFormSubmit = async () => {
   const res = await refForm.value.validate()
   if (res.valid) {
     ordersListStore.editOrder(itemData.value).then(response => {
-      getOrderDetails();
+      getOrderDetails()
       settingsListStore.alertColor = "success"
       settingsListStore.alertMessage = "تم تعديل حالة الطلب بنجاح"
       settingsListStore.isAlertShow = true
@@ -168,7 +179,7 @@ const onFormSubmit = async () => {
         settingsListStore.alertMessage = ""
       }, 2000)
     }).finally(() => {
-      isSubmitting.value = false;
+      isSubmitting.value = false
     })
   }
   else {
@@ -187,14 +198,6 @@ onMounted(() => {
   getOrderDetails()
   ordersListStore.fetchOrderStatus().then(response => {
     orderStatus.value = response.data.data
-  })
-
-  ordersListStore.fetchAllOrderStatus().then(response => {
-    allOrderStatus.value = response.data.data
-  })
-
-  employeesStore.fetchEmployees({ pageSize: -1, role_id: 7 }).then(response => {
-    employees.value = response.data.data
   })
 
   settingsListStore.fetchDelivery_Periods().then(response => {
@@ -237,7 +240,7 @@ onMounted(() => {
             <span>طلب رقم</span>
             <span> - </span>
             <span dir="ltr">
-              #{{ order ? order.order.ref_no :  '*******'}}
+              #{{ order ? order.order.ref_no : '*******' }}
             </span>
           </h2>
         </VCol>
@@ -263,7 +266,10 @@ onMounted(() => {
         <VCard class="mb-8">
           <VCardText>
             <h2 class="py-2 mb-6">
-              <VIcon color="primary" icon="arcticons:destiny-item-manager" />
+              <VIcon
+                color="primary"
+                icon="arcticons:destiny-item-manager"
+              />
               <span class="ms-2">
                 تفاصيل الطلب
               </span>
@@ -275,19 +281,19 @@ onMounted(() => {
               >
                 <div class="">
                   <VIcon
-                  icon="ph:dot-duotone"
-                  color="primary"
-                  class="ml-2"
-                />
-                <span>
-                  تاريخ الطلب :
-                </span>
-                <VChip
-                  size="small"
-                  class="font-weight-bold"
-                >
-                  {{ ConvertToArabicNumbers(formatDateTime(order.order.created_at).date) }}
-                </VChip>
+                    icon="ph:dot-duotone"
+                    color="primary"
+                    class="ml-2"
+                  />
+                  <span>
+                    تاريخ الطلب :
+                  </span>
+                  <VChip
+                    size="small"
+                    class="font-weight-bold"
+                  >
+                    {{ ConvertToArabicNumbers(formatDateTime(order.order.created_at).date) }}
+                  </VChip>
                 </div>
               </VCol>
               <VCol
@@ -329,7 +335,7 @@ onMounted(() => {
                 cols="12"
                 md="4"
               >
-              <VIcon
+                <VIcon
                   icon="ph:dot-duotone"
                   color="primary"
                   class="ml-2"
@@ -349,7 +355,7 @@ onMounted(() => {
                 cols="12"
                 md="4"
               >
-              <VIcon
+                <VIcon
                   icon="ph:dot-duotone"
                   color="primary"
                   class="ml-2"
@@ -371,7 +377,7 @@ onMounted(() => {
                 cols="12"
                 md="4"
               >
-              <VIcon
+                <VIcon
                   icon="ph:dot-duotone"
                   color="primary"
                   class="ml-2"
@@ -397,34 +403,25 @@ onMounted(() => {
                 <VCol
                   cols="12"
                   md="6"
+                  v-if="canEditAllFields"
                 >
                   <VSelect
                     v-model="itemData.order_state_id"
-                    :items="allOrderStatus"
+                    :items="orderStatus"
                     :label="t('forms.order_state')"
                     item-title="customer_state_ar"
                     item-value="code"
                     :rules="[requiredValidator]"
                   />
                 </VCol>
+                
                 <VCol
                   cols="12"
                   md="6"
-                >
-                  <VSelect
-                    v-model="itemData.user_id"
-                    :items="employees"
-                    :label="t('forms.user')"
-                    item-title="username"
-                    item-value="id"
-                  />
-                </VCol>
-                <VCol
-                  cols="12"
-                  md="6"
+                  v-if="canEditAllFields"
                 >
                   <VRow>
-                    <VCol cols="11">
+                    <VCol cols="12">
                       <VSelect
                         v-model="itemData.discount_code"
                         :label="t('forms.coupon')"
@@ -433,9 +430,9 @@ onMounted(() => {
                         item-value="code"
                       />
                     </VCol>
-                    <VCol cols="1" class="px-0">
+                    <!-- <VCol cols="1" class="px-0">
                       <VTooltip text="إزالة الكوبون من الطلب">
-                        <template v-slot:activator="{ props }">
+                        <template #activator="{ props }">
                           <VBtn
                             v-bind="props"
                             icon
@@ -451,12 +448,13 @@ onMounted(() => {
                           </VBtn>
                         </template>
                       </VTooltip>
-                    </VCol>
+                    </VCol> -->
                   </VRow>
                 </VCol>
                 <VCol
                   cols="12"
                   md="6"
+                  v-if="canEditAllFields"
                 >
                   <VTextField
                     v-model="itemData.delivery_date"
@@ -467,6 +465,7 @@ onMounted(() => {
                 <VCol
                   cols="12"
                   md="6"
+                  v-if="canEditAllFields"
                 >
                   <VSelect
                     v-model="itemData.delivery_period"
@@ -479,6 +478,7 @@ onMounted(() => {
                 <VCol
                   cols="12"
                   md="6"
+                  v-if="canEditAllFields"
                 >
                   <VSelect
                     v-model="itemData.payment_type_id"
@@ -491,6 +491,7 @@ onMounted(() => {
                 <VCol
                   cols="12"
                   md="6"
+                  v-if="canEditAllFields"
                 >
                   <VSelect
                     v-model="itemData.paid"
@@ -511,11 +512,14 @@ onMounted(() => {
                 <VCol
                   cols="12"
                   md="6"
+                  v-if="canEditAllFields"
                 >
-                  <!-- <VTextField
+                  <!--
+                    <VTextField
                     v-model="itemData.address"
                     label="عنوان التوصيل"
-                  /> -->
+                    /> 
+                  -->
                   <VSelect
                     v-model="itemData.address_id"
                     label="عنوان التوصيل"
@@ -527,18 +531,19 @@ onMounted(() => {
                 <VCol
                   cols="12"
                   md="6"
+                  v-if="canEditAllFields"
                 >
                   <VTextField
+                    v-model="itemData.delivery_fee"
                     type="number"
                     min="0"
-                    v-model="itemData.delivery_fee"
                     label="مصاريف التوصيل"
                   />
                 </VCol>
                 <VCol
+                  v-if="hasRole(['production_manager', 'admin'])"
                   cols="12"
                   md="6"
-                  v-if="hasRole('admin')"
                 >
                   <VTextField
                     v-model="itemData.boxes_count"
@@ -548,9 +553,9 @@ onMounted(() => {
                   />
                 </VCol>
                 <VCol
+                  v-if="hasRole(['production_manager', 'admin'])"
                   cols="12"
                   md="6"
-                  v-if="hasRole('admin')"
                 >
                   <VTextField
                     v-model="itemData.dishes_count"
@@ -561,6 +566,7 @@ onMounted(() => {
                 </VCol>
                 <VCol
                   cols="12"
+                  v-if="canEditAllFields"
                 >
                   <VTextarea
                     v-model="itemData.comment"
@@ -569,7 +575,7 @@ onMounted(() => {
                   />
                 </VCol>
                 <VCol
-                cols="12"
+                  cols="12"
                 >
                   <VBtn
                     v-if="isSubmitting"
@@ -582,7 +588,8 @@ onMounted(() => {
                       size="32"
                     />
                   </VBtn>
-                  <VBtn v-else
+                  <VBtn
+                    v-else
                     color="primary"
                     class="px-4 d-flex"
                     type="submit"
@@ -608,7 +615,7 @@ onMounted(() => {
                   المنتجات
                 </span>
               </h2>
-              <VBtn
+              <VBtn v-if="canEditAllFields"
                 color="primary"
                 @click="AddNewProductOpen(order.order)"
               >
@@ -647,7 +654,7 @@ onMounted(() => {
                       <th>
                         السعر
                       </th>
-                      <th>
+                      <th v-if="canEditAllFields">
                         الاجراءات
                       </th>
                     </tr>
@@ -680,7 +687,7 @@ onMounted(() => {
                           {{ product.size ? ConvertToArabicNumbers(Intl.NumberFormat().format(product.size.sale_price * product.quantity)) : "غير معروف" }} ريال
                         </span>
                       </td>
-                      <td>
+                      <td v-if="canEditAllFields">
                         <div class="d-flex align-center gap-2">
                           <VTooltip text="تعديل المنتج">
                             <template #activator="{ props }">
@@ -730,7 +737,7 @@ onMounted(() => {
                 </VTable>
               </div>
             </div>
-          </div>
+            </div>
           </VCardText>
         </VCard>
       </div>

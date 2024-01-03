@@ -65,5 +65,11 @@ export const useOrdersStore = defineStore('OrdersStore', {
     deleteOrderProduct(data) {
       return axios.post(`orders/delete-order-product`, data)
     },
+    assignOrderDeligation(data) {
+      return axios.post(`orders/assign-user-order`, data)
+    },
+    takeOrder(orderId) {
+      return axios.get(`orders/take-order/${orderId}`)
+    },
   },
 })

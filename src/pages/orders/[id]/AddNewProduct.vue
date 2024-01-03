@@ -236,7 +236,7 @@ const dialogModelValueUpdate = val => {
             <VCol cols="12"
               md="6"
             >
-              <v-checkbox label="الشلوطة"
+              <v-checkbox label="مع شلوطة"
               v-model="itemData.shalwata"
               :false-value="0" :true-value="1"
               ></v-checkbox>
@@ -245,16 +245,12 @@ const dialogModelValueUpdate = val => {
             md="6"
               class="d-flex gap-9"
             >
-              <v-checkbox label="كرشة"
+              <v-checkbox label="بدون كرشة"
               v-model="itemData.is_karashah"
               :false-value="0" :true-value="1"
               ></v-checkbox>
-              <v-checkbox label="كوارع"
+              <v-checkbox label="بدون كوارع"
               v-model="itemData.is_kwar3"
-              :false-value="0" :true-value="1"
-              ></v-checkbox>
-              <v-checkbox label="لية"
-              v-model="itemData.is_lyh"
               :false-value="0" :true-value="1"
               ></v-checkbox>
             </VCol>
@@ -262,7 +258,11 @@ const dialogModelValueUpdate = val => {
             md="6"
             class="d-flex gap-10"
             >
-              <v-checkbox label="رأس"
+              <v-checkbox label="بدون ليه"
+              v-model="itemData.is_lyh"
+              :false-value="0" :true-value="1"
+              ></v-checkbox>
+              <v-checkbox label="بدون رأس"
               v-model="itemData.is_Ras"
               :false-value="0" :true-value="1"
               ></v-checkbox>
