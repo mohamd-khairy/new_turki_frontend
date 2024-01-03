@@ -42,6 +42,7 @@ const products = ref([])
 const coupons = ref([])
 const deliveryPeriods = ref([])
 const orderStatuses = ref([])
+const allOrderStatuses = ref([])
 const dataFrom = ref(1)
 const dataTo = ref(1)
 const selectedRows = ref([])
@@ -380,7 +381,7 @@ onMounted(() => {
                 </div>
                 <VSelect
                   v-model="filters.order_state_ids"
-                  :items="orderStatuses"
+                  :items="allOrderStatuses"
                   label="حالة الطلب"
                   item-title="state_ar"
                   item-value="code"

@@ -36,7 +36,9 @@ const coupons = ref([])
 const paymentTypes = ref([])
 const refForm = ref(null)
 const orderStatus = ref([])
+const allOrderStatus = ref([])
 const customerAddresses = ref([])
+
 const itemData = ref({
   order_state_id: null,
   address_id: null,
@@ -57,7 +59,7 @@ const openProductEdit = (item) => {
   isEditProductOpen.value = true
 }
 
-const AddNewProductOpen = (item) => {
+const AddNewProductOpen = item => {
   selectedProductItem.value = {
     ...item,
     shalwata: item.shalwata ? 1 : 0,
@@ -84,9 +86,9 @@ const formatDateTime = data => {
   return { date, time }
 }
 
-const getCustomerAddresses = (customerId) => {
+const getCustomerAddresses = customerId => {
   customersStore.getAddresses(customerId).then(response => {
-    customerAddresses.value = response.data?.data || [];
+    customerAddresses.value = response.data?.data || []
   })
 }
 
@@ -97,25 +99,26 @@ const getOrderDetails = () => {
     is_kwar3: 0,
     is_lyh: 0,
     is_Ras: 0,
-  };
+  }
 
   const id = route.params.id
 
   isLoading.value = true
   ordersListStore.fetchOrder(id).then(response => {
     order.value = response?.data.data
-    const orderDetails = response?.data?.data?.order;
+
+    const orderDetails = response?.data?.data?.order
 
     if(orderDetails.customer) {
       getCustomerAddresses(orderDetails.customer.id)
     }
 
     if(orderDetails) {
-      itemData.value = orderDetails;
-      itemData.value.address = orderDetails?.selected_address?.address || null;
+      itemData.value = orderDetails
+      itemData.value.address = orderDetails?.selected_address?.address || null
     }
   }).catch(error => {
-    console.error(error);
+    console.error(error)
   }).finally (() => {
     isLoading.value = false
   })
@@ -151,7 +154,7 @@ const onFormSubmit = async () => {
   const res = await refForm.value.validate()
   if (res.valid) {
     ordersListStore.editOrder(itemData.value).then(response => {
-      getOrderDetails();
+      getOrderDetails()
       settingsListStore.alertColor = "success"
       settingsListStore.alertMessage = "تم تعديل حالة الطلب بنجاح"
       settingsListStore.isAlertShow = true
@@ -176,7 +179,7 @@ const onFormSubmit = async () => {
         settingsListStore.alertMessage = ""
       }, 2000)
     }).finally(() => {
-      isSubmitting.value = false;
+      isSubmitting.value = false
     })
   }
   else {
@@ -237,7 +240,7 @@ onMounted(() => {
             <span>طلب رقم</span>
             <span> - </span>
             <span dir="ltr">
-              #{{ order ? order.order.ref_no :  '*******'}}
+              #{{ order ? order.order.ref_no : '*******' }}
             </span>
           </h2>
         </VCol>
@@ -263,7 +266,10 @@ onMounted(() => {
         <VCard class="mb-8">
           <VCardText>
             <h2 class="py-2 mb-6">
-              <VIcon color="primary" icon="arcticons:destiny-item-manager" />
+              <VIcon
+                color="primary"
+                icon="arcticons:destiny-item-manager"
+              />
               <span class="ms-2">
                 تفاصيل الطلب
               </span>
@@ -275,19 +281,19 @@ onMounted(() => {
               >
                 <div class="">
                   <VIcon
-                  icon="ph:dot-duotone"
-                  color="primary"
-                  class="ml-2"
-                />
-                <span>
-                  تاريخ الطلب :
-                </span>
-                <VChip
-                  size="small"
-                  class="font-weight-bold"
-                >
-                  {{ ConvertToArabicNumbers(formatDateTime(order.order.created_at).date) }}
-                </VChip>
+                    icon="ph:dot-duotone"
+                    color="primary"
+                    class="ml-2"
+                  />
+                  <span>
+                    تاريخ الطلب :
+                  </span>
+                  <VChip
+                    size="small"
+                    class="font-weight-bold"
+                  >
+                    {{ ConvertToArabicNumbers(formatDateTime(order.order.created_at).date) }}
+                  </VChip>
                 </div>
               </VCol>
               <VCol
@@ -329,7 +335,7 @@ onMounted(() => {
                 cols="12"
                 md="4"
               >
-              <VIcon
+                <VIcon
                   icon="ph:dot-duotone"
                   color="primary"
                   class="ml-2"
@@ -349,7 +355,7 @@ onMounted(() => {
                 cols="12"
                 md="4"
               >
-              <VIcon
+                <VIcon
                   icon="ph:dot-duotone"
                   color="primary"
                   class="ml-2"
@@ -371,7 +377,7 @@ onMounted(() => {
                 cols="12"
                 md="4"
               >
-              <VIcon
+                <VIcon
                   icon="ph:dot-duotone"
                   color="primary"
                   class="ml-2"
@@ -426,7 +432,7 @@ onMounted(() => {
                     </VCol>
                     <!-- <VCol cols="1" class="px-0">
                       <VTooltip text="إزالة الكوبون من الطلب">
-                        <template v-slot:activator="{ props }">
+                        <template #activator="{ props }">
                           <VBtn
                             v-bind="props"
                             icon
@@ -508,10 +514,12 @@ onMounted(() => {
                   md="6"
                   v-if="canEditAllFields"
                 >
-                  <!-- <VTextField
+                  <!--
+                    <VTextField
                     v-model="itemData.address"
                     label="عنوان التوصيل"
-                  /> -->
+                    /> 
+                  -->
                   <VSelect
                     v-model="itemData.address_id"
                     label="عنوان التوصيل"
@@ -526,16 +534,16 @@ onMounted(() => {
                   v-if="canEditAllFields"
                 >
                   <VTextField
+                    v-model="itemData.delivery_fee"
                     type="number"
                     min="0"
-                    v-model="itemData.delivery_fee"
                     label="مصاريف التوصيل"
                   />
                 </VCol>
                 <VCol
+                  v-if="hasRole(['production_manager', 'admin'])"
                   cols="12"
                   md="6"
-                  v-if="hasRole(['production_manager', 'admin'])"
                 >
                   <VTextField
                     v-model="itemData.boxes_count"
@@ -545,9 +553,9 @@ onMounted(() => {
                   />
                 </VCol>
                 <VCol
+                  v-if="hasRole(['production_manager', 'admin'])"
                   cols="12"
                   md="6"
-                  v-if="hasRole(['production_manager', 'admin'])"
                 >
                   <VTextField
                     v-model="itemData.dishes_count"
@@ -567,7 +575,7 @@ onMounted(() => {
                   />
                 </VCol>
                 <VCol
-                cols="12"
+                  cols="12"
                 >
                   <VBtn
                     v-if="isSubmitting"
@@ -580,7 +588,8 @@ onMounted(() => {
                       size="32"
                     />
                   </VBtn>
-                  <VBtn v-else
+                  <VBtn
+                    v-else
                     color="primary"
                     class="px-4 d-flex"
                     type="submit"
@@ -728,7 +737,7 @@ onMounted(() => {
                 </VTable>
               </div>
             </div>
-          </div>
+            </div>
           </VCardText>
         </VCard>
       </div>
