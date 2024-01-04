@@ -7,10 +7,12 @@ const { t } = useI18n()
 
 const customersListStore = useEmployeesStore()
 const searchQuery = ref('')
-const selectedStatus = ref()
-const rowPerPage = ref(5)
+const rowPerPage = ref(10)
 const currentPage = ref(1)
 const totalPage = ref(1)
+const totalOrders = ref(0)
+const dataFrom = ref(1)
+const dataTo = ref(1)
 const totalCities = ref(0)
 const customers = ref([])
 const selectedRows = ref([])
@@ -41,58 +43,40 @@ const filterOptions = reactive([
 ])
 
 const getCustomers = () => {
+  isLoading.value = true
   customersListStore.fetchCustomers({
+    ...filters,
     search: searchQuery.value,
-    wallet: filters.wallet,
+    per_page: rowPerPage.value,
+    page: currentPage.value,
   }).then(response => {
     customers.value = response.data?.data?.data;
-    totalPage.value = response.data?.data?.total
-    totalCities.value = customers.value.length
-    currentPage.value = response.data?.data?.current_page;
+    totalPage.value = response.data.data.last_page
+    dataFrom.value = response.data.data.from
+    dataTo.value = response.data.data.to
+    totalOrders.value = response.data.data.total
+    isLoading.value = false
   }).catch(error => {
     console.log(error)
   })
 }
 
-// watchEffect(() => {
-//   getCustomers()
-// })
-
-watchEffect(() => {
-  if (rowPerPage.value) {
-    currentPage.value = 1
-  }
+watch(rowPerPage, () => {
+  getCustomers()
 })
 
-const paginateCustomers = computed(() => {
-  totalPage.value = Math.ceil(customers.value.length / rowPerPage.value)
-
-  return customers.value.filter((row, index) => {
-    let start = (currentPage.value - 1) * rowPerPage.value
-    let end = currentPage.value * rowPerPage.value
-    if (index >= start && index < end) return true
-  })
+watch(() => currentPage.value, () => {
+  getCustomers()
 })
-
-const nextPage = () => {
-  if ((currentPage.value * rowPerPage.value) < customers.value.length) currentPage.value
-}
-
-const prevPage = () => {
-  if (currentPage.value > 1) currentPage.value
-}
 
 // 👉 Computing pagination data
 const paginationData = computed(() => {
-  const firstIndex = customers.value.length ? (currentPage.value - 1) * rowPerPage.value + 1 : 0
-  const lastIndex = firstIndex + (rowPerPage.value - 1) <= customers.value.length ? firstIndex + (rowPerPage.value - 1) : totalCities.value
-
-  return ` عرض من ${ConvertToArabicNumbers(firstIndex)} إلي ${ConvertToArabicNumbers(lastIndex)} من ${ConvertToArabicNumbers(totalCities.value)} الإجمالي `
+  return ` عرض من ${ConvertToArabicNumbers(dataFrom.value)} إلي ${ConvertToArabicNumbers(dataTo.value)} من ${ConvertToArabicNumbers(totalOrders.value)} الإجمالي `
 })
 
 const filterCustomers = () => {
-  getCustomers()
   isFiltered.value = true
+  getCustomers()
 }
 
 const clearFilter = () => {
@@ -191,7 +175,7 @@ onMounted(() => {
         </VCol>
       </VRow>
     </VCard>
-    <VCard>
+    <VCard :loading="isLoading">
       <VCardTitle class="d-flex align-center">
         <VIcon icon="ph:users-four" size="24" color="primary"></VIcon>
         <span class="mx-1">{{ t('Customers') }}</span>
@@ -209,6 +193,7 @@ onMounted(() => {
           v-can="'create-user'"
           prepend-icon="tabler-plus"
           @click="isAddOpen = true"
+          :disabled="isLoading"
         >
           {{ t('Add_Customer') }}
         </VBtn>
@@ -288,7 +273,7 @@ onMounted(() => {
 
         <tbody>
         <tr
-          v-for="(employee, i) in paginateCustomers"
+          v-for="(employee, i) in customers"
           :key="employee.id"
         >
           <td>
@@ -368,15 +353,14 @@ onMounted(() => {
 
       <VCardText class="d-flex align-center flex-wrap justify-space-between gap-4 py-3">
         <span class="text-sm text-disabled">{{ paginationData }}</span>
-
         <VPagination
-          v-model="currentPage"
-          size="small"
-          :total-visible="rowPerPage"
-          :length="totalPage"
-          @next="nextPage"
-          @prev="prevPage"
-        />
+            v-model="currentPage"
+            size="small"
+            :total-visible="5"
+            :length="totalPage"
+            @next="selectedRows = []"
+            @prev="selectedRows = []"
+          />
       </VCardText>
     </VCard>
     <AddCustomerDialog v-model:is-add-open="isAddOpen" @refreshTable="getCustomers"/>

@@ -1,8 +1,8 @@
 <script setup>
-import { useProductsStore } from "@/store/Products"
-import moment from "moment/moment"
 import { useCategoriesStore } from "@/store/Categories"
 import { useCitiesStore } from "@/store/Cities"
+import { useProductsStore } from "@/store/Products"
+import moment from "moment/moment"
 
 const productListStore = useProductsStore()
 const categoriesListStore = useCategoriesStore()
@@ -218,7 +218,7 @@ onMounted(() => {
         </VRow>
       </VForm>
     </VCard>
-    <VCard>
+    <VCard :loading="isLoading">
       <VCardTitle class="d-flex align-center">
         <VIcon icon="streamline:shopping-bag-hand-bag-1-shopping-bag-purse-goods-item-products" size="24"
                color="primary"
@@ -238,6 +238,7 @@ onMounted(() => {
         <VBtn
           prepend-icon="tabler-plus"
           @click="isAddOpen = true"
+          :disabled="isLoading"
         >
           إضافة منتج
         </VBtn>

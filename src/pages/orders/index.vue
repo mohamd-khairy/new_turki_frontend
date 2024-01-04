@@ -26,7 +26,6 @@ const couponsListStore = useCouponsStore()
 const paymentTypesStore = usePaymentTypesStore()
 const searchQuery = ref('')
 const searchTerm = ref('')
-const selectedStatus = ref()
 const rowPerPage = ref(10)
 const currentPage = ref(1)
 const totalPage = ref(1)
@@ -119,8 +118,15 @@ const canTakeOrder = order => {
   return false
 }
 
-const canChangeOrderStatus = computed(() => hasRole(['production_manager', 'logistic_manager', 'admin', 'store_manager']));
+const canChangeOrderStatus = computed(() => hasRole(['production_manager', 'logistic_manager', 'admin', 'general_manager']));
 
+const delegateCanUpdateOrderStatus = (order) => {
+  return hasRole('delegate') && order.driver_id == authUser.value?.id;
+}
+
+const storeMangerCanUpdateOrderStatus = (order) => {
+  return hasRole('store_manager') && order.sales_representative_id == authUser.value?.id;
+}
 
 watch(() => filters.country_ids, (newVal, oldVal) => {
   citiesListStore.fetchCitiesByCountry(filters.country_ids).then(response => {
@@ -154,7 +160,7 @@ watch(rowPerPage, () => {
   getOrders()
 })
 
-watch(() => currentPage.value, (newVal,oldVal) => {
+watch(() => currentPage.value, () => {
   getOrders()
 })
 
@@ -633,7 +639,7 @@ onMounted(() => {
             />
           </div>
           <VBtn
-            v-if="hasRole(['general_manager', 'admin'])"
+            v-if="hasRole(['general_manager', 'store_manager', 'admin'])"
             prepend-icon="tabler-plus"
             :disabled="isLoading"
             @click="isAddOpen = true"
@@ -729,7 +735,7 @@ onMounted(() => {
               >
                 {{ t('forms.order_state_ar') }} <br>
                 <span
-                  v-if="canChangeOrderStatus" 
+                  v-if="canChangeOrderStatus || hasRole(['delegate', 'store_manager'])" 
                   class="text-primary"
                 >( {{ t('forms.click_change_status') }} )</span>
               </th>
@@ -830,7 +836,7 @@ onMounted(() => {
               </td>
               <td>
                 <span
-                  v-if="canChangeOrderStatus" 
+                  v-if="canChangeOrderStatus || storeMangerCanUpdateOrderStatus(order) || delegateCanUpdateOrderStatus(order)" 
                   @click="openEdit(order)"
                 >
                   <VChip style="cursor: pointer;">
@@ -883,6 +889,23 @@ onMounted(() => {
               -->
               <td>
                 <div class="d-flex align-center gap-2">
+                  <VTooltip text="طباعة الفاتورة">
+                    <template #activator="{ props }">
+                      <VBtn
+                        v-bind="props"
+                        icon
+                        variant="plain"
+                        color="default"
+                        size="x-small"
+                        @click="openInvoice(order)"
+                      >
+                        <VIcon
+                          :size="22"
+                          icon="iconamoon:invoice-thin"
+                        />
+                      </VBtn>
+                    </template>
+                  </VTooltip>
                   <VTooltip
                     v-if="canEditOrder(order)"
                     text="تفاصيل الطلب"
@@ -903,23 +926,7 @@ onMounted(() => {
                       </VBtn>
                     </template>
                   </VTooltip>
-                  <VTooltip text="طباعة الفاتورة">
-                    <template #activator="{ props }">
-                      <VBtn
-                        v-bind="props"
-                        icon
-                        variant="plain"
-                        color="default"
-                        size="x-small"
-                        @click="openInvoice(order)"
-                      >
-                        <VIcon
-                          :size="22"
-                          icon="iconamoon:invoice-thin"
-                        />
-                      </VBtn>
-                    </template>
-                  </VTooltip>
+                  
                   <VTooltip
                     v-if="canTakeOrder(order)"
                     text="اخذ الطلب"

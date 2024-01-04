@@ -38,6 +38,7 @@ const loginUser = () => {
   isLoading.value = true
   auth.login(user).then(res => {
     localStorage.setItem("najdUser", JSON.stringify(res.data.data))
+    auth.updateUser(res.data.data);
     localStorage.setItem("najdToken", res.data.data.api_token)
     localStorage.setItem("najdPermissions", JSON.stringify(res.data.data.permissions))
     axiosIns.defaults.headers.Authorization = `Bearer ${res.data.data.api_token}`

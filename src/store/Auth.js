@@ -9,10 +9,12 @@ export const useAuthStore = defineStore('AuthStore', {
     }
   },
   getters: {
-    currentUser: () => {
-      if(localStorage.getItem("najdUser")) {
-        return JSON.parse(localStorage.getItem("najdUser"));
-      }
+    currentUser: (state) => {
+      if(state.user) return state.user;
+
+      // if(localStorage.getItem("najdUser")) {
+      //   return JSON.parse(localStorage.getItem("najdUser"));
+      // }
 
       return null
     }
@@ -21,5 +23,8 @@ export const useAuthStore = defineStore('AuthStore', {
     login(data) {
       return axios.post('login', data)
     },
+    updateUser(user) {
+      this.user = user;
+    }
   },
 })

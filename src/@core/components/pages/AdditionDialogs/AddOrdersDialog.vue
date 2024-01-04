@@ -70,8 +70,8 @@ const itemData = reactive({
   discount_code: null,
   notes: null,
   products: [],
-  boxes_count: null,
-  dishes_count: null,
+  boxes_count: 0,
+  dishes_count: 0,
 })
 
 const savedProduct = reactive({
@@ -248,9 +248,6 @@ const AddQuantity = data => {
     size_id: data.size_id ?? null,
     preparation_id: data.preparation_id ?? null,
   })
-  console.log(data, itemData.products)
-
-  // resetItem()
 }
 
 const _timerId = ref(null)
