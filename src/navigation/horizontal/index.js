@@ -91,9 +91,10 @@ export default [
     ],
     permission: "read-dashboard",
   },
-  // {
-  //   title: 'Activities',
-  //   to: { name: 'activities' },
-  //   icon: { icon: 'octicon:log-24' },
-  // },
+  {
+    title: 'Activities',
+    to: { name: 'activities' },
+    icon: { icon: 'octicon:log-24' },
+    permission: "read-dashboard",
+  },
 ]

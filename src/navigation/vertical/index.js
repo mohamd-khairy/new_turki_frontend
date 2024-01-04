@@ -96,6 +96,6 @@ export default [
     title: 'Activities',
     to: { name: 'activities' },
     icon: { icon: 'octicon:log-24' },
-    permission: "show",
+    permission: "read-dashboard",
   },
 ]
