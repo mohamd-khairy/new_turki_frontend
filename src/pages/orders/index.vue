@@ -118,14 +118,14 @@ const canTakeOrder = order => {
   return false
 }
 
-const canChangeOrderStatus = computed(() => hasRole(['production_manager', 'logistic_manager', 'admin', 'general_manager']));
+const canChangeOrderStatus = computed(() => hasRole(['production_manager', 'logistic_manager', 'admin', 'general_manager']))
 
-const delegateCanUpdateOrderStatus = (order) => {
-  return hasRole('delegate') && order.driver_id == authUser.value?.id;
+const delegateCanUpdateOrderStatus = order => {
+  return hasRole('delegate') && order.driver_id == authUser.value?.id
 }
 
-const storeMangerCanUpdateOrderStatus = (order) => {
-  return hasRole('store_manager') && order.sales_representative_id == authUser.value?.id;
+const storeMangerCanUpdateOrderStatus = order => {
+  return hasRole('store_manager') && order.sales_representative_id == authUser.value?.id
 }
 
 watch(() => filters.country_ids, (newVal, oldVal) => {
@@ -166,18 +166,19 @@ watch(() => currentPage.value, () => {
 
 const _timerId = ref(null)
 const isLoadingCustomers = ref(false)
-const searchCustomer = (e) => {
+
+const searchCustomer = e => {
   clearTimeout(_timerId.value)
   _timerId.value = setTimeout(() => {
     isLoadingCustomers.value = true
     employeesStore.fetchCustomers({ search: e.target.value, wallet: "all" })
-    .then(response => {
-      customers.value = response.data?.data?.data || [];
-    })
-    .finally(() => {
-      isLoadingCustomers.value = false
-    })
-  }, 800);
+      .then(response => {
+        customers.value = response.data?.data?.data || []
+      })
+      .finally(() => {
+        isLoadingCustomers.value = false
+      })
+  }, 800)
 }
 
 
@@ -288,6 +289,9 @@ onMounted(() => {
   ordersListStore.fetchOrderStatus().then(response => {
     orderStatuses.value = response.data.data
   })
+  ordersListStore.fetchAllOrderStatus().then(response => {
+    allOrderStatuses.value = response.data.data
+  })
   countriesListStore.fetchCountries().then(response => {
     countries.value = response.data.data
   })
@@ -301,11 +305,11 @@ onMounted(() => {
   paymentTypesStore.getAll().then(response => {
     paymentTypes.value = response.data.data
   })
-  employeesStore.fetchEmployees({pageSize: 100, role_name: 'delegate'}).then(response => {
-    salesAgents.value = response.data?.data?.data || [];
+  employeesStore.fetchEmployees({ pageSize: 100, role_name: 'delegate' }).then(response => {
+    salesAgents.value = response.data?.data?.data || []
   })
-  employeesStore.fetchEmployees({pageSize: 100, role_name: 'store_manager'}).then(response => {
-    salesRepresentatives.value = response.data?.data?.data || [];
+  employeesStore.fetchEmployees({ pageSize: 100, role_name: 'store_manager' }).then(response => {
+    salesRepresentatives.value = response.data?.data?.data || []
   })
 
 })
