@@ -684,7 +684,7 @@ onMounted(() => {
                   
                       <td class="px-2">
                         <span class="text-success whitespace-nowrap font-weight-bold">
-                          {{ product.total_price ? ConvertToArabicNumbers(Intl.NumberFormat().format(product.total_price)) + 'ريال' : "غير معروف" }} 
+                          {{ product.total_price ? ConvertToArabicNumbers(Intl.NumberFormat().format(product.total_price)) + ' ريال ' : "غير معروف" }} 
                         </span>
                       </td>
                       <td v-if="canEditAllFields">
