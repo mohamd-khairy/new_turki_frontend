@@ -8,6 +8,7 @@ import { useI18n } from "vue-i18n"
 import { hasRole } from '@/helpers'
 import { useAuthStore } from "@/store/Auth"
 import { useCitiesStore } from "@/store/Cities"
+import { useCouponsStore } from "@/store/Coupons"
 import { useEmployeesStore } from "@/store/Employees"
 import { useOrdersStore } from "@/store/Orders"
 import { useProductsStore } from "@/store/Products"
@@ -27,10 +28,6 @@ const props = defineProps({
     type: Array,
     required: true,
   },
-  coupons: {
-    type: Array,
-    required: true,
-  },
 })
 
 const emit = defineEmits([
@@ -43,6 +40,7 @@ const ordersListStore = useOrdersStore()
 const citiesListStore = useCitiesStore()
 const customersListStore = useEmployeesStore()
 const productsListStore = useProductsStore()
+const couponsListStore = useCouponsStore()
 const authStore = useAuthStore()
 
 
@@ -57,6 +55,7 @@ const cities = ref([])
 const selectedProducts = ref([])
 const customers = ref([])
 const products = ref([])
+const coupons = ref([])
 const searchTerm = ref('')
 
 const itemData = reactive({
@@ -217,6 +216,11 @@ const resetItem = () => {
   savedProduct.cut_id = null
   savedProduct.size_id = null
   savedProduct.preparation_id = null
+  savedProduct.shalwata = 0
+  savedProduct.is_karashah = 0
+  savedProduct.is_kwar3 = 0
+  savedProduct.is_lyh = 0
+  savedProduct.is_Ras = 0
 }
 
 const AddQuantity = data => {
@@ -224,6 +228,11 @@ const AddQuantity = data => {
   savedProduct.cut_id = data.cut_id
   savedProduct.size_id = data.size_id
   savedProduct.preparation_id = data.preparation_id
+  savedProduct.shalwata = data.shalwata
+  savedProduct.is_karashah = data.is_karashah
+  savedProduct.is_kwar3 = data.is_kwar3
+  savedProduct.is_lyh = data.is_lyh
+  savedProduct.is_Ras = data.is_Ras
 
   let targetId = data.id
 
@@ -249,6 +258,11 @@ const AddQuantity = data => {
     cut_id: data.cut_id ?? null,
     size_id: data.size_id ?? null,
     preparation_id: data.preparation_id ?? null,
+    shalwata: data.shalwata,
+    is_karashah: data.is_karashah,
+    is_kwar3: data.is_kwar3,
+    is_lyh: data.is_lyh,
+    is_Ras: data.is_Ras,
   })
 }
 
@@ -279,6 +293,21 @@ const searchProduct = (e) => {
     })
     .finally(() => {
       isLoadingProducts.value = false
+    });
+  }, 800);
+}
+
+const _timerCouponsId = ref(null)
+const isLoadingCoupons = ref(false)
+const searchCoupon = (e) => {
+  clearTimeout(_timerCouponsId.value)
+  _timerCouponsId.value = setTimeout(() => {
+    isLoadingCoupons.value = true
+    couponsListStore.fetchCoupons({ search: e.target.value }).then(response => {
+      coupons.value = response.data?.data?.data || [];
+    })
+    .finally(() => {
+      isLoadingCoupons.value = false
     });
   }, 800);
 }
@@ -458,13 +487,33 @@ const searchProduct = (e) => {
               <VCol
                 cols="12"
               >
-                <VSelect
+                <!-- <VSelect
                   v-model="itemData.discount_code"
                   :items="props.coupons"
                   :label="t('Coupons')"
                   item-title="name"
                   item-value="name"
-                />
+                /> -->
+                <VSelect
+                  v-model="itemData.discount_code"
+                  :items="coupons"
+                  :label="t('Coupons')"
+                  item-title="name"
+                  item-value="code"
+                  :loading="isLoadingCoupons"
+                >
+                  <template #prepend-item>
+                    <VListItem>
+                      <VListItemContent>
+                        <VTextField
+                          placeholder="البحث في الكوبونات"
+                          @input="searchCoupon"
+                        />
+                      </VListItemContent>
+                    </VListItem>
+                    <VDivider class="mt-2" />
+                  </template>
+                </VSelect>
               </VCol>
               <VCol
                 cols="12"

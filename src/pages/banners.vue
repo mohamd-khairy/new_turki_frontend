@@ -16,6 +16,7 @@ const banners = ref([])
 const selectedBanner = ref({})
 const selectedRows = ref([])
 const isAddOpen = ref(false)
+const isLoading = ref(false)
 const isEditOpen = ref(false)
 const isDeleteOpen = ref(false)
 
@@ -33,7 +34,7 @@ const getBanners = () => {
 }
 
 // 👉 Fetch Banners
-watchEffect(() => {
+onMounted(() => {
   getBanners()
 })
 

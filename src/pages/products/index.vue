@@ -451,8 +451,8 @@ onMounted(() => {
       </VCardText>
     </VCard>
 
-    <AddProductDialog v-model:is-add-open="isAddOpen" @refreshTable="getProducts"/>
-    <EditProductDialog v-model:is-edit-open="isEditOpen" :item="selectedProduct" @refreshTable="getProducts"/>
-    <DeleteProductsDialog v-model:is-delete-open="isDeleteOpen" :item="selectedProduct" @refreshTable="getProducts"/>
+    <AddProductDialog v-if="isAddOpen" v-model:is-add-open="isAddOpen" @refreshTable="getProducts"/>
+    <EditProductDialog v-if="isEditOpen" v-model:is-edit-open="isEditOpen" :item="selectedProduct" @refreshTable="getProducts"/>
+    <DeleteProductsDialog v-if="isDeleteOpen" v-model:is-delete-open="isDeleteOpen" :item="selectedProduct" @refreshTable="getProducts"/>
   </div>
 </template>

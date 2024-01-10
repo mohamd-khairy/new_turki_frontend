@@ -194,6 +194,21 @@ const onFormSubmit = async () => {
   }
 }
 
+const _timerCouponsId = ref(null)
+const isLoadingCoupons = ref(false)
+const searchCoupon = (e) => {
+  clearTimeout(_timerCouponsId.value)
+  _timerCouponsId.value = setTimeout(() => {
+    isLoadingCoupons.value = true
+    couponsStore.fetchCoupons({ search: e.target.value }).then(response => {
+      coupons.value = response.data?.data?.data || [];
+    })
+    .finally(() => {
+      isLoadingCoupons.value = false
+    });
+  }, 800);
+}
+
 onMounted(() => {
   getOrderDetails()
   ordersListStore.fetchOrderStatus().then(response => {
@@ -202,10 +217,6 @@ onMounted(() => {
 
   settingsListStore.fetchDelivery_Periods().then(response => {
     deliveryPeriods.value = response.data.data
-  })
-
-  couponsStore.fetchCoupons().then(response => {
-    coupons.value = response.data.data
   })
 
   settingsListStore.fetchPaymentTypes().then(response => {
@@ -224,6 +235,7 @@ onMounted(() => {
     productPreparations.value = response.data.data
   })
 })
+
 </script>
 
 <template>
@@ -423,12 +435,25 @@ onMounted(() => {
                   <VRow>
                     <VCol cols="12">
                       <VSelect
-                        v-model="itemData.discount_code"
-                        :label="t('forms.coupon')"
-                        :items="coupons"
-                        item-title="name"
-                        item-value="code"
-                      />
+                      v-model="itemData.discount_code"
+                      :items="coupons"
+                      :label="t('forms.coupon')"
+                      item-title="name"
+                      item-value="code"
+                      :loading="isLoadingCoupons"
+                    >
+                      <template #prepend-item>
+                        <VListItem>
+                          <VListItemContent>
+                            <VTextField
+                              placeholder="البحث في الكوبونات"
+                              @input="searchCoupon"
+                            />
+                          </VListItemContent>
+                        </VListItem>
+                        <VDivider class="mt-2" />
+                      </template>
+                    </VSelect>
                     </VCol>
                     <!-- <VCol cols="1" class="px-0">
                       <VTooltip text="إزالة الكوبون من الطلب">
@@ -742,7 +767,7 @@ onMounted(() => {
         </VCard>
       </div>
     </div>
-    <AddNewProduct
+    <AddNewProduct v-if="isAddProductOpen"
       v-model:isAddOpen="isAddProductOpen"
       :order="selectedProductItem"
       :sizes="productSizes"
@@ -755,7 +780,7 @@ onMounted(() => {
       @addProductCoupon="addProductCoupon"
     />
 
-    <EditOrderItemDialog
+    <EditOrderItemDialog v-if="isEditProductOpen"
       v-model:isEditProductOpen="isEditProductOpen"
       :item="selectedProductItem"
       :sizes="productSizes"

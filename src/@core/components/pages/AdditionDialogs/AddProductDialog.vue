@@ -32,7 +32,7 @@ const categories = reactive([])
 const sub_categories = reactive([])
 const preparations = ref([])
 const sizes = ref([])
-const cuts = ref([])
+const productCuts = ref([])
 const shalwatas = ref([])
 const payment_type_ids = reactive([])
 
@@ -94,7 +94,7 @@ const getProductShalwata = () => {
 
 const getProductCuts = () => {
   settingsListStore.fetchProductCut({ pageSize: -1 }).then(response => {
-    cuts.value = response.data.data
+    productCuts.value = response.data.data;
   })
 }
 
@@ -356,7 +356,7 @@ const dialogModelValueUpdate = val => {
                 >
                   <VSelect
                     v-model="itemData.cut_ids"
-                    :items="cuts"
+                    :items="productCuts"
                     :label="t('forms.product_cut')"
                     item-title="name_ar"
                     item-value="id"

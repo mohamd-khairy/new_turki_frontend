@@ -1,10 +1,7 @@
 <script setup>
-import { useI18n } from "vue-i18n"
-import {
-  requiredValidator,
-} from '@validators'
-import { useSettingsStore } from "@/store/Settings"
 import { useProductsStore } from "@/store/Products"
+import { useSettingsStore } from "@/store/Settings"
+import { useI18n } from "vue-i18n"
 
 const props = defineProps({
   isAddOpen: {
@@ -53,6 +50,11 @@ const itemData = reactive({
   cut_id: null,
   size_id: null,
   preparation_id: null,
+  shalwata: 0,
+  is_karashah: 0,
+  is_kwar3: 0,
+  is_lyh: 0,
+  is_Ras: 0,
 })
 
 const isLoadingCuts = ref(false)
@@ -64,6 +66,11 @@ const resetForm = () => {
   itemData.cut_id = null
   itemData.size_id = null
   itemData.preparation_id = null
+  itemData.shalwata = 0
+  itemData.is_karashah = 0
+  itemData.is_kwar3 = 0
+  itemData.is_lyh = 0
+  itemData.is_Ras = 0
   productCuts.value = []
   productSizes.value = []
   productPreparations.value = []
@@ -175,6 +182,41 @@ onUpdated(() => {
                   item-value="id"
                   :disabled="isLoadingPreparations"
                 />
+              </VCol>
+              <VCol cols="12"
+                md="6"
+                class="d-flex gap-9"
+              >
+                <v-checkbox label="مع شلوطة"
+                v-model="itemData.shalwata"
+                :false-value="0" :true-value="1"
+                ></v-checkbox>
+                <v-checkbox label="بدون كرشة"
+                v-model="itemData.is_karashah"
+                :false-value="0" :true-value="1"
+                ></v-checkbox>
+              </VCol>
+              <VCol cols="12"
+              md="6"
+                class="d-flex gap-9"
+              >
+                <v-checkbox label="بدون كوارع"
+                v-model="itemData.is_kwar3"
+                :false-value="0" :true-value="1"
+                ></v-checkbox>
+                <v-checkbox label="بدون ليه"
+                v-model="itemData.is_lyh"
+                :false-value="0" :true-value="1"
+                ></v-checkbox>
+              </VCol>
+              <VCol cols="12"
+              md="6"
+              class="d-flex gap-10 mb-4"
+              >
+                <v-checkbox label="بدون رأس"
+                v-model="itemData.is_Ras"
+                :false-value="0" :true-value="1"
+                ></v-checkbox>
               </VCol>
 
               <VCol

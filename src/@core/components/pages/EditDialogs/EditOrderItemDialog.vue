@@ -58,8 +58,14 @@ const resetForm = () => {
 }
 
 onUpdated(() => {
-  itemData.order_product_id = props.item ? props.item.id : 0
-  itemData.quantity = props.item ? props.item.quantity : 1
+  itemData.order_product_id = props.item ? props.item.id : 0;
+  itemData.quantity = props.item ? props.item.quantity : 1;
+  itemData.is_kwar3 = props.item?.is_kwar3 ? 1 : 0;
+  itemData.is_Ras = props.item?.is_Ras ? 1 : 0;
+  itemData.is_lyh = props.item?.is_lyh ? 1 : 0;
+  itemData.is_karashah = props.item?.is_karashah ? 1 : 0;
+  itemData.shalwata = props.item?.shalwata ? 1 : 0;
+
   if (typeof props.item.preparation == 'object') {
     // itemData.cut_ids.push(props.item.preparation)
     itemData.preparation_ids = props.item.preparation?.id ?? null;

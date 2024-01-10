@@ -1,13 +1,13 @@
 <script setup>
-import { useI18n } from "vue-i18n"
-import { useProductsStore } from "@/store/Products"
 import { useBannersStore } from "@/store/Banners"
 import { useCategoriesStore } from "@/store/Categories"
 import { useCitiesStore } from "@/store/Cities"
+import { useProductsStore } from "@/store/Products"
 import { useSettingsStore } from "@/store/Settings"
 import {
-  requiredValidator,
+requiredValidator,
 } from '@validators'
+import { useI18n } from "vue-i18n"
 
 const props = defineProps({
   isEditOpen: {
@@ -31,32 +31,6 @@ const categoriesList = useCategoriesStore()
 const citiesList = useCitiesStore()
 const settingsListStore = useSettingsStore()
 
-onUpdated(() => {
-  productsList.fetchProducts({ per_page: -1 }).then(response => {
-    products.value = response.data.data
-  })
-  categoriesList.fetchCategories().then(response => {
-    categories.value = response.data.data
-  })
-  citiesList.fetchCities().then(response => {
-    cities.value = response.data.data
-  })
-  bannerData.id = props.banner.id,
-  bannerData.title = props.banner.title,
-  bannerData.title_color = props.banner.title_color,
-  bannerData.sub_title = props.banner.sub_title,
-  bannerData.sub_title_color = props.banner.sub_title_color,
-  bannerData.button_text = props.banner.button_text,
-  bannerData.button_text_color = props.banner.button_text_color,
-  bannerData.redirect_url = props.banner.redirect_url,
-  bannerData.is_active = props.banner.is_active,
-  bannerData.type = Number(props.banner.type),
-  bannerData.redirect_mobile_url = props.banner.redirect_mobile_url,
-  bannerData.product_id = props.banner.product_id,
-  bannerData.category_ids = props.banner.categories,
-  bannerData.city_ids = props.banner.cities
-})
-
 const { t } = useI18n()
 
 const bannerData = reactive({
@@ -77,7 +51,7 @@ const bannerData = reactive({
   city_ids: [],
 })
 
-const products = reactive([])
+const products = ref([])
 const categories = reactive([])
 const cities = reactive([])
 const isLoading = ref(false)
@@ -175,6 +149,44 @@ const onFormSubmit = async () => {
 const dialogModelValueUpdate = val => {
   emit('update:isEditOpen', val)
 }
+
+const _timerProductsId = ref(null)
+const isLoadingProducts = ref(false)
+const searchProduct = (e) => {
+  clearTimeout(_timerProductsId.value)
+  _timerProductsId.value = setTimeout(() => {
+    isLoadingProducts.value = true
+    productsList.fetchProducts({ search: e.target.value}).then(response => {
+      products.value = response.data?.data?.data || [];
+    })
+    .finally(() => {
+      isLoadingProducts.value = false
+    });
+  }, 800);
+}
+
+onUpdated(() => {
+  categoriesList.fetchCategories().then(response => {
+    categories.value = response.data.data
+  })
+  citiesList.fetchCities().then(response => {
+    cities.value = response.data.data
+  })
+  bannerData.id = props.banner.id,
+  bannerData.title = props.banner.title,
+  bannerData.title_color = props.banner.title_color,
+  bannerData.sub_title = props.banner.sub_title,
+  bannerData.sub_title_color = props.banner.sub_title_color,
+  bannerData.button_text = props.banner.button_text,
+  bannerData.button_text_color = props.banner.button_text_color,
+  bannerData.redirect_url = props.banner.redirect_url,
+  bannerData.is_active = props.banner.is_active,
+  bannerData.type = Number(props.banner.type),
+  bannerData.redirect_mobile_url = props.banner.redirect_mobile_url,
+  bannerData.product_id = props.banner.product_id,
+  bannerData.category_ids = props.banner.categories,
+  bannerData.city_ids = props.banner.cities
+})
 </script>
 
 <template>
@@ -275,12 +287,25 @@ const dialogModelValueUpdate = val => {
             >
               <VSelect
                 v-model="bannerData.product_id"
-                :items="products.value"
-                :label="t('forms.products')"
+                :items="products"
+                :label="t('Products')"
                 item-title="name_ar"
                 item-value="id"
+                :loading="isLoadingProducts"
                 :rules="[requiredValidator]"
-              />
+              >
+                <template #prepend-item>
+                  <VListItem>
+                    <VListItemContent>
+                      <VTextField
+                        placeholder="البحث في المنتجات"
+                        @input="searchProduct"
+                      />
+                    </VListItemContent>
+                  </VListItem>
+                  <VDivider class="mt-2" />
+                </template>
+              </VSelect>
             </VCol>
             <VCol
               cols="12"

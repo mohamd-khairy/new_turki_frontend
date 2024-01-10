@@ -50,6 +50,11 @@ const itemData = reactive({
   cut_ids: [],
   size_ids: [],
   preparation_ids: [],
+  shalwata: 0,
+  is_karashah: 0,
+  is_kwar3: 0,
+  is_lyh: 0,
+  is_Ras: 0,
 })
 
 const getProductSpecifications = (productId) => {
@@ -95,10 +100,10 @@ const resetForm = () => {
 }
 
 const onFormSubmit = async () => {
-  isLoading.value = true
 
   const res = await refForm.value.validate()
   if (res.valid) {
+    isLoading.value = true
     productsListStore.addNewProduct(itemData).then(response => {
       emit('refreshTable')
       emit('update:isAddOpen', false)
@@ -109,7 +114,8 @@ const onFormSubmit = async () => {
         settingsListStore.isAlertShow = false
         settingsListStore.alertMessage = ""
       }, 2000)
-    }).catch(error => {
+    })
+    .catch(error => {
       if (error.response.data.errors) {
         const errs = Object.keys(error.response.data.errors)
         errs.forEach(err => {
@@ -118,13 +124,15 @@ const onFormSubmit = async () => {
       } else {
         settingsListStore.alertMessage = "حدث خطأ ما !"
       }
-      isLoading.value = false
       settingsListStore.alertColor = "error"
       settingsListStore.isAlertShow = true
       setTimeout(() => {
         settingsListStore.isAlertShow = false
         settingsListStore.alertMessage = ""
       }, 2000)
+    })
+    .finally(() => {
+      isLoading.value = false
     })
   } else {
     isLoading.value = false

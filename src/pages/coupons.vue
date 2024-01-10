@@ -1,82 +1,58 @@
 <script setup>
+import { useCouponsStore } from "@/store/Coupons"
 import moment from "moment"
 import { useI18n } from "vue-i18n"
-import { useCouponsStore } from "@/store/Coupons"
-import AppDateTimePicker from "@core/components/AppDateTimePicker.vue"
 
 const { t } = useI18n()
 
 const couponsListStore = useCouponsStore()
 const searchQuery = ref('')
-const selectedStatus = ref()
 const rowPerPage = ref(5)
 const currentPage = ref(1)
 const totalPage = ref(1)
 const totalCoupons = ref(0)
 const coupons = ref([])
+const dataFrom = ref(1)
+const dataTo = ref(1)
 const selectedRows = ref([])
 const isAddOpen = ref(false)
 const isDeleteOpen = ref(false)
 const selectedCoupon = ref({})
 const isEditOpen = ref(false)
+const isLoading = ref(false)
 
 const getCoupons = () => {
+  isLoading.value = true
+
   couponsListStore.fetchCoupons({
     q: searchQuery.value,
+    per_page: rowPerPage.value,
+    page: currentPage.value,
   }).then(response => {
-    coupons.value = response.data.data
-    totalPage.value = coupons.value / rowPerPage
-    totalCoupons.value = coupons.value.length
-    currentPage.value = 1
+    coupons.value = response.data?.data?.data || [];
+    totalPage.value = response.data.data.last_page
+    dataFrom.value = response.data.data.from
+    dataTo.value = response.data.data.to
+    totalCoupons.value = response.data.data.total
   }).catch(error => {
     console.log(error)
   })
+  .finally(() => {
+    isLoading.value = false
+  })
 }
 
-// 👉 Fetch Categories
-watchEffect(() => {
+watch(rowPerPage, () => {
   getCoupons()
 })
 
-
-// 👉 Fetch Countrys
-watchEffect(() => {
-  if (rowPerPage.value) {
-    currentPage.value = 1
-  }
+watch(() => currentPage.value, () => {
+  getCoupons()
 })
 
-const paginateCoupons = computed(() => {
-  totalPage.value = Math.ceil(coupons.value.length / rowPerPage.value)
-
-  return coupons.value.filter((row, index) => {
-    let start = (currentPage.value - 1) * rowPerPage.value
-    let end = currentPage.value * rowPerPage.value
-    if (index >= start && index < end) return true
-  })
-})
-
-const nextPage = () => {
-  if ((currentPage.value * rowPerPage.value) < coupons.value.length) currentPage.value
-}
-
-const prevPage = () => {
-  if (currentPage.value > 1) currentPage.value
-}
-
-// 👉 Computing pagination data
 const paginationData = computed(() => {
-  const firstIndex = coupons.value.length ? (currentPage.value - 1) * rowPerPage.value + 1 : 0
-  const lastIndex = firstIndex + (rowPerPage.value - 1) <= coupons.value.length ? firstIndex + (rowPerPage.value - 1) : totalCoupons.value
-
-  return ` عرض من ${ConvertToArabicNumbers(firstIndex)} إلي ${ConvertToArabicNumbers(lastIndex)} من ${ConvertToArabicNumbers(totalCoupons.value)} الإجمالي `
+  return ` عرض من ${ConvertToArabicNumbers(dataFrom.value)} إلي ${ConvertToArabicNumbers(dataTo.value)} من ${ConvertToArabicNumbers(totalCoupons.value)} الإجمالي `
 })
-
-const changeStatus = data => {
-  // couponsListStore.changeCountryStatus(data).then(response => {
-  //   getCoupons()
-  // })
-}
 
 const openDelete = coupon => {
   isDeleteOpen.value = true
@@ -103,12 +79,16 @@ const formatDateTime = data => {
 
   return { date, time }
 }
+
+onMounted(() => {
+  getCoupons()
+})
 </script>
 
 <template>
   <div>
-    <VCard>
-      <VCardTitle class="d-flex align-center">
+    <VCard :loading="isLoading">
+      <VCardTitle class="d-flex align-center mb-6 pt-4">
         <VIcon icon="bxs:coupon" size="24" color="primary"></VIcon>
         <span class="mx-1">{{ t('Coupons') }}</span>
       </VCardTitle>
@@ -125,6 +105,7 @@ const formatDateTime = data => {
         <VBtn
           prepend-icon="tabler-plus"
           @click="isAddOpen = true"
+          :disabled="isLoading"
         >
           {{ t('Add_Coupon') }}
         </VBtn>
@@ -193,7 +174,7 @@ const formatDateTime = data => {
 
         <tbody>
           <tr
-            v-for="(coupon, i) in paginateCoupons"
+            v-for="(coupon, i) in coupons"
             :key="coupon.id"
           >
             <td>
@@ -275,10 +256,10 @@ const formatDateTime = data => {
         <VPagination
           v-model="currentPage"
           size="small"
-          :total-visible="rowPerPage"
+          :total-visible="5"
           :length="totalPage"
-          @next="nextPage"
-          @prev="prevPage"
+          @next="selectedRows = []"
+          @prev="selectedRows = []"
         />
       </VCardText>
     </VCard>

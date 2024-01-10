@@ -3,7 +3,6 @@ import { hasRole } from '@/helpers'
 import { useAuthStore } from "@/store/Auth"
 import { useCitiesStore } from "@/store/Cities"
 import { useCountriesStore } from "@/store/Countries"
-import { useCouponsStore } from "@/store/Coupons"
 import { useEmployeesStore } from "@/store/Employees"
 import { useOrdersStore } from "@/store/Orders"
 import { usePaymentTypesStore } from "@/store/PaymentTypes"
@@ -22,7 +21,6 @@ const citiesListStore = useCitiesStore()
 const countriesListStore = useCountriesStore()
 const settingsListStore = useSettingsStore()
 const employeesStore = useEmployeesStore()
-const couponsListStore = useCouponsStore()
 const paymentTypesStore = usePaymentTypesStore()
 const searchQuery = ref('')
 const searchTerm = ref('')
@@ -34,7 +32,6 @@ const orders = ref([])
 const cities = ref([])
 const customers = ref([])
 const countries = ref([])
-const coupons = ref([])
 const deliveryPeriods = ref([])
 const orderStatuses = ref([])
 const allOrderStatuses = ref([])
@@ -297,9 +294,6 @@ onMounted(() => {
   })
   settingsListStore.fetchDelivery_Periods().then(response => {
     deliveryPeriods.value = response.data.data
-  })
-  couponsListStore.fetchCoupons({ per_page: 100 }).then(response => {
-    coupons.value = response.data.data
   })
  
   paymentTypesStore.getAll().then(response => {
@@ -1001,7 +995,6 @@ onMounted(() => {
       :cities="cities"
       :customers="customers"
       :delivery-periods="deliveryPeriods"
-      :coupons="coupons"
       @refreshTable="getOrders"
     />
     <EditOrderStatusDialog

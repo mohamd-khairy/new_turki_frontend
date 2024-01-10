@@ -29,18 +29,6 @@ const citiesList = useCitiesStore()
 const settingsListStore = useSettingsStore()
 const isLoading = ref(false)
 
-onUpdated(() => {
-  productsList.fetchProducts({ per_page: -1 }).then(response => {
-    products.value = response.data.data
-  })
-  categoriesList.fetchCategories().then(response => {
-    categories.value = response.data.data
-  })
-  citiesList.fetchCities().then(response => {
-    cities.value = response.data.data
-  })
-})
-
 const { t } = useI18n()
 
 const bannerData = reactive({
@@ -60,7 +48,7 @@ const bannerData = reactive({
   city_ids: [],
 })
 
-const products = reactive([])
+const products = ref([])
 const categories = reactive([])
 const cities = reactive([])
 const form = ref()
@@ -107,6 +95,21 @@ const resetForm = () => {
   bannerData.category_ids = [],
   bannerData.city_ids = []
   emit('update:isAddOpen', false)
+}
+
+const _timerProductsId = ref(null)
+const isLoadingProducts = ref(false)
+const searchProduct = (e) => {
+  clearTimeout(_timerProductsId.value)
+  _timerProductsId.value = setTimeout(() => {
+    isLoadingProducts.value = true
+    productsList.fetchProducts({ search: e.target.value}).then(response => {
+      products.value = response.data?.data?.data || [];
+    })
+    .finally(() => {
+      isLoadingProducts.value = false
+    });
+  }, 800);
 }
 
 const onFormSubmit = async () => {
@@ -158,6 +161,15 @@ const onFormSubmit = async () => {
 const dialogModelValueUpdate = val => {
   emit('update:isAddOpen', val)
 }
+
+onUpdated(() => {
+  categoriesList.fetchCategories().then(response => {
+    categories.value = response.data.data
+  })
+  citiesList.fetchCities().then(response => {
+    cities.value = response.data.data
+  })
+})
 </script>
 
 <template>
@@ -250,12 +262,25 @@ const dialogModelValueUpdate = val => {
             >
               <VSelect
                 v-model="bannerData.product_id"
-                :items="products.value"
-                :label="t('forms.products')"
+                :items="products"
+                :label="t('Products')"
                 item-title="name_ar"
                 item-value="id"
+                :loading="isLoadingProducts"
                 :rules="[requiredValidator]"
-              />
+              >
+                <template #prepend-item>
+                  <VListItem>
+                    <VListItemContent>
+                      <VTextField
+                        placeholder="البحث في المنتجات"
+                        @input="searchProduct"
+                      />
+                    </VListItemContent>
+                  </VListItem>
+                  <VDivider class="mt-2" />
+                </template>
+              </VSelect>
             </VCol>
             <VCol
               cols="12"
