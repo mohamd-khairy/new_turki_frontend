@@ -130,7 +130,7 @@ const printOrderInvoice = async (order) => {
   if(hasRole(['production_manager'])) {
     try {
       currentPrintedInvoice.value = order.ref_no;
-      await ordersListStore.editOrder({is_printed: true})
+      await ordersListStore.editOrder({ id: order.id, is_printed: true })
     } catch (error) {
       console.error(error);
     } finally {
@@ -895,7 +895,7 @@ onMounted(() => {
                 </td>
               -->
               <td>
-                <div class="d-flex align-center gap-2">
+                <div class="d-flex align-center justify-end gap-2">
                   <div v-if="!hasRole(['production_manager']) || (hasRole(['production_manager']) && !order.is_printed)">
                     <VTooltip text="طباعة الفاتورة">
                       <template #activator="{ props }">
