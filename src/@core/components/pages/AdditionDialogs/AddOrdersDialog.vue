@@ -557,7 +557,7 @@ const searchCoupon = (e) => {
               </VCol>
               <VCol
                 cols="12"
-                v-if="hasRole(['production_manager'])"
+                v-if="hasRole(['production_manager', 'production_supervisor'])"
               >
                 <VTextField
                   v-model="itemData.boxes_count"
@@ -568,7 +568,7 @@ const searchCoupon = (e) => {
               </VCol>
               <VCol
                 cols="12"
-                v-if="hasRole(['production_manager'])"
+                v-if="hasRole(['production_manager', 'production_supervisor'])"
               >
                 <VTextField
                   v-model="itemData.dishes_count"

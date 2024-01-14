@@ -38,7 +38,8 @@ const printOrder = () => {
 const getOrderDetails = id => {
   ordersListStore.fetchOrder(id).then(response => {
     order.value = response?.data.data
-    isLoading.value = false
+    isLoading.value = false;
+
     setTimeout(() => {
       printOrder();
     }, 500);

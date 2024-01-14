@@ -566,7 +566,7 @@ onMounted(() => {
                   />
                 </VCol>
                 <VCol
-                  v-if="hasRole(['production_manager'])"
+                  v-if="hasRole(['production_manager', 'production_supervisor'])"
                   cols="12"
                   md="6"
                 >
@@ -578,7 +578,7 @@ onMounted(() => {
                   />
                 </VCol>
                 <VCol
-                  v-if="hasRole(['production_manager'])"
+                  v-if="hasRole(['production_manager', 'production_supervisor'])"
                   cols="12"
                   md="6"
                 >

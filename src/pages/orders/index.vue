@@ -51,6 +51,7 @@ const salesAgents = ref([])
 const salesRepresentatives = ref([])
 const isAssignDeligateDialog = ref(false)
 const allOrdersSelected = ref(false)
+const currentPrintedInvoice = ref(null);
 
 const filters = reactive({
   city_ids: [],
@@ -93,7 +94,7 @@ const openAssignDeligateDialog = () => {
 const authUser = computed(() => authStore.currentUser)
 
 const canEditOrder = order => {
-  if(hasRole(['general_manager', 'production_manager', 'admin'])) {
+  if(hasRole(['general_manager', 'production_manager', 'production_supervisor', 'admin'])) {
     return true
   }
 
@@ -115,7 +116,7 @@ const canTakeOrder = order => {
   return false
 }
 
-const canChangeOrderStatus = computed(() => hasRole(['production_manager', 'logistic_manager', 'admin', 'general_manager']))
+const canChangeOrderStatus = computed(() => hasRole(['production_manager', 'production_supervisor', 'logistic_manager', 'admin', 'general_manager']))
 
 const delegateCanUpdateOrderStatus = order => {
   return hasRole('delegate') && order.driver_id == authUser.value?.id
@@ -123,6 +124,21 @@ const delegateCanUpdateOrderStatus = order => {
 
 const storeMangerCanUpdateOrderStatus = order => {
   return hasRole('store_manager') && order.sales_representative_id == authUser.value?.id
+}
+
+const printOrderInvoice = async (order) => {
+  if(hasRole(['production_manager'])) {
+    try {
+      currentPrintedInvoice.value = order.ref_no;
+      await ordersListStore.editOrder({is_printed: true})
+    } catch (error) {
+      console.error(error);
+    } finally {
+      currentPrintedInvoice.value = null;
+    }
+  }
+
+  router.push(`orders/${order.ref_no}/invoice`);
 }
 
 watch(() => filters.country_ids, (newVal, oldVal) => {
@@ -246,13 +262,6 @@ const clearFilter = () => {
 
 const openDetails = order => {
   router.push(`orders/${order.ref_no}`)
-}
-
-const openInvoice = order => {
-  router.push(`orders/${order.ref_no}/invoice`)
-
-  // isPrinting.value = true
-  // selectedOrder.value = order
 }
 
 const closePriniting = order => {
@@ -887,23 +896,26 @@ onMounted(() => {
               -->
               <td>
                 <div class="d-flex align-center gap-2">
-                  <VTooltip text="طباعة الفاتورة">
-                    <template #activator="{ props }">
-                      <VBtn
-                        v-bind="props"
-                        icon
-                        variant="plain"
-                        color="default"
-                        size="x-small"
-                        @click="openInvoice(order)"
-                      >
-                        <VIcon
-                          :size="22"
-                          icon="iconamoon:invoice-thin"
-                        />
-                      </VBtn>
-                    </template>
-                  </VTooltip>
+                  <div v-if="!hasRole(['production_manager']) || (hasRole(['production_manager']) && !order.is_printed)">
+                    <VTooltip text="طباعة الفاتورة">
+                      <template #activator="{ props }">
+                        <VBtn
+                          v-bind="props"
+                          icon
+                          variant="plain"
+                          color="default"
+                          size="x-small"
+                          @click="printOrderInvoice(order)"
+                          :loading="currentPrintedInvoice == order.ref_no"
+                        >
+                          <VIcon
+                            :size="22"
+                            icon="iconamoon:invoice-thin"
+                          />
+                        </VBtn>
+                      </template>
+                    </VTooltip>
+                  </div>
                   <VTooltip
                     v-if="canEditOrder(order)"
                     text="تفاصيل الطلب"
