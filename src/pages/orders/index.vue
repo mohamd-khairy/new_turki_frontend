@@ -52,6 +52,7 @@ const salesRepresentatives = ref([])
 const isAssignDeligateDialog = ref(false)
 const allOrdersSelected = ref(false)
 const currentPrintedInvoice = ref(null);
+const totalOrdersAmount = ref(0);
 
 const filters = reactive({
   city_ids: [],
@@ -160,6 +161,7 @@ const getOrders = () => {
     dataFrom.value = response.data.data.from
     dataTo.value = response.data.data.to
     totalOrders.value = response.data.data.total
+    totalOrdersAmount.value = response.data.total
     isLoading.value = false
     
     resetSelections()
@@ -636,7 +638,6 @@ onMounted(() => {
           <span class="mx-1">{{ t('Orders') }}</span>
         </VCardTitle>
         <VCardText class="d-flex align-center flex-wrap gap-2 py-4">
-          <!-- 👉 Rows per page -->
           <div style="width: 5rem;">
             <VSelect
               v-model="rowPerPage"
@@ -668,6 +669,40 @@ onMounted(() => {
           </div>
 
           <VSpacer />
+
+          <div v-if="isLoading">
+            <VCard class="py-7 px-16">
+              <VIcon
+                icon="mingcute:loading-line"
+                class="loading"
+                size="32"
+              />
+            </VCard>
+          </div>
+          <div v-else>
+            <VCard v-if="totalOrdersAmount" class="py-3 px-4">
+              <p class="mb-3">
+                <VAvatar
+                  color="success"
+                  variant="tonal"
+                  size="42"
+                  class="me-3"
+                >
+                  <VIcon
+                    size="24"
+                    icon="tabler-currency-dollar"
+                  />
+                </VAvatar>
+                <span>الإجمالي</span>
+              </p>
+              <div class="d-flex gap-2">
+                <span class="text-h6 font-weight-semibold">
+                  {{ ConvertToArabicNumbers(Intl.NumberFormat().format(totalOrdersAmount)) }}
+                </span>
+                <small>{{ t('riyal') }}</small>
+              </div>
+            </VCard>
+          </div>
         </VCardText>
 
         <VDivider />
@@ -846,12 +881,26 @@ onMounted(() => {
                   v-if="canChangeOrderStatus || storeMangerCanUpdateOrderStatus(order) || delegateCanUpdateOrderStatus(order)" 
                   @click="openEdit(order)"
                 >
-                  <VChip style="cursor: pointer;">
+                  <VChip style="cursor: pointer;"
+                  :class="[
+                    {'text-success': [101, 200].includes(order.order_state_id)},
+                    {'text-warning': [104, 105, 106].includes(order.order_state_id)},
+                    {'text-error': [103, 107, 108, 109].includes(order.order_state_id)},
+                    {'text-secondary': order.order_state_id == 103},
+                    {'text-primary': order.order_state_id == 102},
+                  ]">
                     {{ order.order_state_ar }}
                   </VChip>
                 </span>
                 <span v-else>
-                  <VChip>
+                  <VChip
+                  :class="[
+                    {'text-success': [101, 200].includes(order.order_state_id)},
+                    {'text-warning': [104, 105, 106].includes(order.order_state_id)},
+                    {'text-error': [103, 107, 108, 109].includes(order.order_state_id)},
+                    {'text-secondary': order.order_state_id == 103},
+                    {'text-primary': order.order_state_id == 102},
+                  ]">
                     {{ order.order_state_ar }}
                   </VChip>
                 </span>
