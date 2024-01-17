@@ -156,7 +156,7 @@ const getOrders = () => {
     per_page: rowPerPage.value,
     page: currentPage.value,
   }).then(response => {
-    orders.value = response.data.data.data
+    orders.value = response.data.data.data;
     totalPage.value = response.data.data.last_page
     dataFrom.value = response.data.data.from
     dataTo.value = response.data.data.to
@@ -283,6 +283,16 @@ const ConvertToArabicNumbers = num => {
   return String(num).replace(/[0123456789]/g, d => {
     return arabicNumbers[d]
   })
+}
+
+const handleDeliveryDate = (date) => {
+  const dateArray = date.split('-');
+  if(dateArray[0].length < 4) {
+    dateArray.unshift('2024');
+    date = dateArray.join('-');
+  }
+
+  return ConvertToArabicNumbers(moment(date).format("DD-MM-YYYY"));
 }
 
 const formatDateTime = data => {
@@ -669,39 +679,40 @@ onMounted(() => {
           </div>
 
           <VSpacer />
-
-          <div v-if="isLoading">
-            <VCard class="py-7 px-16">
-              <VIcon
-                icon="mingcute:loading-line"
-                class="loading"
-                size="32"
-              />
-            </VCard>
-          </div>
-          <div v-else>
-            <VCard v-if="totalOrdersAmount" class="py-3 px-4">
-              <p class="mb-3">
-                <VAvatar
-                  color="success"
-                  variant="tonal"
-                  size="42"
-                  class="me-3"
-                >
-                  <VIcon
-                    size="24"
-                    icon="tabler-currency-dollar"
-                  />
-                </VAvatar>
-                <span>الإجمالي</span>
-              </p>
-              <div class="d-flex gap-2">
-                <span class="text-h6 font-weight-semibold">
-                  {{ ConvertToArabicNumbers(Intl.NumberFormat().format(totalOrdersAmount)) }}
-                </span>
-                <small>{{ t('riyal') }}</small>
-              </div>
-            </VCard>
+          <div class="pt-3 pt-md-0">
+            <div v-if="isLoading">
+              <VCard class="py-7 px-16">
+                <VIcon
+                  icon="mingcute:loading-line"
+                  class="loading"
+                  size="32"
+                />
+              </VCard>
+            </div>
+            <div v-else>
+              <VCard v-if="totalOrdersAmount" class="py-3 px-4">
+                <p class="mb-3">
+                  <VAvatar
+                    color="success"
+                    variant="tonal"
+                    size="42"
+                    class="me-3"
+                  >
+                    <VIcon
+                      size="24"
+                      icon="tabler-currency-dollar"
+                    />
+                  </VAvatar>
+                  <span>الإجمالي</span>
+                </p>
+                <div class="d-flex gap-2">
+                  <span class="text-h6 font-weight-semibold">
+                    {{ ConvertToArabicNumbers(Intl.NumberFormat().format(totalOrdersAmount)) }}
+                  </span>
+                  <small>{{ t('riyal') }}</small>
+                </div>
+              </VCard>
+            </div>
           </div>
         </VCardText>
 
@@ -874,7 +885,7 @@ onMounted(() => {
                 <span v-else>--</span>
               </td>
               <td>
-                {{ ConvertToArabicNumbers(formatDateTime(order.delivery_date).date) }}
+                {{ handleDeliveryDate(order.delivery_date) }}
               </td>
               <td>
                 <span
