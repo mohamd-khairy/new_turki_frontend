@@ -285,10 +285,10 @@ const ConvertToArabicNumbers = num => {
   })
 }
 
-const handleDeliveryDate = (date) => {
+const handleDeliveryDate = (date, createdDate) => {
   const dateArray = date.split('-');
   if(dateArray[0].length < 4) {
-    dateArray.unshift('2024');
+    dateArray.unshift(`${new Date(createdDate).getFullYear()}`);
     date = dateArray.join('-');
   }
 
@@ -669,7 +669,7 @@ onMounted(() => {
             <Transition>
               <div
                 v-if="selectedOrders.length"
-                class="d-flex gap-2 mx-4"
+                class="d-flex"
               >
                 <VBtn @click="openAssignDeligateDialog">
                   تعيين مندوب
@@ -885,7 +885,7 @@ onMounted(() => {
                 <span v-else>--</span>
               </td>
               <td>
-                {{ handleDeliveryDate(order.delivery_date) }}
+                {{ handleDeliveryDate(order.delivery_date, order.created_at) }}
               </td>
               <td>
                 <span
