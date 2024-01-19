@@ -9,6 +9,7 @@ import { hasRole } from '@/helpers'
 import { useAuthStore } from "@/store/Auth"
 import { useCitiesStore } from "@/store/Cities"
 import { useCouponsStore } from "@/store/Coupons"
+import { useCustomersStore } from "@/store/Customers"
 import { useEmployeesStore } from "@/store/Employees"
 import { useOrdersStore } from "@/store/Orders"
 import { useProductsStore } from "@/store/Products"
@@ -41,6 +42,7 @@ const citiesListStore = useCitiesStore()
 const customersListStore = useEmployeesStore()
 const productsListStore = useProductsStore()
 const couponsListStore = useCouponsStore()
+const customersStore = useCustomersStore()
 const authStore = useAuthStore()
 
 
@@ -83,7 +85,7 @@ const savedProduct = reactive({
 const isLoading = ref(false)
 const isAddCustomerOpen = ref(false)
 const isAddCustomerAddressOpen = ref(false)
-const addresses = ref([])
+const customerAddresses = ref([])
 
 const updateProducts = (products) => {
   const selected = [];
@@ -106,9 +108,9 @@ const changeDate = ev => {
 }
 
 watch(() => itemData.customer_id, (newVal, oldVal) => {
-  if(itemData.customer_id !== null) {
+  if(itemData.customer_id) {
     selectedCustomer.value = itemData.customer_id
-    addresses.value = getAddresses()
+    getSelectedCustomerAddresses()
   }
 })
 
@@ -118,10 +120,14 @@ watch(() => itemData.country_id, (newVal, oldVal) => {
   })
 })
 
-const getAddresses = () => {
-  let selected_customer = customers.value.filter(obj => obj.id === itemData.customer_id)
+const getSelectedCustomerAddresses = () => {
+  if (!selectedCustomer.value) return;
   
-  return selected_customer[0].addresses
+  customerAddresses.value = [];
+
+  customersStore.getAddresses(selectedCustomer.value).then(response => {
+    customerAddresses.value = response.data?.data || []
+  })
 }
 
 const refForm = ref(null)
@@ -410,7 +416,7 @@ const searchCoupon = (e) => {
                   >
                     <VSelect
                       v-model="itemData.address_id"
-                      :items="addresses"
+                      :items="customerAddresses"
                       :label="t('forms.customer_addresses')"
                       item-title="address"
                       item-value="id"
@@ -631,19 +637,20 @@ const searchCoupon = (e) => {
       </VCard>
     </VDialog>
 
-    <AddProductQunatity
+    <AddProductQunatity v-if="isQuantityOpen"
       v-model:is-add-open="isQuantityOpen"
       :item-saved="savedProduct"
       :item="selectedProduct"
       @addProductQuantity="AddQuantity"
     />
-    <AddCustomerDialog
+    <AddCustomerDialog v-if="isAddCustomerOpen"
       v-model:is-add-open="isAddCustomerOpen"
     />
-    <AddCustomerAddressDialog
+    <AddCustomerAddressDialog v-if="isAddCustomerAddressOpen"
       v-model:is-add-open="isAddCustomerAddressOpen"
-      :customer="selectedCustomer"
-      @refreshTable="closeModel"
+      :customer-id="selectedCustomer"
+      @update="getSelectedCustomerAddresses"
+      @refreshTable="isAddCustomerAddressOpen = false"
     />
   </div>
 </template>

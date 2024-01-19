@@ -775,7 +775,7 @@ onMounted(() => {
       :preparations="productPreparations"
       @refreshTable="getOrderDetails"
     />
-    <AddProductCoupon
+    <AddProductCoupon v-if="isAddProductCouponOpen"
       v-model:isAddOpen="isAddProductCouponOpen"
       @addProductCoupon="addProductCoupon"
     />

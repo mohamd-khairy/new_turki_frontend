@@ -1,11 +1,6 @@
 <script setup>
-import countriesList from "@core/utils/countries.json"
 import { useEmployeesStore } from "@/store/Employees"
 import { useRolesStore } from "@/store/Roles"
-import {
-  emailValidator,
-  requiredValidator,
-} from '@validators'
 
 
 const props = defineProps({
@@ -13,7 +8,7 @@ const props = defineProps({
     type: Boolean,
     required: true,
   },
-  customer: {
+  customerId: {
     type: Number,
     required: true,
   },
@@ -24,10 +19,10 @@ const emit = defineEmits([
   'refreshTable',
 ])
 
-import { useI18n } from "vue-i18n"
-import { useSettingsStore } from "@/store/Settings"
-import { useCountriesStore } from "@/store/Countries"
 import { useCitiesStore } from "@/store/Cities"
+import { useCountriesStore } from "@/store/Countries"
+import { useSettingsStore } from "@/store/Settings"
+import { useI18n } from "vue-i18n"
 
 const { t } = useI18n()
 const rolesListStore = useRolesStore()
@@ -39,22 +34,6 @@ const roles = reactive([])
 const countries = ref([])
 const cities = ref([])
 const isLoading = ref(false)
-
-onUpdated(() => {
-  address.customer_id = props.customer
-})
-
-onMounted(() => {
-  rolesListStore.fetchRoles().then(response => {
-    roles.value = response.data.data
-  })
-  countriesListStore.fetchCountries().then(response => {
-    countries.value = response.data.data
-  })
-  citiesListStore.fetchCities().then(response => {
-    cities.value = response.data.data
-  })
-})
 
 // Variables
 const address = reactive({
@@ -84,6 +63,22 @@ const resetForm = () => {
 
 const refForm = ref(null)
 
+onUpdated(() => {
+  address.customer_id = props.customerId
+})
+
+onMounted(() => {
+  rolesListStore.fetchRoles().then(response => {
+    roles.value = response.data.data
+  })
+  countriesListStore.fetchCountries().then(response => {
+    countries.value = response.data.data
+  })
+  citiesListStore.fetchCities().then(response => {
+    cities.value = response.data.data
+  })
+})
+
 const onFormSubmit = async () => {
   isLoading.value = true
 
@@ -95,7 +90,9 @@ const onFormSubmit = async () => {
       settingsListStore.alertMessage = "تم إضافة العنصر بنجاح"
       settingsListStore.isAlertShow = true
       resetForm()
-      emit('refreshTable')
+      // emit('refreshTable')
+      emit('update')
+      
       setTimeout(() => {
         settingsListStore.isAlertShow = false
         settingsListStore.alertMessage = ""
