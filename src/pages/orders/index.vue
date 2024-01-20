@@ -55,6 +55,7 @@ const currentPrintedInvoice = ref(null);
 const totalOrdersAmount = ref(0);
 
 const filters = reactive({
+  ref_no: null,
   city_ids: [],
   country_ids: [],
   order_state_ids: [],
@@ -117,6 +118,37 @@ const canTakeOrder = order => {
   return false
 }
 
+const getOrderStatusColorClass = (orderStatusCode) => {
+  if([104, 105, 106].includes(orderStatusCode)) {
+    return 'text-warning';
+  }
+
+  if([103, 107, 108, 109].includes(orderStatusCode)) {
+    return 'text-error';
+  }
+
+  // order confirmed
+  if(orderStatusCode == 101) {
+    return 'text-success';
+  }
+
+  // delivered
+  if(orderStatusCode == 200) {
+    return 'text-delivered';
+  }
+
+  if(orderStatusCode == 103) {
+    return 'text-secondary';
+  }
+
+  // pending
+  if(orderStatusCode == 102) {
+    return 'text-pending';
+  }
+
+  return '';
+}
+
 const canChangeOrderStatus = computed(() => hasRole(['production_manager', 'production_supervisor', 'logistic_manager', 'admin', 'general_manager']))
 
 const delegateCanUpdateOrderStatus = order => {
@@ -156,7 +188,10 @@ const getOrders = () => {
     per_page: rowPerPage.value,
     page: currentPage.value,
   }).then(response => {
-    orders.value = response.data.data.data;
+    const ordersItems = response.data.data.data
+    // ordersItems[0].order_state_id = 102
+    // ordersItems[0].order_state_ar = 'معلق'
+    orders.value = ordersItems;
     totalPage.value = response.data.data.last_page
     dataFrom.value = response.data.data.from
     dataTo.value = response.data.data.to
@@ -248,6 +283,8 @@ const filterOrders = () => {
 }
 
 const clearFilter = () => {
+  filters.ref_no = null
+  filters.customer_id = null
   filters.city_ids = []
   filters.country_ids = []
   filters.order_state_ids = []
@@ -255,15 +292,18 @@ const clearFilter = () => {
   filters.date_to = null
   filters.delivery_date = null
   filters.delivery_period_id = null
-  filters.customer_id = null
   filters.payment_type_ids = []
   filters.sales_agent_id = null
   filters.sales_representative_id = null
   filterOrders()
 }
 
-const openDetails = order => {
+const openDetails = (order) => {
   router.push(`orders/${order.ref_no}`)
+}
+
+const openDetailsInNewTab = (order) => {
+  window.open(`orders/${order.ref_no}`, '_blank');
 }
 
 const closePriniting = order => {
@@ -335,6 +375,50 @@ onMounted(() => {
     <div>
       <VCard class="mb-5 pa-5">
         <VRow>
+          <VCol cols="6"
+              class="d-flex align-center gap-3"
+            >
+              <div class="icon">
+                <VIcon
+                  icon="solar:delivery-broken"
+                  color="primary"
+                />
+              </div>
+              <VTextField  v-model="filters.ref_no" 
+                label="البحث برقم الطلب"
+                :disabled="isLoading"
+              />
+          </VCol>
+          <VCol cols="6"
+                class="d-flex align-center gap-3"
+              >
+                <div class="icon">
+                  <VIcon
+                    icon="clarity:users-line"
+                    color="primary"
+                  />
+                </div>
+                <VSelect
+                  v-model="filters.customer_id"
+                  :items="customers"
+                  label="البحث باسم أو رقم جوال العميل"
+                  item-title="name_mobile"
+                  item-value="id"
+                  :disabled="isLoading || isLoadingCustomers"
+                  :loading="isLoadingCustomers"
+                >
+                  <template #prepend-item>
+                    <VTextField
+                      v-model="searchTerm"
+                      class="mx-2"
+                      clearable
+                      placeholder="ابحث باسم أو رقم جوال العميل"
+                      @input="searchCustomer"
+                    />
+                    <VDivider class="mt-2" />
+                  </template>
+                </VSelect>
+          </VCol>
           <VCol
             cols="12"
             lg="3"
@@ -416,30 +500,16 @@ onMounted(() => {
               >
                 <div class="icon">
                   <VIcon
-                    icon="clarity:users-line"
+                    icon="fluent-mdl2:date-time"
                     color="primary"
                   />
                 </div>
-                <VSelect
-                  v-model="filters.customer_id"
-                  :items="customers"
-                  label="العميل"
-                  item-title="name_mobile"
-                  item-value="id"
-                  :disabled="isLoading || isLoadingCustomers"
-                  :loading="isLoadingCustomers"
-                >
-                  <template #prepend-item>
-                    <VTextField
-                      v-model="searchTerm"
-                      class="mx-2"
-                      clearable
-                      placeholder="ابحث عن العميل"
-                      @input="searchCustomer"
-                    />
-                    <VDivider class="mt-2" />
-                  </template>
-                </VSelect>
+                <VTextField
+                  v-model="filters.delivery_date"
+                  type="date"
+                  :label="t('forms.delivery_date')"
+                  :disabled="isLoading"
+                />
               </VCol>
             </VRow>
           </VCol>
@@ -529,32 +599,6 @@ onMounted(() => {
                   v-model="filters.date_to"
                   type="date"
                   :label="t('forms.to')"
-                  :disabled="isLoading"
-                />
-              </VCol>
-            </VRow>
-          </VCol>
-          <VCol
-            cols="12"
-            lg="3"
-            md="4"
-            sm="6"
-          >
-            <VRow>
-              <VCol
-                cols="12"
-                class="d-flex align-center gap-3"
-              >
-                <div class="icon">
-                  <VIcon
-                    icon="fluent-mdl2:date-time"
-                    color="primary"
-                  />
-                </div>
-                <VTextField
-                  v-model="filters.delivery_date"
-                  type="date"
-                  :label="t('forms.delivery_date')"
                   :disabled="isLoading"
                 />
               </VCol>
@@ -744,6 +788,12 @@ onMounted(() => {
                 scope="col"
                 class="font-weight-semibold"
               >
+                {{ t('forms.actions') }}
+              </th>
+              <th
+                scope="col"
+                class="font-weight-semibold"
+              >
                 {{ t('forms.id') }}
               </th>
               <th
@@ -840,12 +890,6 @@ onMounted(() => {
                 {{ t('forms.created_at') }}
                 </th>
               -->
-              <th
-                scope="col"
-                class="font-weight-semibold"
-              >
-                {{ t('forms.actions') }}
-              </th>
             </tr>
           </thead>
 
@@ -857,103 +901,6 @@ onMounted(() => {
               <td v-if="hasRole(['logistic_manager', 'admin'])">
                 <VCheckbox v-model="order.selected" />
               </td>
-              <td>
-                {{ order.ref_no }}
-              </td>
-              <td>
-                {{ order.customer_name + '(' + order.customer_mobile +')' }}
-              </td>
-              <td>
-                {{ order.address_address.toString().length > 20 ? order.address_address.toString().slice(0,20) + "..." : order.address_address }}
-              </td>
-              <td>
-                <span v-if="order.city_name">
-                  {{ order.city_name }}
-                </span>
-                <span v-else>--</span>
-              </td>
-              <td>
-                <span v-if="order.sales_officer_name">
-                  {{ order.sales_officer_name }}
-                </span>
-                <span v-else>--</span>
-              </td>
-              <td>
-                <span v-if="order.driver_name">
-                  {{ order.driver_name }}
-                </span>
-                <span v-else>--</span>
-              </td>
-              <td>
-                {{ handleDeliveryDate(order.delivery_date, order.created_at) }}
-              </td>
-              <td>
-                <span
-                  v-if="canChangeOrderStatus || storeMangerCanUpdateOrderStatus(order) || delegateCanUpdateOrderStatus(order)" 
-                  @click="openEdit(order)"
-                >
-                  <VChip style="cursor: pointer;"
-                  :class="[
-                    {'text-success': [101, 200].includes(order.order_state_id)},
-                    {'text-warning': [104, 105, 106].includes(order.order_state_id)},
-                    {'text-error': [103, 107, 108, 109].includes(order.order_state_id)},
-                    {'text-secondary': order.order_state_id == 103},
-                    {'text-primary': order.order_state_id == 102},
-                  ]">
-                    {{ order.order_state_ar }}
-                  </VChip>
-                </span>
-                <span v-else>
-                  <VChip
-                  :class="[
-                    {'text-success': [101, 200].includes(order.order_state_id)},
-                    {'text-warning': [104, 105, 106].includes(order.order_state_id)},
-                    {'text-error': [103, 107, 108, 109].includes(order.order_state_id)},
-                    {'text-secondary': order.order_state_id == 103},
-                    {'text-primary': order.order_state_id == 102},
-                  ]">
-                    {{ order.order_state_ar }}
-                  </VChip>
-                </span>
-              </td>
-              <td>
-                <VChip
-                  style="cursor: pointer;"
-                  :class="{'text-error': order.paid == 0, 'text-success': order.paid == 1}"
-                >
-                  {{ order.paid == 1 ? "مدفوع" : "غير مدفوع" }}
-                </VChip>
-              </td>
-              <!--
-                <td>
-                {{ ConvertToArabicNumbers(Intl.NumberFormat().format(order.order_subtotal)) }}
-                </td>
-              -->
-              <td>
-                {{ order.payment_type_name }}
-              </td>
-              <td>
-                <span v-if="order.payment_price">
-                  {{ ConvertToArabicNumbers(Intl.NumberFormat().format(order.payment_price)) }}
-                </span>
-                <span v-else>--</span>
-              </td>
-            
-              <td>
-                <span v-if="order.remain_amount">
-                  {{ ConvertToArabicNumbers(Intl.NumberFormat().format(order.remain_amount)) }}
-                </span>
-                <span v-else>--</span>
-              </td>
-                
-              <td>
-                {{ ConvertToArabicNumbers(Intl.NumberFormat().format(order.total_amount_after_discount)) }}
-              </td>
-              <!--
-                <td>
-                {{ ConvertToArabicNumbers(formatDateTime(order.created_at).date) }}
-                </td>
-              -->
               <td>
                 <div class="d-flex align-center justify-end gap-2">
                   <div v-if="!hasRole(['production_manager']) || (hasRole(['production_manager']) && !order.is_printed)">
@@ -996,6 +943,27 @@ onMounted(() => {
                       </VBtn>
                     </template>
                   </VTooltip>
+
+                  <VTooltip
+                    v-if="canEditOrder(order)"
+                    text="فتح الطلب في نافذة جديدة"
+                  >
+                    <template #activator="{ props }">
+                      <VBtn
+                        v-bind="props"
+                        icon
+                        variant="plain"
+                        color="default"
+                        size="x-small"
+                        @click="openDetailsInNewTab(order)"
+                      >
+                        <VIcon
+                          :size="22"
+                          icon="mdi-light:tab"
+                        />
+                      </VBtn>
+                    </template>
+                  </VTooltip>
                   
                   <VTooltip
                     v-if="canTakeOrder(order)"
@@ -1021,6 +989,90 @@ onMounted(() => {
                   </VTooltip>
                 </div>
               </td>
+              <td>
+                {{ order.ref_no }}
+              </td>
+              <td>
+                {{ order.customer_name + '(' + order.customer_mobile +')' }}
+              </td>
+              <td>
+                {{ order.address_address.toString().length > 20 ? order.address_address.toString().slice(0,20) + "..." : order.address_address }}
+              </td>
+              <td>
+                <span v-if="order.city_name">
+                  {{ order.city_name }}
+                </span>
+                <span v-else>--</span>
+              </td>
+              <td>
+                <span v-if="order.sales_officer_name">
+                  {{ order.sales_officer_name }}
+                </span>
+                <span v-else>--</span>
+              </td>
+              <td>
+                <span v-if="order.driver_name">
+                  {{ order.driver_name }}
+                </span>
+                <span v-else>--</span>
+              </td>
+              <td>
+                {{ handleDeliveryDate(order.delivery_date, order.created_at) }}
+              </td>
+              <td>
+                <span
+                  v-if="canChangeOrderStatus || storeMangerCanUpdateOrderStatus(order) || delegateCanUpdateOrderStatus(order)" 
+                  @click="openEdit(order)"
+                >
+                  <VChip style="cursor: pointer;"
+                  :class="getOrderStatusColorClass(order.order_state_id)">
+                    {{ order.order_state_ar }}
+                  </VChip>
+                </span>
+                <span v-else>
+                  <VChip :class="getOrderStatusColorClass(order.order_state_id)">
+                    {{ order.order_state_ar }}
+                  </VChip>
+                </span>
+              </td>
+              <td>
+                <VChip
+                  style="cursor: pointer;"
+                  :class="{'text-error': order.paid == 0, 'text-success': order.paid == 1}"
+                >
+                  {{ order.paid == 1 ? "مدفوع" : "غير مدفوع" }}
+                </VChip>
+              </td>
+              <!--
+                <td>
+                {{ ConvertToArabicNumbers(Intl.NumberFormat().format(order.order_subtotal)) }}
+                </td>
+              -->
+              <td>
+                {{ order.payment_type_name }}
+              </td>
+              <td>
+                <span v-if="order.payment_price">
+                  {{ ConvertToArabicNumbers(Intl.NumberFormat().format(order.payment_price)) }}
+                </span>
+                <span v-else>--</span>
+              </td>
+            
+              <td>
+                <span v-if="order.remain_amount">
+                  {{ ConvertToArabicNumbers(Intl.NumberFormat().format(order.remain_amount)) }}
+                </span>
+                <span v-else>--</span>
+              </td>
+                
+              <td>
+                {{ ConvertToArabicNumbers(Intl.NumberFormat().format(order.total_amount_after_discount)) }}
+              </td>
+              <!--
+                <td>
+                {{ ConvertToArabicNumbers(formatDateTime(order.created_at).date) }}
+                </td>
+              -->
             </tr>
           </tbody>
 
@@ -1061,7 +1113,7 @@ onMounted(() => {
       @close="closePriniting"
     />
     
-    <AddOrdersDialog
+    <AddOrdersDialog v-if="isAddOpen"
       v-model:is-add-open="isAddOpen"
       :countries="countries"
       :cities="cities"
@@ -1069,17 +1121,42 @@ onMounted(() => {
       :delivery-periods="deliveryPeriods"
       @refreshTable="getOrders"
     />
-    <EditOrderStatusDialog
+    <EditOrderStatusDialog v-if="isEditOpen"
       v-model:is-edit-open="isEditOpen"
       :item="selectedOrder"
+      :order-statuses="orderStatuses"
       @refreshTable="getOrders"
     />
 
-    <AssignOrderDeligationDialog
+    <AssignOrderDeligationDialog v-if="isAssignDeligateDialog"
       v-model:is-open="isAssignDeligateDialog"
       :order-ids="selectedOrders"
       @refreshTable="getOrders"
     />
   </div>
 </template>
+
+<style lang="scss">
+.text-delivered {
+  color: #00BCD4;
+}
+
+.text-pending {
+  color: #5C6BC0;
+}
+
+.v-table__wrapper {
+  &::-webkit-scrollbar {
+    height: 15px;
+  }
+  
+  // &::-webkit-scrollbar-track {
+  //   background: #f1f1f1;
+  // }
+
+  &::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+  }
+}
+</style>
 

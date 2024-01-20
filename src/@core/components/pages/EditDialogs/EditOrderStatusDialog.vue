@@ -15,6 +15,12 @@ const props = defineProps({
     type: Object,
     required: true,
   },
+  orderStatuses: {
+    type: Object,
+    default: [],
+    required: true,
+  },
+  
 })
 
 const emit = defineEmits([
@@ -32,19 +38,11 @@ const itemData = reactive({
   order_state_id: null,
 })
 
-const statues = reactive([])
-
 const form = ref()
 
 const resetForm = () => {
   emit('update:isEditOpen', false)
 }
-
-onMounted(() => {
-  ordersListStore.fetchOrderStatus().then(response => {
-    statues.value = response.data.data
-  })
-})
 
 onUpdated(() => {
   itemData.id = props.item.id
@@ -142,7 +140,7 @@ const dialogModelValueUpdate = val => {
             >
               <VSelect
                 v-model="itemData.order_state_id"
-                :items="statues.value"
+                :items="orderStatuses"
                 :label="t('forms.order_state')"
                 item-title="customer_state_ar"
                 item-value="code"
