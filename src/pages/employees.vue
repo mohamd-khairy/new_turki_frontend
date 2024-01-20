@@ -1,13 +1,12 @@
 <script setup>
+import { useEmployeesStore } from "@/store/Employees"
 import moment from "moment"
 import { useI18n } from "vue-i18n"
-import { useEmployeesStore } from "@/store/Employees"
 
 const { t } = useI18n()
 
 const employeesListStore = useEmployeesStore()
 const searchQuery = ref('')
-const selectedStatus = ref()
 const rowPerPage = ref(10)
 const currentPage = ref(1)
 const totalPage = ref(1)
@@ -20,35 +19,33 @@ const isAddOpen = ref(false)
 const isDeleteOpen = ref(false)
 const selectedEmployee = ref({})
 const isEditOpen = ref(false)
+const isLoading = ref(false)
 
 const getEmployees = () => {
+  isLoading.value = true
   employeesListStore.fetchEmployees({
     q: searchQuery.value,
     per_page: rowPerPage.value,
     page: currentPage.value,
   }).then(response => {
-    employees.value = response.data.data.data
+    employees.value = response.data?.data?.data;
     totalPage.value = response.data.data.last_page
     dataFrom.value = response.data.data.from
     dataTo.value = response.data.data.to
     totalEmployees.value = response.data.data.total
-    currentPage.value = 1
   }).catch(error => {
     console.log(error)
+  }).finally(() => {
+    isLoading.value = false
   })
 }
 
-// 👉 Fetch Categories
-watchEffect(() => {
+watch(rowPerPage, () => {
   getEmployees()
 })
 
-
-// 👉 Fetch Countrys
-watchEffect(() => {
-  if (rowPerPage.value) {
-    currentPage.value = 1
-  }
+watch(() => currentPage.value, () => {
+  getEmployees()
 })
 
 const paginateEmployees = computed(() => {
@@ -71,9 +68,6 @@ const prevPage = () => {
 
 // 👉 Computing pagination data
 const paginationData = computed(() => {
-  // const firstIndex = products.value.length ? (currentPage.value - 1) * rowPerPage.value + 1 : 0
-  // const lastIndex = firstIndex + (rowPerPage.value - 1) <= products.value.length ? firstIndex + (rowPerPage.value - 1) : totalProducts.value
-
   return ` عرض من ${ConvertToArabicNumbers(dataFrom.value)} إلي ${ConvertToArabicNumbers(dataTo.value)} من ${ConvertToArabicNumbers(totalEmployees.value)} الإجمالي `
 })
 
@@ -108,11 +102,15 @@ const formatDateTime = data => {
 
   return { date, time }
 }
+
+onMounted(() => {
+  getEmployees()
+})
 </script>
 
 <template>
   <div>
-    <VCard>
+    <VCard :loading="isLoading">
       <VCardTitle class="d-flex align-center">
         <VIcon icon="ph:users-four" size="24" color="primary"></VIcon>
         <span class="mx-1">{{ t('Employees') }}</span>
@@ -131,6 +129,7 @@ const formatDateTime = data => {
           v-can="'create-user'"
           prepend-icon="tabler-plus"
           @click="isAddOpen = true"
+          :disabled="isLoading"
         >
           {{ t('Add_Employee') }}
         </VBtn>
@@ -299,15 +298,14 @@ const formatDateTime = data => {
 
       <VCardText class="d-flex align-center flex-wrap justify-space-between gap-4 py-3">
         <span class="text-sm text-disabled">{{ paginationData }}</span>
-
         <VPagination
-          v-model="currentPage"
-          size="small"
-          :total-visible="5"
-          :length="totalPage"
-          @next="selectedRows = []"
-          @prev="selectedRows = []"
-        />
+            v-model="currentPage"
+            size="small"
+            :total-visible="5"
+            :length="totalPage"
+            @next="selectedRows = []"
+            @prev="selectedRows = []"
+          />
       </VCardText>
     </VCard>
 
