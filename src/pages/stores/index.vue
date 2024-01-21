@@ -3,9 +3,6 @@ import { useCitiesStore } from "@/store/Cities";
 import { useEmployeesStore } from "@/store/Employees";
 import { useStoresStore } from "@/store/Stores";
 import moment from "moment/moment";
-import AddStoreDialog from './components/AddStore.vue';
-import DeleteStoreDialog from './components/DeleteStore.vue';
-import EditStoreDialog from './components/EditStore.vue';
 
 const storesStore = useStoresStore()
 const citiesListStore = useCitiesStore()
@@ -46,11 +43,11 @@ const getStores = () => {
     per_page: rowPerPage.value,
     page: currentPage.value,
   }).then(response => {
-    storesItems.value = response.data.data
-    // totalPage.value = response.data.data.last_page
-    // dataFrom.value = response.data.data.from
-    // dataTo.value = response.data.data.to
-    // totalItems.value = response.data.data.total
+    storesItems.value = response.data?.data?.data;
+    totalPage.value = response.data.data.last_page
+    dataFrom.value = response.data.data.from
+    dataTo.value = response.data.data.to
+    totalItems.value = response.data.data.total
   }).catch(error => {
     console.log(error)
   }).finally(() => {

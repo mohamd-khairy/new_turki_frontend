@@ -49,6 +49,13 @@ export default [
   //   // permission: "read-stocks",
   //   permission: "read-product",
   // },
+  // {
+  //   title: 'الموردون',
+  //   to: { name: 'suppliers' },
+  //   icon: { icon: 'heroicons:truck' },
+  //   // permission: "read-stocks",
+  //   permission: "read-product",
+  // },
   {
     title: 'Coupons',
     to: { name: 'coupons' },

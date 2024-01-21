@@ -1,10 +1,10 @@
 <script setup>
 import { useCitiesStore } from "@/store/Cities";
 import { useEmployeesStore } from "@/store/Employees";
-import { useStocksStore } from "@/store/Stocks";
+import { useSuppliersStore } from "@/store/Suppliers";
 import moment from "moment/moment";
 
-const stocksStore = useStocksStore()
+const suppliersStore = useSuppliersStore()
 const citiesListStore = useCitiesStore()
 const employeesStore = useEmployeesStore()
 
@@ -15,7 +15,7 @@ const totalPage = ref(1)
 const dataFrom = ref(1)
 const dataTo = ref(1)
 const totalItems = ref(0)
-const stocksItems = ref([])
+const storesItems = ref([])
 const selectedRows = ref([])
 const isAddOpen = ref(false)
 const isDeleteOpen = ref(false)
@@ -37,13 +37,13 @@ const router = useRouter()
 const getStores = () => {
   isLoading.value = true
   // products.value = []
-  stocksStore.getAll({
+  suppliersStore.getAll({
     ...filters,
     q: searchQuery.value,
     per_page: rowPerPage.value,
     page: currentPage.value,
   }).then(response => {
-    stocksItems.value = response.data?.data?.data;
+    storesItems.value = response.data?.data?.data;
     totalPage.value = response.data.data.last_page
     dataFrom.value = response.data.data.from
     dataTo.value = response.data.data.to
@@ -125,78 +125,13 @@ onMounted(() => {
 
 <template>
   <div>
-    <VCard class="mb-5 pa-5">
-      <VForm @submit.stop>
-        <VRow justify="space-between">
-          <VCol cols="12" lg="8">
-            <VRow>
-              <VCol cols="12" lg="4" md="3" sm="6" class="d-flex align-center gap-3">
-                <div class="icon">
-                  <VIcon icon="solar:city-broken" color="primary"></VIcon>
-                </div>
-                <VSelect
-                  v-model="filters.city_id"
-                  :items="cities"
-                  label="المنطقة"
-                  item-title="name_ar"
-                  item-value="id"
-                />
-              </VCol>
-              <VCol cols="12" lg="4" md="3" sm="6" class="d-flex align-center gap-3">
-                <div class="icon">
-                  <VIcon icon="clarity:users-line" color="primary"></VIcon>
-                </div>
-                <VSelect
-                  v-model="filters.user_id"
-                  :items="employees"
-                  label="المسئول"
-                  item-title="username"
-                  item-value="id"
-                />
-              </VCol>
-            </VRow>
-          </VCol>
-          <VCol
-          cols="12" lg="4"
-            class="d-flex align-center justify-end gap-3"
-          >
-            <VBtn
-              v-if="!isLoading"
-              prepend-icon="solar:filter-bold-duotone"
-              :disabled="isLoading"
-              @click.stop="filterItems"
-            >
-              {{ t('Filter') }}
-            </VBtn>
-            <VBtn
-              v-else
-              class="position-relative"
-              style="width: 152px;max-width: 100%;"
-            >
-              <VIcon
-                icon="mingcute:loading-line"
-                class="loading"
-                size="32"
-              />
-            </VBtn>
-            <VBtn
-              prepend-icon="healthicons:x"
-              :disabled="isLoading"
-              @click.stop="clearFilter"
-            >
-              {{ t('Clear_Filter') }}
-            </VBtn>
-          </VCol>
-        </VRow>
-      </VForm>
-    </VCard>
     <VCard :loading="isLoading">
       <VCardTitle class="d-flex align-center gap-2">
-        <VIcon icon="material-symbols:production-quantity-limits-sharp"
+        <VIcon icon="heroicons:truck"
           size="24"
           color="primary"
         ></VIcon>
-        <span class="mx-1">المخزون</span>
+        <span class="mx-1">الموردون</span>
       </VCardTitle>
       <VCardText class="d-flex align-center flex-wrap gap-2 py-4">
         <!-- 👉 Rows per page -->
@@ -210,11 +145,10 @@ onMounted(() => {
         <!--         👉 Create product :to="{ name: 'apps-product-add' }"-->
         <VBtn
           prepend-icon="tabler-plus"
-          to="/stocks/create"
-          type="link"
+          @click="isAddOpen = true"
           :disabled="isLoading"
         >
-          إضافة مخزون
+          إضافة مورد
         </VBtn>
 
         <VSpacer/>
@@ -237,37 +171,19 @@ onMounted(() => {
             scope="col"
             class="font-weight-semibold"
           >
-            المنتج
+            {{ t('forms.name') }}
           </th>
           <th
             scope="col"
             class="font-weight-semibold"
           >
-            الكمية
+            المسئول عن المخزن
           </th>
           <th
             scope="col"
             class="font-weight-semibold"
           >
-            السعر
-          </th>
-          <th
-            scope="col"
-            class="font-weight-semibold"
-          >
-            المخزن
-          </th>
-          <th
-            scope="col"
-            class="font-weight-semibold"
-          >
-            المزود
-          </th>
-          <th
-            scope="col"
-            class="font-weight-semibold"
-          >
-            المسئول
+            المنطقة
           </th>
           <th
             scope="col"
@@ -286,30 +202,20 @@ onMounted(() => {
 
         <tbody>
         <tr
-          v-for="(store, i) in stocksItems"
+          v-for="(store, i) in storesItems"
           :key="store.id"
         >
           <td>
             {{ store.id }}
           </td>
           <td>
-            {{ store.product_name }}
+            {{ store.name }}
           </td>
           <td>
-            <span class="font-weight-bold">{{ store.quantity }}</span>
+            {{ store.user.username }}
           </td>
           <td>
-            <span class="font-weight-bold">{{ store.price }}</span>
-            <small class="d-inline-block ms-1">ريال</small>
-          </td>
-          <td>
-            {{ store.store?.name }}
-          </td>
-          <td>
-            {{ store.supplier?.name }}
-          </td>
-          <td>
-            {{ store.user?.username }}
+            {{ store.city?.name_ar }}
           </td>
           <td>
             {{ ConvertToArabicNumbers(formatDateTime(store.created_at).date) }}
@@ -344,7 +250,7 @@ onMounted(() => {
         </tbody>
 
         <!-- 👉 table footer  -->
-        <tfoot v-show="!stocksItems.length">
+        <tfoot v-show="!storesItems.length">
         <tr>
           <td
             colspan="8"
@@ -374,6 +280,8 @@ onMounted(() => {
       </VCardText>
     </VCard>
 
-    <DeleteStockDialog v-if="isDeleteOpen" v-model:is-delete-open="isDeleteOpen" :item="selectedItem" @refreshTable="getStores"/>
+    <AddStoreDialog v-if="isAddOpen" v-model:is-add-open="isAddOpen" @refreshTable="getStores"/>
+    <EditStoreDialog v-if="isEditOpen" v-model:is-edit-open="isEditOpen" :item="selectedItem" @refreshTable="getStores"/>
+    <DeleteStoreDialog v-if="isDeleteOpen" v-model:is-delete-open="isDeleteOpen" :item="selectedItem" @refreshTable="getStores"/>
   </div>
 </template>

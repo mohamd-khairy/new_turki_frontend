@@ -35,6 +35,14 @@ const printOrder = () => {
   window.print()
 }
 
+const orderCurrency = computed(() => {
+  if(order.value.order?.selected_address?.country_id == 4) {
+    return 'درهم';
+  }
+
+  return 'ريال';
+});
+
 const getOrderDetails = id => {
   ordersListStore.fetchOrder(id).then(response => {
     order.value = response?.data.data
@@ -245,42 +253,42 @@ onMounted(() => {
             <VCol cols="6" class="d-flex align-center gap-3 text-base py-1">
               <span class="text-primary"> المبلغ المسدد :</span>
               <span v-if="order.order.payment">
-                {{ order.order.payment ? ConvertToArabicNumbers(order.order.payment.price) : 0 }} <small>ريال سعودي </small> 
+                {{ order.order.payment ? ConvertToArabicNumbers(order.order.payment.price) : 0 }} <small>{{ orderCurrency }}</small> 
               </span>
             </VCol>
             <VCol cols="6" class="d-flex align-center gap-3 text-base py-1">
               <span> إجمالي المتبقي	: </span>
               <span class="text-primary">
                 {{ order.order.payment ? order.order.total_amount_after_discount - order.order.payment.price < 0 ? ConvertToArabicNumbers(0) : ConvertToArabicNumbers(order.order.total_amount_after_discount - order.order.payment.price) : ConvertToArabicNumbers(order.order.total_amount_after_discount) }} 
-                <small>ريال سعودي </small>
+                <small>{{ orderCurrency }}</small>
               </span>
             </VCol>
             <VCol cols="6" class="d-flex align-center gap-3 text-base py-1">
               <span>الخصم :</span>
               <span class="text-primary">
                 {{ ConvertToArabicNumbers(order.order.discount_applied) ?? 0 }} 
-                <small>ريال سعودي </small>
+                <small>{{ orderCurrency }}</small>
               </span>
             </VCol>
             <VCol cols="6" class="d-flex align-center gap-3 text-base py-1">
               <span> الإجمالي غير شامل الضريبة بعد الخصم : </span>
               <span class="text-primary">
                 {{ ConvertToArabicNumbers(order.order.total_amount_after_tax) ?? 0 }} 
-                <small>ريال سعودي </small>
+                <small>{{ orderCurrency }}</small>
               </span>
             </VCol>
             <VCol cols="6" class="d-flex align-center gap-3 text-base py-1">
               <span>ضريبة القيمة المضافة : </span>
               <span class="text-primary">
                 {{ ConvertToArabicNumbers(order.order.tax_fees) }} 
-                <small>ريال سعودي </small>
+                <small>{{ orderCurrency }}</small>
               </span>
             </VCol>
             <VCol cols="6" class="d-flex align-center gap-3 text-base py-1">
               <span> الإجمالي شامل الضريبة : </span>
               <span class="text-primary">
                 {{ ConvertToArabicNumbers(Number(order.order.order_subtotal)) }} 
-                <small>ريال سعودي </small>
+                <small>{{ orderCurrency }}</small>
               </span>
             </VCol>
             <VCol cols="12" class="pt-3">
@@ -290,7 +298,7 @@ onMounted(() => {
               <span> الإجمالي شامل الضريبة بعد الخصم : </span>
               <h3 class="text-primary">
                 {{ ConvertToArabicNumbers(order.order.total_amount_after_discount) ?? 0 }} 
-                <small>ريال سعودي </small>
+                <small>{{ orderCurrency }}</small>
               </h3>
             </VCol>
             <VCol v-if="order.order && order.order.boxes_count"

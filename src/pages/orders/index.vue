@@ -63,7 +63,7 @@ const filters = reactive({
   date_to: null,
   delivery_date: null,
   customer_id: null,
-  delivery_period_id: null,
+  delivery_period_ids: [],
   payment_type_ids: [],
   sales_agent_id: null,
   sales_representative_id: null,
@@ -291,7 +291,7 @@ const clearFilter = () => {
   filters.date_from = null
   filters.date_to = null
   filters.delivery_date = null
-  filters.delivery_period_id = null
+  filters.delivery_period_ids = []
   filters.payment_type_ids = []
   filters.sales_agent_id = null
   filters.sales_representative_id = null
@@ -531,11 +531,12 @@ onMounted(() => {
                   />
                 </div>
                 <VSelect
-                  v-model="filters.delivery_period_id"
+                  v-model="filters.delivery_period_ids"
                   :items="deliveryPeriods"
                   :label="t('Delivery_Periods')"
                   item-title="name_ar"
                   item-value="id"
+                  multiple
                   :disabled="isLoading"
                 />
               </VCol>

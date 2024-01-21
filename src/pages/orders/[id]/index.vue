@@ -53,6 +53,14 @@ const itemData = ref({
   comment: null,
 })
 
+const orderCurrency = computed(() => {
+  if(order.value.order?.selected_address?.country_id == 4) {
+    return 'درهم';
+  }
+
+  return 'ريال';
+});
+
 const canEditAllFields = computed(() => {
   if(hasRole(['general_manager', 'store_manager', 'admin'])) {
     return true
@@ -60,8 +68,6 @@ const canEditAllFields = computed(() => {
 
   return false;
 });
-
-
 
 const openProductEdit = (item) => {
   selectedProductItem.value = item
@@ -381,7 +387,7 @@ onMounted(() => {
                   class="mx-1 font-weight-bold"
                 >
                   {{ order ? ConvertToArabicNumbers(order.order.order_subtotal) : ConvertToArabicNumbers(0) }}
-                  ريال
+                  {{ orderCurrency }}
                 </VChip>
               </VCol>
               <VCol
@@ -403,7 +409,8 @@ onMounted(() => {
                 >
                   {{
                     order.order.total_amount_after_discount !== "undefined" ? ConvertToArabicNumbers(order.order.total_amount_after_discount) : ConvertToArabicNumbers(0)
-                  }} ريال
+                  }} 
+                  {{ orderCurrency }}
                 </VChip>
               </VCol>
               <VCol
@@ -423,7 +430,7 @@ onMounted(() => {
                   class="font-weight-bold"
                 >
                   {{
-                    order.order.wallet_amount_used !== "undefined" ? ConvertToArabicNumbers(order.order.wallet_amount_used) + " " + "ريال " : "لا يوجد  "
+                    order.order.wallet_amount_used !== "undefined" ? ConvertToArabicNumbers(order.order.wallet_amount_used) + " " + orderCurrency : "لا يوجد  "
                   }}
                 </VChip>
               </VCol>
@@ -724,7 +731,7 @@ onMounted(() => {
                   
                       <td class="px-2">
                         <span class="text-success whitespace-nowrap font-weight-bold">
-                          {{ product.total_price ? ConvertToArabicNumbers(Intl.NumberFormat().format(product.total_price)) + ' ريال ' : "غير معروف" }} 
+                          {{ product.total_price ? ConvertToArabicNumbers(Intl.NumberFormat().format(product.total_price)) + orderCurrency : "غير معروف" }} 
                         </span>
                       </td>
                       <td v-if="canEditAllFields">
