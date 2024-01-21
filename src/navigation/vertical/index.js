@@ -35,6 +35,20 @@ export default [
     icon: { icon: 'streamline:shopping-bag-hand-bag-1-shopping-bag-purse-goods-item-products' },
     permission: "read-product",
   },
+  // {
+  //   title: 'المخازن',
+  //   to: { name: 'stores' },
+  //   icon: { icon: 'carbon:store' },
+  //   // permission: "read-stores",
+  //   permission: "read-product",
+  // },
+  // {
+  //   title: 'المخزون',
+  //   to: { name: 'stocks' },
+  //   icon: { icon: 'material-symbols:production-quantity-limits-sharp' },
+  //   // permission: "read-stocks",
+  //   permission: "read-product",
+  // },
   {
     title: 'Coupons',
     to: { name: 'coupons' },
