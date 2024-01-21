@@ -104,10 +104,10 @@ onMounted(() => {
         <VCol cols="12" class="py-0">
           <div class="d-flex justify-space-between align-center">
             <div>
-              <h2 class="mb-2" style="font-size: 1rem;">
+              <h2 class="mb-2" style="font-size: 1.4rem;">
                 شركة المرعى للتجارة (تركي للذبائح)
               </h2>
-              <h4 class="d-flex align-center gap-3 text-base">
+              <h4 class="d-flex align-center gap-3 mb-3 text-base">
                 <span>رقم السجل الضريبي: </span>
                 <span class="text-primary">
                   {{ ConvertToArabicNumbers(310841577800003) }}
@@ -192,18 +192,18 @@ onMounted(() => {
           <VTable class="mb-4">
             <thead>
               <tr>
-                <th>الذبيحة</th>
-                <th>الحجم</th>
-                <th>الكمية</th>
-                <th>التقطيع</th>
-                <th>التجهيز</th>
+                <th class="text-base">الذبيحة</th>
+                <th class="text-base">الحجم</th>
+                <th class="text-base">الكمية</th>
+                <th class="text-base">التقطيع</th>
+                <th class="text-base">التجهيز</th>
                 <!-- <th>الكرشة</th>
                 <th>الكوارع</th>
                 <th>اللية</th>
                 <th>الرأس</th> -->
-                <th>الشلوطة</th>
-                <th>السعر</th>
-                <th>الاجمالي</th>
+                <th class="text-base">الشلوطة</th>
+                <th class="text-base">السعر</th>
+                <th class="text-base">الاجمالي</th>
               </tr>
             </thead>
             <tbody>
@@ -238,8 +238,8 @@ onMounted(() => {
             </tbody>
           </VTable>
           <h3 class="d-flex align-center justify-space-between pa-2 mb-3" style="background-color: #ddd;font-size: .8rem;">
-            <span>بيانات الدفع</span>
-            <small>جميع الأسعار تشمل الضريبة</small>
+            <span class="text-base">بيانات الدفع</span>
+            <small class="text-base">جميع الأسعار تشمل الضريبة</small>
           </h3>
           <VRow class="mb-4">
             <VCol cols="6" class="d-flex align-center gap-3 text-base py-1">
@@ -311,7 +311,7 @@ onMounted(() => {
           <h3 class="d-flex align-center justify-space-between pa-2 mb-1 text-base" style="background-color: #ddd;">
             ملاحظات
           </h3>
-          <p>{{ order.order.comment ?? "لا يوجد" }}</p>
+          <p class="text-base">{{ order.order.comment ?? "لا يوجد" }}</p>
         </VCol>
       </VRow>
       <VRow
@@ -343,7 +343,8 @@ onMounted(() => {
   margin-top: -100px;
 
   .text-base {
-    font-size: .75rem !important;
+    font-size: 1.2rem !important;
+    font-weight: 600;
   }
 }
 .loader_wrap {
@@ -362,20 +363,22 @@ onMounted(() => {
 
 table thead th {
   border-block-start: 1px solid;
-  font-size: .8rem;
+  font-size: 1.2rem;
+  font-weight: 600;
 
   small {
-    font-size: .8rem;
+    font-size: 1.2rem;
+    font-weight: 600;
   }
 }
 
 table tbody td {
   border-block-end: 1px solid;
   border-block-start: 1px solid;
-  font-size: .8rem;
+  font-size: 1.2rem;
 
   small {
-    font-size: .8rem;
+    font-size: 1.2rem;
     font-weight: 600;
   }
 }

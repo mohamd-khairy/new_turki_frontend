@@ -41,7 +41,16 @@ const customerAddresses = ref([])
 
 const itemData = ref({
   order_state_id: null,
+  discount_code: null,
+  delivery_date: null,
+  delivery_period_id: null,
+  payment_type_id: null,
+  paid: 0,
   address_id: null,
+  delivery_fee: 0,
+  boxes_count: 0,
+  dishes_count: 0,
+  comment: null,
 })
 
 const canEditAllFields = computed(() => {
@@ -114,8 +123,20 @@ const getOrderDetails = () => {
     }
 
     if(orderDetails) {
-      itemData.value = orderDetails
-      itemData.value.address = orderDetails?.selected_address?.address || null
+      itemData.value = {
+        id: orderDetails.id,
+        order_state_id: orderDetails.order_state_id,
+        discount_code: orderDetails.discount_code,
+        delivery_date: orderDetails.delivery_date,
+        delivery_period_id: orderDetails.delivery_period_id,
+        payment_type_id: orderDetails.payment_type_id,
+        paid: orderDetails.paid,
+        address_id: orderDetails.address_id,
+        delivery_fee: orderDetails.delivery_fee,
+        boxes_count: orderDetails.boxes_count,
+        dishes_count: orderDetails.dishes_count,
+        comment: orderDetails.comment,
+      }
     }
   }).catch(error => {
     console.error(error)
@@ -493,7 +514,7 @@ onMounted(() => {
                   v-if="canEditAllFields"
                 >
                   <VSelect
-                    v-model="itemData.delivery_period"
+                    v-model="itemData.delivery_period_id"
                     :label="t('forms.delivery_time')"
                     :items="deliveryPeriods"
                     item-title="name_ar"
@@ -539,12 +560,6 @@ onMounted(() => {
                   md="6"
                   v-if="canEditAllFields"
                 >
-                  <!--
-                    <VTextField
-                    v-model="itemData.address"
-                    label="عنوان التوصيل"
-                    /> 
-                  -->
                   <VSelect
                     v-model="itemData.address_id"
                     label="عنوان التوصيل"

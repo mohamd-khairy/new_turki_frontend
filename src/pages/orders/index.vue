@@ -696,7 +696,7 @@ onMounted(() => {
             <VSelect
               v-model="rowPerPage"
               variant="outlined"
-              :items="[5, 10, 20, 30, 50]"
+              :items="[5, 10, 20, 30, 50, 100, 200]"
               :disabled="isLoading"
             />
           </div>
