@@ -12,7 +12,10 @@ import vuetify from 'vite-plugin-vuetify'
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  base:"",//"/dashboard/",
+  base:"",
+
+  // base:"/dashboard/",
+  // base:"/dashboard-v2/",
   plugins: [
     vue(),
     vueJsx(),

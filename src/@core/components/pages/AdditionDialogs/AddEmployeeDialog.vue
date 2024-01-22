@@ -2,8 +2,8 @@
 import { useEmployeesStore } from "@/store/Employees"
 import { useRolesStore } from "@/store/Roles"
 import {
-  emailValidator,
-  requiredValidator,
+emailValidator,
+requiredValidator,
 } from '@validators'
 
 
@@ -19,8 +19,8 @@ const emit = defineEmits([
   'update:isAddOpen',
 ])
 
-import { useI18n } from "vue-i18n"
 import { useSettingsStore } from "@/store/Settings"
+import { useI18n } from "vue-i18n"
 
 const { t } = useI18n()
 const rolesListStore = useRolesStore()
@@ -44,6 +44,7 @@ const employee = reactive({
   mobile: null,
   gender: null,
   age: null,
+  country_code:null,
   roles: [],
   is_active: false,
 })
@@ -59,6 +60,18 @@ const genders = reactive([
   },
 ])
 
+const countries = reactive([
+  {
+    code: 'SA',
+    name: "السعودية",
+  },
+  {
+    code: "AE",
+    name: "الامارات",
+  },
+])
+
+
 // Functions
 const resetForm = () => {
   employee.username = null
@@ -68,6 +81,7 @@ const resetForm = () => {
   employee.mobile = null
   employee.gender = null
   employee.age = null
+  employee.country_code = null
   employee.roles = []
   employee.is_active = false
   emit('update:isAddOpen', false)
@@ -94,6 +108,7 @@ const onFormSubmit = async () => {
     }).catch(error => {
       if (error.response.data.errors) {
         const errs = Object.keys(error.response.data.errors)
+
         errs.forEach(err => {
           settingsListStore.alertMessage = t(`errors.${err}`)
         })
@@ -132,7 +147,7 @@ const dialogModelValueUpdate = val => {
     @update:model-value="dialogModelValueUpdate"
   >
     <!-- Dialog close btn -->
-    <DialogCloseBtn @click="dialogModelValueUpdate(false)"/>
+    <DialogCloseBtn @click="dialogModelValueUpdate(false)" />
 
     <VCard
       class="pa-sm-9 pa-5"
@@ -140,7 +155,11 @@ const dialogModelValueUpdate = val => {
       <!-- 👉 Title -->
       <VCardItem>
         <VCardTitle class="text-h5 d-flex flex-column align-center gap-2 text-center mb-3">
-          <VIcon icon="carbon:categories" size="24" color="primary"></VIcon>
+          <VIcon
+            icon="carbon:categories"
+            size="24"
+            color="primary"
+          />
           <span class="mx-1 my-1">
             {{ t('Add_Employee') }}
           </span>
@@ -149,7 +168,10 @@ const dialogModelValueUpdate = val => {
 
       <VCardText>
         <!-- 👉 Form -->
-        <VForm ref="refForm" @submit.prevent="onFormSubmit">
+        <VForm
+          ref="refForm"
+          @submit.prevent="onFormSubmit"
+        >
           <VRow>
             <VCol
               cols="12"
@@ -215,6 +237,20 @@ const dialogModelValueUpdate = val => {
               lg="12"
               sm="6"
             >
+              <VSelect
+                v-model="employee.country_code"
+                :label="t('forms.country')"
+                :items="countries"
+                item-title="name"
+                item-value="code"
+                :rules="[requiredValidator]"
+              />
+            </VCol>
+            <VCol
+              cols="12"
+              lg="12"
+              sm="6"
+            >
               <VTextField
                 v-model="employee.age"
                 :label="t('forms.age')"
@@ -271,7 +307,11 @@ const dialogModelValueUpdate = val => {
                 type="submit"
                 class="position-relative me-3"
               >
-                <VIcon icon="mingcute:loading-line" class="loading" size="32"></VIcon>
+                <VIcon
+                  icon="mingcute:loading-line"
+                  class="loading"
+                  size="32"
+                />
               </VBtn>
 
               <VBtn

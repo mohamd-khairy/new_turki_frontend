@@ -28,7 +28,7 @@ const getEmployees = () => {
     per_page: rowPerPage.value,
     page: currentPage.value,
   }).then(response => {
-    employees.value = response.data?.data?.data;
+    employees.value = response.data?.data?.data
     totalPage.value = response.data.data.last_page
     dataFrom.value = response.data.data.from
     dataTo.value = response.data.data.to
@@ -112,7 +112,11 @@ onMounted(() => {
   <div>
     <VCard :loading="isLoading">
       <VCardTitle class="d-flex align-center">
-        <VIcon icon="ph:users-four" size="24" color="primary"></VIcon>
+        <VIcon
+          icon="ph:users-four"
+          size="24"
+          color="primary"
+        />
         <span class="mx-1">{{ t('Employees') }}</span>
       </VCardTitle>
       <VCardText class="d-flex align-center flex-wrap gap-2 py-4">
@@ -124,19 +128,17 @@ onMounted(() => {
             :items="[5, 10, 20, 30, 50]"
           />
         </div>
-        <!--         👉 Create product :to="{ name: 'apps-product-add' }"-->
+        <!--         👉 Create product :to="{ name: 'apps-product-add' }" -->
         <VBtn
           v-can="'create-user'"
           prepend-icon="tabler-plus"
-          @click="isAddOpen = true"
           :disabled="isLoading"
+          @click="isAddOpen = true"
         >
           {{ t('Add_Employee') }}
         </VBtn>
 
         <VSpacer />
-
-
       </VCardText>
 
       <VDivider />
@@ -161,6 +163,12 @@ onMounted(() => {
               class="font-weight-semibold"
             >
               {{ t('forms.age') }}
+            </th>
+            <th
+              scope="col"
+              class="font-weight-semibold"
+            >
+              {{ t('forms.country_code') }}
             </th>
             <th
               scope="col"
@@ -217,9 +225,12 @@ onMounted(() => {
               {{ employee.age }}
             </td>
             <td>
-              <VIcon :icon="employee.gender == 0 ? 'material-symbols-light:female' : 'material-symbols-light:male'"></VIcon>
+              {{ employee.country_code }}
+            </td>
+            <td>
+              <VIcon :icon="employee.gender == 0 ? 'material-symbols-light:female' : 'material-symbols-light:male'" />
               <span class="mx-1">
-                {{ employee.gender == 0 ? 'أنثي' : 'ذكر'}}
+                {{ employee.gender == 0 ? 'أنثي' : 'ذكر' }}
               </span>
             </td>
             <td>
@@ -229,7 +240,11 @@ onMounted(() => {
               {{ employee.mobile }}
             </td>
             <td>
-              <VIcon icon="ph:dot-bold" :color="employee.is_active == true ? '#008000' : '#f00000'" size="32"></VIcon>
+              <VIcon
+                icon="ph:dot-bold"
+                :color="employee.is_active == true ? '#008000' : '#f00000'"
+                size="32"
+              />
               <span>
                 {{ employee.is_active == true ? t('forms.statuses.active') : t('forms.statuses.inactive') }}
               </span>
@@ -239,17 +254,17 @@ onMounted(() => {
             </td>
 
             <td v-can="'read-user' || 'update-user' || 'delete-user'">
-<!--              <VBtn-->
-<!--                icon-->
-<!--                variant="plain"-->
-<!--                color="default"-->
-<!--                size="x-small"-->
-<!--              >-->
-<!--                <VIcon-->
-<!--                  :size="22"-->
-<!--                  icon="tabler-eye"-->
-<!--                />-->
-<!--              </VBtn>-->
+              <!--              <VBtn -->
+              <!--                icon -->
+              <!--                variant="plain" -->
+              <!--                color="default" -->
+              <!--                size="x-small" -->
+              <!--              > -->
+              <!--                <VIcon -->
+              <!--                  :size="22" -->
+              <!--                  icon="tabler-eye" -->
+              <!--                /> -->
+              <!--              </VBtn> -->
               <VBtn
                 v-can="'update-user'"
                 icon
@@ -299,18 +314,29 @@ onMounted(() => {
       <VCardText class="d-flex align-center flex-wrap justify-space-between gap-4 py-3">
         <span class="text-sm text-disabled">{{ paginationData }}</span>
         <VPagination
-            v-model="currentPage"
-            size="small"
-            :total-visible="5"
-            :length="totalPage"
-            @next="selectedRows = []"
-            @prev="selectedRows = []"
-          />
+          v-model="currentPage"
+          size="small"
+          :total-visible="5"
+          :length="totalPage"
+          @next="selectedRows = []"
+          @prev="selectedRows = []"
+        />
       </VCardText>
     </VCard>
 
-    <AddEmployeeDialog v-model:isAddOpen="isAddOpen" @refreshTable="getEmployees" ></AddEmployeeDialog>
-    <EditEmployeeDialog v-model:isEditOpen="isEditOpen" :employee="selectedEmployee" @refreshTable="getEmployees" ></EditEmployeeDialog>
-    <DeleteEmployeeDialog v-model:isDeleteOpen="isDeleteOpen" :employee="selectedEmployee" @refreshTable="getEmployees" ></DeleteEmployeeDialog>
+    <AddEmployeeDialog
+      v-model:isAddOpen="isAddOpen"
+      @refreshTable="getEmployees"
+    />
+    <EditEmployeeDialog
+      v-model:isEditOpen="isEditOpen"
+      :employee="selectedEmployee"
+      @refreshTable="getEmployees"
+    />
+    <DeleteEmployeeDialog
+      v-model:isDeleteOpen="isDeleteOpen"
+      :employee="selectedEmployee"
+      @refreshTable="getEmployees"
+    />
   </div>
 </template>

@@ -18,8 +18,8 @@ const emit = defineEmits([
   'update:isEditOpen',
 ])
 
-import { useI18n } from "vue-i18n"
 import { useSettingsStore } from "@/store/Settings"
+import { useI18n } from "vue-i18n"
 
 const { t } = useI18n()
 const rolesListStore = useRolesStore()
@@ -38,10 +38,12 @@ onUpdated(() => {
   employeeData.username = props.employee.username
   employeeData.email = props.employee.email
   employeeData.password = props.employee.password
+
   // employeeData.avatar = props.employee.avatar ?? {}
   employeeData.mobile = props.employee.mobile
   employeeData.gender = props.employee.gender
   employeeData.age = props.employee.age
+  employeeData.country_code = props.employee.country_code
   employeeData.roles = props.employee.roles
   employeeData.is_active = props.employee.is_active == 1 ? true : false
 })
@@ -56,6 +58,7 @@ const employeeData = reactive({
   mobile: null,
   gender: null,
   age: null,
+  country_code: null,
   roles: [],
   is_active: null,
 })
@@ -68,6 +71,17 @@ const genders = reactive([
   {
     id: 0,
     name: "أنثي",
+  },
+])
+
+const countries = reactive([
+  {
+    code: 'SA',
+    name: "السعودية",
+  },
+  {
+    code: "AE",
+    name: "الامارات",
   },
 ])
 
@@ -97,6 +111,7 @@ const onFormSubmit = async () => {
     }).catch(error => {
       if (error.response.data.errors) {
         const errs = Object.keys(error.response.data.errors)
+
         errs.forEach(err => {
           settingsListStore.alertMessage = t(`errors.${err}`)
         })
@@ -136,7 +151,7 @@ const dialogModelValueUpdate = val => {
     @update:model-value="dialogModelValueUpdate"
   >
     <!-- Dialog close btn -->
-    <DialogCloseBtn @click="dialogModelValueUpdate(false)"/>
+    <DialogCloseBtn @click="dialogModelValueUpdate(false)" />
 
     <VCard
       class="pa-sm-9 pa-5"
@@ -144,7 +159,11 @@ const dialogModelValueUpdate = val => {
       <!-- 👉 Title -->
       <VCardItem>
         <VCardTitle class="text-h5 d-flex flex-column align-center gap-2 text-center mb-3">
-          <VIcon icon="carbon:categories" size="24" color="primary"></VIcon>
+          <VIcon
+            icon="carbon:categories"
+            size="24"
+            color="primary"
+          />
           <span class="mx-1 my-1">
             {{ t('Edit_Employee') }}
           </span>
@@ -153,7 +172,10 @@ const dialogModelValueUpdate = val => {
 
       <VCardText>
         <!-- 👉 Form -->
-        <VForm ref="refForm" @submit.prevent="onFormSubmit">
+        <VForm
+          ref="refForm"
+          @submit.prevent="onFormSubmit"
+        >
           <VRow>
             <VCol
               cols="12"
@@ -194,6 +216,20 @@ const dialogModelValueUpdate = val => {
                 v-model="employeeData.password"
                 :label="t('forms.password')"
                 type="password"
+              />
+            </VCol>
+            <VCol
+              cols="12"
+              lg="12"
+              sm="6"
+            >
+              <VSelect
+                v-model="employeeData.country_code"
+                :label="t('forms.country')"
+                :items="countries"
+                item-title="name"
+                item-value="code"
+                :rules="[requiredValidator]"
               />
             </VCol>
             <VCol
@@ -268,7 +304,11 @@ const dialogModelValueUpdate = val => {
                 type="submit"
                 class="position-relative me-3"
               >
-                <VIcon icon="mingcute:loading-line" class="loading" size="32"></VIcon>
+                <VIcon
+                  icon="mingcute:loading-line"
+                  class="loading"
+                  size="32"
+                />
               </VBtn>
 
               <VBtn
