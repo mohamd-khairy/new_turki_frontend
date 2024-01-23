@@ -12,7 +12,9 @@
         "src/@iconify/*"
     ],
     "compilerOptions": {
-        "baseUrl":"",// "./dashboard/",
+        "baseUrl":"",
+        // "baseUrl": "./dashboard/",
+        // "baseUrl": "./dashboard-v2/",
         "target": "esnext",
         "module": "esnext",
         "moduleResolution": "node",

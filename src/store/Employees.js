@@ -28,6 +28,8 @@ export const useEmployeesStore = defineStore('EmployeesStore', {
       formData.append("gender", data.gender)
       formData.append("age", data.age)
       formData.append("is_active", data.is_active)
+      formData.append("country_code", data.country_code)
+
       for (let i = 0; i < data.roles.length; i++) {
         formData.append(`roles[${i}]`, data.roles[i])
       }
@@ -57,7 +59,6 @@ export const useEmployeesStore = defineStore('EmployeesStore', {
     },
 
     editEmployee(data) {
-      console.log('here', Object.values(data.roles))
 
       const formData = new FormData()
 
@@ -73,6 +74,7 @@ export const useEmployeesStore = defineStore('EmployeesStore', {
       formData.append("mobile", data.mobile)
       formData.append("gender", data.gender)
       formData.append("age", data.age)
+      formData.append("country_code", data.country_code)
       formData.append("is_active", data.is_active)
 
       Object.values(data.roles).map((role, index) => {
@@ -80,9 +82,8 @@ export const useEmployeesStore = defineStore('EmployeesStore', {
       })
 
       // for (let i = 0; i < data.roles.length; i++) {
-      // }
-
-      
+      //   formData.append(`roles[${i}]`, data[i].id)
+      // }      
 
       return axios.post(`users/${data.id}`, formData)
     },
