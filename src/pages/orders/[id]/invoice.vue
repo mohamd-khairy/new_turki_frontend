@@ -43,6 +43,8 @@ const orderCurrency = computed(() => {
   return 'ريال';
 });
 
+const isUAEOrder = computed(() => order.value.order?.selected_address?.country_id == 4);
+
 const getOrderDetails = id => {
   ordersListStore.fetchOrder(id).then(response => {
     order.value = response?.data.data
@@ -123,7 +125,10 @@ onMounted(() => {
               </h4>
               <h4 class="d-flex align-center gap-3 mb-2 text-base">
                 <span>سجل تجاري: </span>
-                <span class="text-primary">
+                <span v-if="isUAEOrder" class="text-primary">
+                  {{ ConvertToArabicNumbers(100313508200003) }}
+                </span>
+                <span v-else class="text-primary">
                   {{ ConvertToArabicNumbers(1010476540) }}
                 </span>
               </h4>
