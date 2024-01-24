@@ -31,13 +31,16 @@ const logout = () => {
     bordered
     color="success"
   >
-    <VAvatar
+    <!-- <VAvatar
       class="cursor-pointer"
       color="primary"
       variant="tonal"
-    >
-      <VImg :src="user.avatar" v-if="user.avatar"/>
-      <VImg else :src="avatar1" />
+    > -->
+    <div class="avatar-container cursor-pointer">
+      <img v-if="user.avatar" :src="user.avatar" class="avatar-img">
+      <img v-else :src="avatar1" class="avatar-img">
+      <!-- <VImg :src="user.avatar" v-if="user.avatar"/>
+      <VImg else :src="avatar1" /> -->
       <!-- <VIcon icon="iconoir:n-square" size="32" v-else></VIcon> -->
       
       <!-- SECTION Menu -->
@@ -52,7 +55,11 @@ const logout = () => {
           <VListItem>
             <template #prepend>
               <VListItemAction start>
-                <VBadge
+                <div class="avatar-container cursor-pointer">
+                  <img v-if="user.avatar" :src="user.avatar" class="avatar-img">
+                  <img v-else :src="avatar1" class="avatar-img">
+                </div>
+                <!-- <VBadge
                   dot
                   location="bottom right"
                   offset-x="3"
@@ -65,9 +72,8 @@ const logout = () => {
                   >
                     <VImg v-if="user.avatar" :src="user.avatar ?? avatar1" />
                     <VImg v-else :src="avatar1" />
-                    <!-- <VIcon icon="iconoir:n-square" size="32" v-else></VIcon> -->
                   </VAvatar>
-                </VBadge>
+                </VBadge> -->
               </VListItemAction>
             </template>
 
@@ -102,6 +108,24 @@ const logout = () => {
         </VList>
       </VMenu>
       <!-- !SECTION -->
-    </VAvatar>
+    </div>
+    <!-- </VAvatar> -->
   </VBadge>
 </template>
+
+<style>
+.avatar-container {
+  position: relative;
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  border: 1px solid #f8f7fa;
+}
+
+.avatar-img {
+  display: inline-block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+</style>

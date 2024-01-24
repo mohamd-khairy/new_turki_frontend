@@ -57,7 +57,8 @@ const getOrderDetails = id => {
     isLoading.value = false
   }).finally(() => {
     setTimeout(() => {
-      router.push(`/orders`)
+      // router.push(`/orders`)
+      window.close();
     }, 1500);
   });
 }

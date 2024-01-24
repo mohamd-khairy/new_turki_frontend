@@ -8,7 +8,7 @@ import { useOrdersStore } from "@/store/Orders"
 import { usePaymentTypesStore } from "@/store/PaymentTypes"
 import { useSettingsStore } from "@/store/Settings"
 import moment from "moment"
-import { ref } from "vue"
+import { ref, watch } from 'vue'
 import { useI18n } from "vue-i18n"
 
 
@@ -171,7 +171,8 @@ const printOrderInvoice = async (order) => {
     }
   }
 
-  router.push(`orders/${order.ref_no}/invoice`);
+  // router.push(`orders/${order.ref_no}/invoice`);
+  window.open(`orders/${order.ref_no}/invoice`, '_blank');
 }
 
 watch(() => filters.country_ids, (newVal, oldVal) => {
@@ -306,12 +307,12 @@ const openDetailsInNewTab = (order) => {
   window.open(`orders/${order.ref_no}`, '_blank');
 }
 
-const closePriniting = order => {
+const closePriniting = () => {
   isPrinting.value = false
   selectedOrder.value = {}
 }
 
-const openEdit = order => {
+const openEdit = (order) => {
   isEditOpen.value = true
   selectedOrder.value = order
 }
@@ -373,316 +374,335 @@ onMounted(() => {
 <template>
   <div>
     <div>
-      <VCard class="mb-5 pa-5">
-        <VRow>
-          <VCol cols="6"
-              class="d-flex align-center gap-3"
-            >
-              <div class="icon">
+      <v-expansion-panels class="mb-6">
+        <v-expansion-panel>
+          <v-expansion-panel-title expand-icon="mdi-menu-down">
+            <div class="py-2 d-flex align-center gap-1">
+              <span>
                 <VIcon
-                  icon="solar:delivery-broken"
+                  icon="tabler:search"
+                  :size="24"
                   color="primary"
                 />
-              </div>
-              <VTextField  v-model="filters.ref_no" 
-                label="البحث برقم الطلب"
-                :disabled="isLoading"
-              />
-          </VCol>
-          <VCol cols="6"
-                class="d-flex align-center gap-3"
-              >
-                <div class="icon">
-                  <VIcon
-                    icon="clarity:users-line"
-                    color="primary"
-                  />
-                </div>
-                <VSelect
-                  v-model="filters.customer_id"
-                  :items="customers"
-                  label="البحث باسم أو رقم جوال العميل"
-                  item-title="name_mobile"
-                  item-value="id"
-                  :disabled="isLoading || isLoadingCustomers"
-                  :loading="isLoadingCustomers"
-                >
-                  <template #prepend-item>
-                    <VTextField
-                      v-model="searchTerm"
-                      class="mx-2"
-                      clearable
-                      placeholder="ابحث باسم أو رقم جوال العميل"
-                      @input="searchCustomer"
+              </span>
+              <span style="font-weight: 400;">البحث في الطلبات</span>
+            </div>
+          </v-expansion-panel-title>
+          <v-expansion-panel-text>
+            <div class="py-4 px-2">
+              <VRow>
+                <VCol cols="6"
+                    class="d-flex align-center gap-3"
+                  >
+                    <div class="icon">
+                      <VIcon
+                        icon="solar:delivery-broken"
+                        color="primary"
+                      />
+                    </div>
+                    <VTextField  v-model="filters.ref_no" 
+                      label="البحث برقم الطلب"
+                      :disabled="isLoading"
                     />
-                    <VDivider class="mt-2" />
-                  </template>
-                </VSelect>
-          </VCol>
-          <VCol
-            cols="12"
-            lg="3"
-            md="4"
-            sm="6"
-          >
-            <VRow>
-              <VCol
-                cols="12"
-                class="d-flex align-center gap-3"
-              >
-                <div class="icon">
-                  <VIcon
-                    icon="material-symbols:globe"
-                    color="primary"
+                </VCol>
+                <VCol cols="6"
+                      class="d-flex align-center gap-3"
+                    >
+                      <div class="icon">
+                        <VIcon
+                          icon="clarity:users-line"
+                          color="primary"
+                        />
+                      </div>
+                      <VSelect
+                        v-model="filters.customer_id"
+                        :items="customers"
+                        label="البحث باسم أو رقم جوال العميل"
+                        item-title="name_mobile"
+                        item-value="id"
+                        :disabled="isLoading || isLoadingCustomers"
+                        :loading="isLoadingCustomers"
+                      >
+                        <template #prepend-item>
+                          <VTextField
+                            v-model="searchTerm"
+                            class="mx-2"
+                            clearable
+                            placeholder="ابحث باسم أو رقم جوال العميل"
+                            @input="searchCustomer"
+                          />
+                          <VDivider class="mt-2" />
+                        </template>
+                      </VSelect>
+                </VCol>
+                <VCol
+                  cols="12"
+                  lg="3"
+                  md="4"
+                  sm="6"
+                >
+                  <VRow>
+                    <VCol
+                      cols="12"
+                      class="d-flex align-center gap-3"
+                    >
+                      <div class="icon">
+                        <VIcon
+                          icon="material-symbols:globe"
+                          color="primary"
+                        />
+                      </div>
+                      <VSelect
+                        v-model="filters.country_ids"
+                        :items="countries"
+                        :label="t('forms.countries')"
+                        item-title="name_ar"
+                        item-value="id"
+                        :disabled="isLoading"
+                      />
+                    </VCol>
+                    <VCol
+                      cols="12"
+                      class="d-flex align-center gap-3"
+                    >
+                      <div class="icon">
+                        <VIcon
+                          icon="solar:city-broken"
+                          color="primary"
+                        />
+                      </div>
+                      <VSelect
+                        v-model="filters.city_ids"
+                        :items="cities"
+                        :label="t('forms.cities')"
+                        item-title="name_ar"
+                        item-value="id"
+                        multiple
+                        :disabled="isLoading"
+                      />
+                    </VCol>
+                  </VRow>
+                </VCol>
+                <VCol
+                  cols="12"
+                  lg="3"
+                  md="4"
+                  sm="6"
+                >
+                  <VRow>
+                    <VCol
+                      cols="12"
+                      class="d-flex align-center gap-3"
+                    >
+                      <div class="icon">
+                        <VIcon
+                          icon="solar:delivery-broken"
+                          color="primary"
+                        />
+                      </div>
+                      <VSelect
+                        v-model="filters.order_state_ids"
+                        :items="allOrderStatuses"
+                        label="حالة الطلب"
+                        item-title="state_ar"
+                        item-value="code"
+                        multiple
+                        :disabled="isLoading"
+                      />
+                    </VCol>
+                    <VCol
+                      cols="12"
+                      class="d-flex align-center gap-3"
+                    >
+                      <div class="icon">
+                        <VIcon
+                          icon="fluent-mdl2:date-time"
+                          color="primary"
+                        />
+                      </div>
+                      <VTextField
+                        v-model="filters.delivery_date"
+                        type="date"
+                        :label="t('forms.delivery_date')"
+                        :disabled="isLoading"
+                      />
+                    </VCol>
+                  </VRow>
+                </VCol>
+                <VCol
+                  cols="12"
+                  lg="3"
+                  md="4"
+                  sm="6"
+                >
+                  <VRow>
+                    <VCol
+                      cols="12"
+                      class="d-flex align-center gap-3"
+                    >
+                      <div class="icon">
+                        <VIcon
+                          icon="fluent-mdl2:date-time"
+                          color="primary"
+                        />
+                      </div>
+                      <VSelect
+                        v-model="filters.delivery_period_ids"
+                        :items="deliveryPeriods"
+                        :label="t('Delivery_Periods')"
+                        item-title="name_ar"
+                        item-value="id"
+                        multiple
+                        :disabled="isLoading"
+                      />
+                    </VCol>
+                    <VCol
+                      cols="12"
+                      class="d-flex align-center gap-3"
+                    >
+                      <div class="icon">
+                        <VIcon
+                          icon="solar:delivery-broken"
+                          color="primary"
+                        />
+                      </div>
+                      <VSelect
+                        v-model="filters.payment_type_ids"
+                        :items="paymentTypes"
+                        label="طريقة الدفع"
+                        item-title="name_ar"
+                        item-value="id"
+                        multiple
+                        :disabled="isLoading"
+                      />
+                    </VCol>
+                  </VRow>
+                </VCol>
+                <VCol
+                  cols="12"
+                  lg="3"
+                  md="4"
+                  sm="6"
+                >
+                  <VRow>
+                    <VCol
+                      cols="12"
+                      class="d-flex align-center gap-3"
+                    >
+                      <div class="icon">
+                        <VIcon
+                          icon="fluent-mdl2:date-time"
+                          color="primary"
+                        />
+                      </div>
+                      <VTextField
+                        v-model="filters.date_from"
+                        type="date"
+                        :label="t('forms.from')"
+                        :disabled="isLoading"
+                      />
+                    </VCol>
+                    <VCol
+                      cols="12"
+                      class="d-flex align-center gap-3"
+                    >
+                      <div class="icon">
+                        <VIcon
+                          icon="fluent-mdl2:date-time"
+                          color="primary"
+                        />
+                      </div>
+                      <VTextField
+                        v-model="filters.date_to"
+                        type="date"
+                        :label="t('forms.to')"
+                        :disabled="isLoading"
+                      />
+                    </VCol>
+                  </VRow>
+                </VCol>
+                <VCol
+                  cols="12"
+                  lg="3"
+                  md="4"
+                  sm="6"
+                  class="d-flex align-center gap-3"
+                >
+                  <div class="icon">
+                    <VIcon
+                      icon="clarity:users-line"
+                      color="primary"
+                    />
+                  </div>
+                  <VSelect
+                    v-model="filters.sales_agent_id"
+                    :items="salesAgents"
+                    label="مندوب المبيعات"
+                    item-title="username"
+                    item-value="id"
+                    :disabled="isLoading"
                   />
-                </div>
-                <VSelect
-                  v-model="filters.country_ids"
-                  :items="countries"
-                  :label="t('forms.countries')"
-                  item-title="name_ar"
-                  item-value="id"
-                  :disabled="isLoading"
-                />
-              </VCol>
-              <VCol
-                cols="12"
-                class="d-flex align-center gap-3"
-              >
-                <div class="icon">
-                  <VIcon
-                    icon="solar:city-broken"
-                    color="primary"
+                </VCol>
+                <VCol
+                  cols="12"
+                  lg="3"
+                  md="4"
+                  sm="6"
+                  class="d-flex align-center gap-3"
+                >
+                  <div class="icon">
+                    <VIcon
+                      icon="clarity:users-line"
+                      color="primary"
+                    />
+                  </div>
+                  <VSelect
+                    v-model="filters.sales_representative_id"
+                    :items="salesRepresentatives"
+                    label="مسئول المبيعات"
+                    item-title="username"
+                    item-value="id"
+                    :disabled="isLoading"
                   />
-                </div>
-                <VSelect
-                  v-model="filters.city_ids"
-                  :items="cities"
-                  :label="t('forms.cities')"
-                  item-title="name_ar"
-                  item-value="id"
-                  multiple
-                  :disabled="isLoading"
-                />
-              </VCol>
-            </VRow>
-          </VCol>
-          <VCol
-            cols="12"
-            lg="3"
-            md="4"
-            sm="6"
-          >
-            <VRow>
-              <VCol
-                cols="12"
-                class="d-flex align-center gap-3"
-              >
-                <div class="icon">
-                  <VIcon
-                    icon="solar:delivery-broken"
-                    color="primary"
-                  />
-                </div>
-                <VSelect
-                  v-model="filters.order_state_ids"
-                  :items="allOrderStatuses"
-                  label="حالة الطلب"
-                  item-title="state_ar"
-                  item-value="code"
-                  multiple
-                  :disabled="isLoading"
-                />
-              </VCol>
-              <VCol
-                cols="12"
-                class="d-flex align-center gap-3"
-              >
-                <div class="icon">
-                  <VIcon
-                    icon="fluent-mdl2:date-time"
-                    color="primary"
-                  />
-                </div>
-                <VTextField
-                  v-model="filters.delivery_date"
-                  type="date"
-                  :label="t('forms.delivery_date')"
-                  :disabled="isLoading"
-                />
-              </VCol>
-            </VRow>
-          </VCol>
-          <VCol
-            cols="12"
-            lg="3"
-            md="4"
-            sm="6"
-          >
-            <VRow>
-              <VCol
-                cols="12"
-                class="d-flex align-center gap-3"
-              >
-                <div class="icon">
-                  <VIcon
-                    icon="fluent-mdl2:date-time"
-                    color="primary"
-                  />
-                </div>
-                <VSelect
-                  v-model="filters.delivery_period_ids"
-                  :items="deliveryPeriods"
-                  :label="t('Delivery_Periods')"
-                  item-title="name_ar"
-                  item-value="id"
-                  multiple
-                  :disabled="isLoading"
-                />
-              </VCol>
-              <VCol
-                cols="12"
-                class="d-flex align-center gap-3"
-              >
-                <div class="icon">
-                  <VIcon
-                    icon="solar:delivery-broken"
-                    color="primary"
-                  />
-                </div>
-                <VSelect
-                  v-model="filters.payment_type_ids"
-                  :items="paymentTypes"
-                  label="طريقة الدفع"
-                  item-title="name_ar"
-                  item-value="id"
-                  multiple
-                  :disabled="isLoading"
-                />
-              </VCol>
-            </VRow>
-          </VCol>
-          <VCol
-            cols="12"
-            lg="3"
-            md="4"
-            sm="6"
-          >
-            <VRow>
-              <VCol
-                cols="12"
-                class="d-flex align-center gap-3"
-              >
-                <div class="icon">
-                  <VIcon
-                    icon="fluent-mdl2:date-time"
-                    color="primary"
-                  />
-                </div>
-                <VTextField
-                  v-model="filters.date_from"
-                  type="date"
-                  :label="t('forms.from')"
-                  :disabled="isLoading"
-                />
-              </VCol>
-              <VCol
-                cols="12"
-                class="d-flex align-center gap-3"
-              >
-                <div class="icon">
-                  <VIcon
-                    icon="fluent-mdl2:date-time"
-                    color="primary"
-                  />
-                </div>
-                <VTextField
-                  v-model="filters.date_to"
-                  type="date"
-                  :label="t('forms.to')"
-                  :disabled="isLoading"
-                />
-              </VCol>
-            </VRow>
-          </VCol>
-          <VCol
-            cols="12"
-            lg="3"
-            md="4"
-            sm="6"
-            class="d-flex align-center gap-3"
-          >
-            <div class="icon">
-              <VIcon
-                icon="clarity:users-line"
-                color="primary"
-              />
+                </VCol>
+                <VCol
+                  cols="12"
+                  class="d-flex align-center gap-3"
+                >
+                  <VBtn
+                    v-if="!isLoading"
+                    prepend-icon="solar:filter-bold-duotone"
+                    :disabled="isLoading"
+                    @click.stop="filterOrders"
+                  >
+                    {{ t('Filter') }}
+                  </VBtn>
+                  <VBtn
+                    v-else
+                    type="submit"
+                    class="position-relative"
+                    style="width: 152px;max-width: 100%;"
+                  >
+                    <VIcon
+                      icon="mingcute:loading-line"
+                      class="loading"
+                      size="32"
+                    />
+                  </VBtn>
+                  <VBtn
+                    prepend-icon="healthicons:x"
+                    :disabled="isLoading || !isFiltered"
+                    @click.stop="clearFilter"
+                  >
+                    {{ t('Clear_Filter') }}
+                  </VBtn>
+                </VCol>
+              </VRow>
             </div>
-            <VSelect
-              v-model="filters.sales_agent_id"
-              :items="salesAgents"
-              label="مندوب المبيعات"
-              item-title="username"
-              item-value="id"
-              :disabled="isLoading"
-            />
-          </VCol>
-          <VCol
-            cols="12"
-            lg="3"
-            md="4"
-            sm="6"
-            class="d-flex align-center gap-3"
-          >
-            <div class="icon">
-              <VIcon
-                icon="clarity:users-line"
-                color="primary"
-              />
-            </div>
-            <VSelect
-              v-model="filters.sales_representative_id"
-              :items="salesRepresentatives"
-              label="مسئول المبيعات"
-              item-title="username"
-              item-value="id"
-              :disabled="isLoading"
-            />
-          </VCol>
-          <VCol
-            cols="12"
-            class="d-flex align-center gap-3"
-          >
-            <VBtn
-              v-if="!isLoading"
-              prepend-icon="solar:filter-bold-duotone"
-              :disabled="isLoading"
-              @click.stop="filterOrders"
-            >
-              {{ t('Filter') }}
-            </VBtn>
-            <VBtn
-              v-else
-              type="submit"
-              class="position-relative"
-              style="width: 152px;max-width: 100%;"
-            >
-              <VIcon
-                icon="mingcute:loading-line"
-                class="loading"
-                size="32"
-              />
-            </VBtn>
-            <VBtn
-              prepend-icon="healthicons:x"
-              :disabled="isLoading || !isFiltered"
-              @click.stop="clearFilter"
-            >
-              {{ t('Clear_Filter') }}
-            </VBtn>
-          </VCol>
-        </VRow>
-      </VCard>
+          </v-expansion-panel-text>
+        </v-expansion-panel>
+      </v-expansion-panels>
+
       <VCard :loading="isLoading">
         <VCardTitle class="d-flex align-center">
           <VIcon
@@ -734,8 +754,30 @@ onMounted(() => {
                 />
               </VCard>
             </div>
-            <div v-else>
-              <VCard v-if="totalOrdersAmount" class="py-3 px-4">
+            <div v-else class="d-flex align-center flex-wrap gap-3">
+              <VCard class="py-3 px-4 w-100 w-sm-auto">
+                <p class="mb-3">
+                  <VAvatar
+                    color="success"
+                    variant="tonal"
+                    size="42"
+                    class="me-3"
+                  >
+                    <VIcon
+                      size="24"
+                      icon="solar:delivery-broken"
+                    />
+                  </VAvatar>
+                  <span class="whitespace-nowrap">عدد الطلبات</span>
+                </p>
+                <div class="d-flex gap-2">
+                  <span class="text-h6 font-weight-semibold">
+                    {{ ConvertToArabicNumbers(Intl.NumberFormat().format(totalOrders)) }}
+                  </span>
+                  <small>طلب</small>
+                </div>
+              </VCard>
+              <VCard v-if="totalOrdersAmount" class="py-3 px-4 w-100 w-sm-auto">
                 <p class="mb-3">
                   <VAvatar
                     color="success"
@@ -807,6 +849,28 @@ onMounted(() => {
                 scope="col"
                 class="font-weight-semibold"
               >
+                {{ t('forms.order_state_ar') }} <br>
+                <span
+                  v-if="canChangeOrderStatus || hasRole(['delegate', 'store_manager'])" 
+                  class="text-primary"
+                >( {{ t('forms.click_change_status') }} )</span>
+              </th>
+              <th
+                scope="col"
+                class="font-weight-semibold"
+              >
+                {{ t('forms.order_payment_status') }}
+              </th>
+              <th
+                scope="col"
+                class="font-weight-semibold"
+              >
+                {{ t('forms.payment_type_name') }}
+              </th>
+              <th
+                scope="col"
+                class="font-weight-semibold"
+              >
                 {{ t('forms.address_address') }}
               </th>
               <th
@@ -833,37 +897,6 @@ onMounted(() => {
               >
                 {{ t('forms.delivery_date') }}
               </th>
-              <th
-                scope="col"
-                class="font-weight-semibold"
-              >
-                {{ t('forms.order_state_ar') }} <br>
-                <span
-                  v-if="canChangeOrderStatus || hasRole(['delegate', 'store_manager'])" 
-                  class="text-primary"
-                >( {{ t('forms.click_change_status') }} )</span>
-              </th>
-              <th
-                scope="col"
-                class="font-weight-semibold"
-              >
-                {{ t('forms.order_payment_status') }}
-              </th>
-              <!--
-                <th
-                scope="col"
-                class="font-weight-semibold"
-                >
-                {{ t('forms.order_subtotal') }}
-                </th>
-              -->
-              <th
-                scope="col"
-                class="font-weight-semibold"
-              >
-                {{ t('forms.payment_type_name') }}
-              </th>
-              
               <th
                 scope="col"
                 class="font-weight-semibold"
@@ -997,30 +1030,6 @@ onMounted(() => {
                 {{ order.customer_name + '(' + order.customer_mobile +')' }}
               </td>
               <td>
-                {{ order.address_address.toString().length > 20 ? order.address_address.toString().slice(0,20) + "..." : order.address_address }}
-              </td>
-              <td>
-                <span v-if="order.city_name">
-                  {{ order.city_name }}
-                </span>
-                <span v-else>--</span>
-              </td>
-              <td>
-                <span v-if="order.sales_officer_name">
-                  {{ order.sales_officer_name }}
-                </span>
-                <span v-else>--</span>
-              </td>
-              <td>
-                <span v-if="order.driver_name">
-                  {{ order.driver_name }}
-                </span>
-                <span v-else>--</span>
-              </td>
-              <td>
-                {{ handleDeliveryDate(order.delivery_date, order.created_at) }}
-              </td>
-              <td>
                 <span
                   v-if="canChangeOrderStatus || storeMangerCanUpdateOrderStatus(order) || delegateCanUpdateOrderStatus(order)" 
                   @click="openEdit(order)"
@@ -1044,13 +1053,32 @@ onMounted(() => {
                   {{ order.paid == 1 ? "مدفوع" : "غير مدفوع" }}
                 </VChip>
               </td>
-              <!--
-                <td>
-                {{ ConvertToArabicNumbers(Intl.NumberFormat().format(order.order_subtotal)) }}
-                </td>
-              -->
               <td>
                 {{ order.payment_type_name }}
+              </td>
+              <td>
+                {{ order.address_address.toString().length > 20 ? order.address_address.toString().slice(0,20) + "..." : order.address_address }}
+              </td>
+              <td>
+                <span v-if="order.city_name">
+                  {{ order.city_name }}
+                </span>
+                <span v-else>--</span>
+              </td>
+              <td>
+                <span v-if="order.sales_officer_name">
+                  {{ order.sales_officer_name }}
+                </span>
+                <span v-else>--</span>
+              </td>
+              <td>
+                <span v-if="order.driver_name">
+                  {{ order.driver_name }}
+                </span>
+                <span v-else>--</span>
+              </td>
+              <td>
+                {{ handleDeliveryDate(order.delivery_date, order.created_at) }}
               </td>
               <td>
                 <span v-if="order.payment_price">
@@ -1157,6 +1185,12 @@ onMounted(() => {
 
   &::-webkit-scrollbar-thumb {
     border-radius: 10px;
+  }
+}
+
+.w-sm-auto {
+  @media screen and (min-width: 580px) {
+    width: auto !important;
   }
 }
 </style>
