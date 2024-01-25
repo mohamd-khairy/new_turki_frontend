@@ -98,7 +98,7 @@ const dialogModelValueUpdate = val => {
 
 onMounted(() => {
   employeesStore.fetchEmployees({ pageSize: -1, role_name: 'delegate' }).then(response => {
-    employees.value = response.data.data
+    employees.value = response.data?.data?.data;
   })
 })
 </script>
