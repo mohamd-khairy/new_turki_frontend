@@ -1,10 +1,10 @@
 <script setup>
 import { useCitiesStore } from "@/store/Cities";
 import { useEmployeesStore } from "@/store/Employees";
-import { useSuppliersStore } from "@/store/Suppliers";
+import { useSafesStore } from "@/store/Safes";
 import moment from "moment/moment";
 
-const suppliersStore = useSuppliersStore()
+const safesStore = useSafesStore()
 const citiesListStore = useCitiesStore()
 const employeesStore = useEmployeesStore()
 
@@ -34,10 +34,10 @@ const filters = reactive({
 const { t } = useI18n()
 const router = useRouter()
 
-const getSuppliers = () => {
+const getSafes = () => {
   isLoading.value = true
-  // products.value = []
-  suppliersStore.getAll({
+  
+  safesStore.getAll({
     ...filters,
     q: searchQuery.value,
     per_page: rowPerPage.value,
@@ -77,14 +77,14 @@ const openEdit = (store) => {
 
 const filterItems = () => {
   isFiltered.value = true
-  getSuppliers();
+  getSafes();
 }
 
 const clearFilter = () => {
   filters.city_id = null
   filters.user_id = null
 
-  getSuppliers();
+  getSafes();
 }
 
 const ConvertToArabicNumbers = num => {
@@ -103,23 +103,23 @@ const formatDateTime = data => {
 }
 
 watch(rowPerPage, () => {
-  getSuppliers();
+  getSafes();
 })
 
 watch(() => currentPage.value, () => {
-  getSuppliers();
+  getSafes();
 })
 
 onMounted(() => {
-  getSuppliers();
+  getSafes();
 
-  citiesListStore.fetchCities({}).then(response => {
-    cities.value = response?.data.data
-  })
+  // citiesListStore.fetchCities({}).then(response => {
+  //   cities.value = response?.data.data
+  // })
 
-  employeesStore.fetchEmployees({ pageSize: -1 }).then(response => {
-    employees.value = response.data.data?.data;
-  })
+  // employeesStore.fetchEmployees({ pageSize: -1 }).then(response => {
+  //   employees.value = response.data.data?.data;
+  // })
 })
 </script>
 
@@ -127,11 +127,11 @@ onMounted(() => {
   <div>
     <VCard :loading="isLoading">
       <VCardTitle class="d-flex align-center gap-2">
-        <VIcon icon="heroicons:truck"
+        <VIcon icon="teenyicons-safe-outline"
           size="24"
           color="primary"
         ></VIcon>
-        <span class="mx-1">الموردون</span>
+        <span class="mx-1">الخزن</span>
       </VCardTitle>
       <VCardText class="d-flex align-center flex-wrap gap-2 py-4">
         <!-- 👉 Rows per page -->
@@ -148,7 +148,7 @@ onMounted(() => {
           @click="isAddOpen = true"
           :disabled="isLoading"
         >
-          إضافة مورد
+          إضافة خزنة
         </VBtn>
 
         <VSpacer/>
@@ -177,7 +177,13 @@ onMounted(() => {
             scope="col"
             class="font-weight-semibold"
           >
-            الهاتف
+            المسئول
+          </th>
+          <th
+            scope="col"
+            class="font-weight-semibold"
+          >
+            العملة
           </th>
           <th
             scope="col"
@@ -218,7 +224,10 @@ onMounted(() => {
             {{ store.name }}
           </td>
           <td>
-            {{ store.mobile }}
+            {{ store.user?.username }}
+          </td>
+          <td>
+            {{ store.currency }}
           </td>
           <td>
             {{ store.balance }}
@@ -289,8 +298,8 @@ onMounted(() => {
       </VCardText>
     </VCard>
 
-    <AddSupplierDialog v-if="isAddOpen" v-model:is-add-open="isAddOpen" @refreshTable="getSuppliers"/>
-    <EditSupplierDialog v-if="isEditOpen" v-model:is-edit-open="isEditOpen" :item="selectedItem" @refreshTable="getSuppliers"/>
-    <DeleteSupplierDialog v-if="isDeleteOpen" v-model:is-delete-open="isDeleteOpen" :item="selectedItem" @refreshTable="getSuppliers"/>
+    <AddSafeDialog v-if="isAddOpen" v-model:is-add-open="isAddOpen" @refreshTable="getSafes"/>
+    <EditSafeDialog v-if="isEditOpen" v-model:is-edit-open="isEditOpen" :item="selectedItem" @refreshTable="getSafes"/>
+    <DeleteSafeDialog v-if="isDeleteOpen" v-model:is-delete-open="isDeleteOpen" :item="selectedItem" @refreshTable="getSafes"/>
   </div>
 </template>

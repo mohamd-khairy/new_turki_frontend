@@ -36,26 +36,43 @@ export default [
     permission: "read-product",
   },
   // {
-  //   title: 'المخازن',
-  //   to: { name: 'stores' },
+  //   title: 'المخزن',
   //   icon: { icon: 'carbon:store' },
-  //   // permission: "read-stores",
-  //   permission: "read-product",
+  //   children: [
+  //     {
+  //       title: 'المخزن',
+  //       to: { name: 'stores' },
+  //       // icon: { icon: 'carbon:store' },
+  //       // permission: "read-store",
+  //     },
+  //     {
+  //       title: 'المخزون',
+  //       to: { name: 'stocks' },
+  //       // icon: { icon: 'material-symbols:production-quantity-limits-sharp' },
+  //       // permission: "read-stock",
+  //     },
+  //     {
+  //       title: 'الموردون',
+  //       to: { name: 'suppliers' },
+  //       // icon: { icon: 'heroicons:truck' },
+  //       // permission: "read-supplier",
+  //     },
+  //     {
+  //       title: 'الخزن',
+  //       to: { name: 'safes' },
+  //       // icon: { icon: 'teenyicons-safe-outline' },
+  //       // permission: "read-money-safe",
+  //     },
+  //     {
+  //       title: 'البنوك',
+  //       to: { name: 'banks' },
+  //       // icon: { icon: 'mdi-bank-outline' },
+  //       // permission: "read-bank",
+  //     },
+  //   ],
+  //   permission: "read-permission",
   // },
-  // {
-  //   title: 'المخزون',
-  //   to: { name: 'stocks' },
-  //   icon: { icon: 'material-symbols:production-quantity-limits-sharp' },
-  //   // permission: "read-stocks",
-  //   permission: "read-product",
-  // },
-  // {
-  //   title: 'الموردون',
-  //   to: { name: 'suppliers' },
-  //   icon: { icon: 'heroicons:truck' },
-  //   // permission: "read-stocks",
-  //   permission: "read-product",
-  // },
+ 
   {
     title: 'Coupons',
     to: { name: 'coupons' },

@@ -1,10 +1,10 @@
 <script setup>
+import { useBanksStore } from "@/store/Banks";
 import { useCitiesStore } from "@/store/Cities";
 import { useEmployeesStore } from "@/store/Employees";
-import { useSuppliersStore } from "@/store/Suppliers";
 import moment from "moment/moment";
 
-const suppliersStore = useSuppliersStore()
+const banksStore = useBanksStore()
 const citiesListStore = useCitiesStore()
 const employeesStore = useEmployeesStore()
 
@@ -34,10 +34,10 @@ const filters = reactive({
 const { t } = useI18n()
 const router = useRouter()
 
-const getSuppliers = () => {
+const getBanks = () => {
   isLoading.value = true
-  // products.value = []
-  suppliersStore.getAll({
+
+  banksStore.getAll({
     ...filters,
     q: searchQuery.value,
     per_page: rowPerPage.value,
@@ -77,14 +77,14 @@ const openEdit = (store) => {
 
 const filterItems = () => {
   isFiltered.value = true
-  getSuppliers();
+  getBanks();
 }
 
 const clearFilter = () => {
   filters.city_id = null
   filters.user_id = null
 
-  getSuppliers();
+  getBanks();
 }
 
 const ConvertToArabicNumbers = num => {
@@ -103,23 +103,23 @@ const formatDateTime = data => {
 }
 
 watch(rowPerPage, () => {
-  getSuppliers();
+  getBanks();
 })
 
 watch(() => currentPage.value, () => {
-  getSuppliers();
+  getBanks();
 })
 
 onMounted(() => {
-  getSuppliers();
+  getBanks();
 
-  citiesListStore.fetchCities({}).then(response => {
-    cities.value = response?.data.data
-  })
+  // citiesListStore.fetchCities({}).then(response => {
+  //   cities.value = response?.data.data
+  // })
 
-  employeesStore.fetchEmployees({ pageSize: -1 }).then(response => {
-    employees.value = response.data.data?.data;
-  })
+  // employeesStore.fetchEmployees({ pageSize: -1 }).then(response => {
+  //   employees.value = response.data.data?.data;
+  // })
 })
 </script>
 
@@ -127,11 +127,11 @@ onMounted(() => {
   <div>
     <VCard :loading="isLoading">
       <VCardTitle class="d-flex align-center gap-2">
-        <VIcon icon="heroicons:truck"
+        <VIcon icon="mdi-bank-outline"
           size="24"
           color="primary"
         ></VIcon>
-        <span class="mx-1">الموردون</span>
+        <span class="mx-1">البنوك</span>
       </VCardTitle>
       <VCardText class="d-flex align-center flex-wrap gap-2 py-4">
         <!-- 👉 Rows per page -->
@@ -148,7 +148,7 @@ onMounted(() => {
           @click="isAddOpen = true"
           :disabled="isLoading"
         >
-          إضافة مورد
+          إضافة بنك
         </VBtn>
 
         <VSpacer/>
@@ -177,7 +177,13 @@ onMounted(() => {
             scope="col"
             class="font-weight-semibold"
           >
-            الهاتف
+            المسئول
+          </th>
+          <th
+            scope="col"
+            class="font-weight-semibold"
+          >
+            العملة
           </th>
           <th
             scope="col"
@@ -218,7 +224,10 @@ onMounted(() => {
             {{ store.name }}
           </td>
           <td>
-            {{ store.mobile }}
+            {{ store.user?.username }}
+          </td>
+          <td>
+            {{ store.currency }}
           </td>
           <td>
             {{ store.balance }}
@@ -289,8 +298,8 @@ onMounted(() => {
       </VCardText>
     </VCard>
 
-    <AddSupplierDialog v-if="isAddOpen" v-model:is-add-open="isAddOpen" @refreshTable="getSuppliers"/>
-    <EditSupplierDialog v-if="isEditOpen" v-model:is-edit-open="isEditOpen" :item="selectedItem" @refreshTable="getSuppliers"/>
-    <DeleteSupplierDialog v-if="isDeleteOpen" v-model:is-delete-open="isDeleteOpen" :item="selectedItem" @refreshTable="getSuppliers"/>
+    <AddBankDialog v-if="isAddOpen" v-model:is-add-open="isAddOpen" @refreshTable="getBanks"/>
+    <EditBankDialog v-if="isEditOpen" v-model:is-edit-open="isEditOpen" :item="selectedItem" @refreshTable="getBanks"/>
+    <DeleteBankDialog v-if="isDeleteOpen" v-model:is-delete-open="isDeleteOpen" :item="selectedItem" @refreshTable="getBanks"/>
   </div>
 </template>
