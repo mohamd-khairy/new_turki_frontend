@@ -35,43 +35,49 @@ export default [
     icon: { icon: 'streamline:shopping-bag-hand-bag-1-shopping-bag-purse-goods-item-products' },
     permission: "read-product",
   },
-  // {
-  //   title: 'المخزن',
-  //   icon: { icon: 'carbon:store' },
-  //   children: [
-  //     {
-  //       title: 'المخزن',
-  //       to: { name: 'stores' },
-  //       // icon: { icon: 'carbon:store' },
-  //       // permission: "read-store",
-  //     },
-  //     {
-  //       title: 'المخزون',
-  //       to: { name: 'stocks' },
-  //       // icon: { icon: 'material-symbols:production-quantity-limits-sharp' },
-  //       // permission: "read-stock",
-  //     },
-  //     {
-  //       title: 'الموردون',
-  //       to: { name: 'suppliers' },
-  //       // icon: { icon: 'heroicons:truck' },
-  //       // permission: "read-supplier",
-  //     },
-  //     {
-  //       title: 'الخزن',
-  //       to: { name: 'safes' },
-  //       // icon: { icon: 'teenyicons-safe-outline' },
-  //       // permission: "read-money-safe",
-  //     },
-  //     {
-  //       title: 'البنوك',
-  //       to: { name: 'banks' },
-  //       // icon: { icon: 'mdi-bank-outline' },
-  //       // permission: "read-bank",
-  //     },
-  //   ],
-  //   permission: "read-permission",
-  // },
+  {
+    title: 'المخزن',
+    icon: { icon: 'carbon:store' },
+    permission: "read-dashboard",
+    children: [
+      // {
+      //   title: 'المخزن',
+      //   to: { name: 'stores' },
+
+      //   // icon: { icon: 'carbon:store' },
+      //   // permission: "read-store",
+      // },
+      // {
+      //   title: 'المخزون',
+      //   to: { name: 'stocks' },
+
+      //   // icon: { icon: 'material-symbols:production-quantity-limits-sharp' },
+      //   // permission: "read-stock",
+      // },
+      {
+        title: 'الموردون',
+        to: { name: 'suppliers' },
+
+        // icon: { icon: 'heroicons:truck' },
+        // permission: "read-supplier",
+      },
+      {
+        title: 'الخزن',
+        to: { name: 'safes' },
+
+        // icon: { icon: 'teenyicons-safe-outline' },
+        // permission: "read-money-safe",
+      },
+      {
+        title: 'البنوك',
+        to: { name: 'banks' },
+
+        // icon: { icon: 'mdi-bank-outline' },
+        // permission: "read-bank",
+      },
+    ],
+    permission: "read-permission",
+  },
  
   {
     title: 'Coupons',
@@ -124,6 +130,7 @@ export default [
       { title: 'Product_Preparation', to: 'product-preparation' },
       { title: 'Product_Size', to: 'product-size' },
       { title: 'Product_Shalwata', to: 'product-shalwata' },
+
       // { title: 'Payment_Types', to: 'payment-types' },
       // { title: 'Delivery_Periods', to: 'delivery-periods' },
       // { title: 'Not_Delivery_Periods', to: 'not-delivery-periods' },
