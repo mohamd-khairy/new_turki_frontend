@@ -1,11 +1,13 @@
 <script setup>
-import { useCitiesStore } from "@/store/Cities";
-import { useEmployeesStore } from "@/store/Employees";
-import { useSuppliersStore } from "@/store/Suppliers";
+import { useCitiesStore } from "@/store/Cities"
+import { useEmployeesStore } from "@/store/Employees"
+import { useSuppliersStore } from "@/store/Suppliers"
+
 // import DateRangeFilter from '@core/components/DateRangeFilter';
-import moment from "moment/moment";
+import moment from "moment/moment"
+
 // import printJS from 'print-js';
-import '@vuepic/vue-datepicker/dist/main.css';
+import '@vuepic/vue-datepicker/dist/main.css'
 
 const suppliersStore = useSuppliersStore()
 const citiesListStore = useCitiesStore()
@@ -38,23 +40,26 @@ const filters = reactive({
 
 const { t } = useI18n()
 const router = useRouter()
-const dateFilter = ref("");
+const dateFilter = ref("")
+
 const updateRangeDate = ([startDate, endDate]) => {
-  filters.start_date = startDate;
-  filters.end_date = endDate;
-  getSuppliers();
+  filters.start_date = startDate
+  filters.end_date = endDate
+  getSuppliers()
 }
 
 const getSuppliers = () => {
   isLoading.value = true
+
   // products.value = []
   suppliersStore.getAll({
     ...filters,
+
     // q: searchQuery.value,
     per_page: rowPerPage.value,
     page: currentPage.value,
   }).then(response => {
-    suppliersItems.value = response.data?.data?.data;
+    suppliersItems.value = response.data?.data?.data
     totalPage.value = response.data.data.last_page
     dataFrom.value = response.data.data.from
     dataTo.value = response.data.data.to
@@ -76,19 +81,19 @@ const paginationData = computed(() => {
   return ` عرض من ${ConvertToArabicNumbers(dataFrom.value)} إلي ${ConvertToArabicNumbers(dataTo.value)} من ${ConvertToArabicNumbers(totalItems.value)} الإجمالي `
 })
 
-const openDelete = (store) => {
+const openDelete = store => {
   isDeleteOpen.value = true
   selectedItem.value = store
 }
 
-const openEdit = (store) => {
+const openEdit = store => {
   isEditOpen.value = true
   selectedItem.value = store
 }
 
 const filterItems = () => {
   isFiltered.value = true
-  getSuppliers();
+  getSuppliers()
 }
 
 const clearFilter = () => {
@@ -97,7 +102,7 @@ const clearFilter = () => {
   filters.date_from = null
   filters.date_to = null
   
-  getSuppliers();
+  getSuppliers()
 }
 
 const ConvertToArabicNumbers = num => {
@@ -116,30 +121,32 @@ const formatDateTime = data => {
 }
 
 const printSuppliers = () => {
-  const queryParams = new URLSearchParams();
+  const queryParams = new URLSearchParams()
 
   for (const key in filters) {
     if (filters[key] !== null && filters[key] !== undefined) {
-      queryParams.append(key, filters[key]);
+      queryParams.append(key, filters[key])
     }
   }
 
-  const queryString = queryParams.toString();
-  const finalUrl = queryString ? `suppliers/reports?${queryString}` : 'suppliers/reports';
-  window.open(finalUrl, '_blank');
+  const queryString = queryParams.toString()
+  const finalUrl = queryString ? `suppliers/reports?${queryString}` : 'suppliers/reports'
+
+  window.open(finalUrl, '_blank')
+
   // printJS({
-	// 	printable: suppliersItems.value,
-	// 	type: 'json',
-	// 	properties: [
+  // 	printable: suppliersItems.value,
+  // 	type: 'json',
+  // 	properties: [
   //     { field: 'name', displayName: 'الاسم'},
   //     { field: 'mobile', displayName: 'الهاتف'},
   //     { field: 'balance', displayName: 'الرصيد'}
   //   ],
-	// 	header: '<h2 class="custom-h3">بيانات الموردين</h2>',
+  // 	header: '<h2 class="custom-h3">بيانات الموردين</h2>',
   //   headerStyle: `
   //     th { padding: 10px 15px; }
   //   `,
-	// 	style: `
+  // 	style: `
   //     body { 
   //       direction: rtl; text-align: right; 
   //       font-family: "Tahoma", sans-serif; 
@@ -148,26 +155,26 @@ const printSuppliers = () => {
   //     h2 { text-transform: underline; }
   //     td, th { padding: 10px 15px; }
   //   `
-	// })
+  // })
 }
 
 watch(rowPerPage, () => {
-  getSuppliers();
+  getSuppliers()
 })
 
 watch(() => currentPage.value, () => {
-  getSuppliers();
+  getSuppliers()
 })
 
 onMounted(() => {
-  getSuppliers();
+  getSuppliers()
 
   citiesListStore.fetchCities({}).then(response => {
     cities.value = response?.data.data
   })
 
   employeesStore.fetchEmployees({ pageSize: -1 }).then(response => {
-    employees.value = response.data.data?.data;
+    employees.value = response.data.data?.data
   })
 })
 </script>
@@ -177,20 +184,38 @@ onMounted(() => {
     <VCard class="mb-5 pa-5">
       <VForm @submit.stop>
         <VRow justify="space-between">
-          <VCol cols="12" lg="8">
+          <VCol
+            cols="12"
+            lg="8"
+          >
             <VRow>
-              <VCol cols="12" sm="6" class="d-flex align-center gap-3">
+              <VCol
+                cols="12"
+                sm="6"
+                class="d-flex align-center gap-3"
+              >
                 <div class="icon">
-                  <VIcon icon="clarity:users-line" color="primary"></VIcon>
+                  <VIcon
+                    icon="clarity:users-line"
+                    color="primary"
+                  />
                 </div>
-                <VTextField  v-model="filters.search" 
+                <VTextField
+                  v-model="filters.search" 
                   label="البحث باسم المورد"
                   :disabled="isLoading"
                 />
               </VCol>
-              <VCol cols="12" sm="6" class="d-flex align-center gap-3">
+              <VCol
+                cols="12"
+                sm="6"
+                class="d-flex align-center gap-3"
+              >
                 <div class="icon">
-                  <VIcon icon="solar:city-broken" color="primary"></VIcon>
+                  <VIcon
+                    icon="solar:city-broken"
+                    color="primary"
+                  />
                 </div>
                 <VSelect
                   v-model="filters.city_id"
@@ -200,7 +225,6 @@ onMounted(() => {
                   item-value="id"
                 />
               </VCol>
-             
             </VRow>
           </VCol>
           <VCol
@@ -246,7 +270,8 @@ onMounted(() => {
               </VCol>
             </VRow>
           </VCol>
-          <VCol cols="12"
+          <VCol
+            cols="12"
             class="d-flex align-center justify-end gap-3"
           >
             <VBtn
@@ -281,10 +306,11 @@ onMounted(() => {
     </VCard>
     <VCard :loading="isLoading">
       <VCardTitle class="d-flex align-center gap-2">
-        <VIcon icon="heroicons:truck"
+        <VIcon
+          icon="heroicons:truck"
           size="24"
           color="primary"
-        ></VIcon>
+        />
         <span class="mx-1">الموردون</span>
       </VCardTitle>
       <VCardText class="d-flex align-center flex-wrap gap-2 py-4">
@@ -296,156 +322,163 @@ onMounted(() => {
             :items="[5, 10, 20, 30, 50, 100]"
           />
         </div>
-        <!--         👉 Create product :to="{ name: 'apps-product-add' }"-->
+        <!--         👉 Create product :to="{ name: 'apps-product-add' }" -->
         <VBtn
           prepend-icon="tabler-plus"
-          @click="isAddOpen = true"
           :disabled="isLoading"
+          @click="isAddOpen = true"
         >
           إضافة مورد
         </VBtn>
 
-        <VSpacer/>
+        <VSpacer />
         <!-- @selected="updateRangeDate" -->
         <div class="d-flex gap-3">
-          <!-- <div dir="ltr">
+          <!--
+            <div dir="ltr">
             <VueDatePicker
-              v-model="dateFilter"
-              range
-              auto-apply
-              locale="ar"
-              format="dd/MM/yyyy - dd/MM/yyyy"
-              :day-names="['أثنين', 'ثلاثاء', 'أربعاء', 'خميس', 'جمعة', 'سبت', 'أحد']"
-              placeholder="فلترة التاريخ"
+            v-model="dateFilter"
+            range
+            auto-apply
+            locale="ar"
+            format="dd/MM/yyyy - dd/MM/yyyy"
+            :day-names="['أثنين', 'ثلاثاء', 'أربعاء', 'خميس', 'جمعة', 'سبت', 'أحد']"
+            placeholder="فلترة التاريخ"
             />
-          </div> -->
+            </div> 
+          -->
   
-          <VBtn @click="printSuppliers"
+          <VBtn
             prepend-icon="prime-print"
             :disabled="isLoading"
+            @click="printSuppliers"
           >
             طباعة
           </VBtn>
         </div>
       </VCardText>
 
-      <VDivider/>
+      <VDivider />
 
       <VTable class="text-no-wrap product-list-table">
         <thead>
-        <tr>
-          <th
-            scope="col"
-            class="font-weight-semibold"
-          >
-            #
-          </th>
-          <th
-            scope="col"
-            class="font-weight-semibold"
-          >
-            {{ t('forms.name') }}
-          </th>
-          <th
-            scope="col"
-            class="font-weight-semibold"
-          >
-            الهاتف
-          </th>
-          <th
-            scope="col"
-            class="font-weight-semibold"
-          >
-            الرصيد
-          </th>
-          <th
-            scope="col"
-            class="font-weight-semibold"
-          >
-            المنطقة
-          </th>
-          <th
-            scope="col"
-            class="font-weight-semibold"
-          >
-            {{ t('forms.created_at') }}
-          </th>
-          <th
-            scope="col"
-            class="font-weight-semibold"
-          >
-            {{ t('forms.actions') }}
-          </th>
-        </tr>
+          <tr>
+            <th
+              scope="col"
+              class="font-weight-semibold"
+            >
+              #
+            </th>
+            <th
+              scope="col"
+              class="font-weight-semibold"
+            >
+              {{ t('forms.name') }}
+            </th>
+            <th
+              scope="col"
+              class="font-weight-semibold"
+            >
+              الهاتف
+            </th>
+            <th
+              scope="col"
+              class="font-weight-semibold"
+            >
+              الرصيد
+            </th>
+            <th
+              scope="col"
+              class="font-weight-semibold"
+            >
+              المنطقة
+            </th>
+            <!--
+              <th
+              scope="col"
+              class="font-weight-semibold"
+              >
+              {{ t('forms.created_at') }}
+              </th>
+            -->
+            <th
+              scope="col"
+              class="font-weight-semibold"
+            >
+              {{ t('forms.actions') }}
+            </th>
+          </tr>
         </thead>
 
         <tbody>
-        <tr
-          v-for="(store, i) in suppliersItems"
-          :key="store.id"
-        >
-          <td>
-            {{ store.id }}
-          </td>
-          <td>
-            {{ store.name }}
-          </td>
-          <td>
-            {{ store.mobile }}
-          </td>
-          <td>
-            {{ store.balance }}
-          </td>
-          <td>
-            {{ store.city?.name_ar }}
-          </td>
-          <td>
-            {{ ConvertToArabicNumbers(formatDateTime(store.created_at).date) }}
-          </td>
-          <td class="d-flex align-center gap-2">
-            <VBtn
-              icon
-              variant="plain"
-              color="default"
-              size="x-small"
-              @click="openEdit(store)"
-            >
-              <VIcon
-                :size="22"
-                icon="tabler-pencil"
-              />
-            </VBtn>
-            <VBtn
-              icon
-              variant="plain"
-              color="default"
-              size="x-small"
-              @click="openDelete(store)"
-            >
-              <VIcon
-                :size="22"
-                icon="tabler-trash"
-              />
-            </VBtn>
-          </td>
-        </tr>
+          <tr
+            v-for="(store, i) in suppliersItems"
+            :key="store.id"
+          >
+            <td>
+              {{ store.id }}
+            </td>
+            <td>
+              {{ store.name }}
+            </td>
+            <td>
+              {{ store.mobile }}
+            </td>
+            <td>
+              {{ store.balance }}
+            </td>
+            <td>
+              {{ store.city?.name_ar }}
+            </td>
+            <!--
+              <td>
+              {{ ConvertToArabicNumbers(formatDateTime(store.created_at).date) }}
+              </td>
+            -->
+            <td class="d-flex align-center gap-2">
+              <VBtn
+                icon
+                variant="plain"
+                color="default"
+                size="x-small"
+                @click="openEdit(store)"
+              >
+                <VIcon
+                  :size="22"
+                  icon="tabler-pencil"
+                />
+              </VBtn>
+              <VBtn
+                icon
+                variant="plain"
+                color="default"
+                size="x-small"
+                @click="openDelete(store)"
+              >
+                <VIcon
+                  :size="22"
+                  icon="tabler-trash"
+                />
+              </VBtn>
+            </td>
+          </tr>
         </tbody>
 
         <!-- 👉 table footer  -->
         <tfoot v-show="!suppliersItems.length">
-        <tr>
-          <td
-            colspan="8"
-            class="text-center text-body-1"
-          >
-            لا يوجد بيانات
-          </td>
-        </tr>
+          <tr>
+            <td
+              colspan="8"
+              class="text-center text-body-1"
+            >
+              لا يوجد بيانات
+            </td>
+          </tr>
         </tfoot>
       </VTable>
       <!-- !SECTION -->
 
-      <VDivider/>
+      <VDivider />
 
       <!-- SECTION Pagination -->
       <VCardText class="d-flex align-center flex-wrap justify-space-between gap-4 py-3">
@@ -462,25 +495,42 @@ onMounted(() => {
       </VCardText>
     </VCard>
 
-    <AddSupplierDialog v-if="isAddOpen" v-model:is-add-open="isAddOpen" @refreshTable="getSuppliers"/>
-    <EditSupplierDialog v-if="isEditOpen" v-model:is-edit-open="isEditOpen" :item="selectedItem" @refreshTable="getSuppliers"/>
-    <DeleteSupplierDialog v-if="isDeleteOpen" v-model:is-delete-open="isDeleteOpen" :item="selectedItem" @refreshTable="getSuppliers"/>
+    <AddSupplierDialog
+      v-if="isAddOpen"
+      v-model:is-add-open="isAddOpen"
+      @refreshTable="getSuppliers"
+    />
+    <EditSupplierDialog
+      v-if="isEditOpen"
+      v-model:is-edit-open="isEditOpen"
+      :item="selectedItem"
+      @refreshTable="getSuppliers"
+    />
+    <DeleteSupplierDialog
+      v-if="isDeleteOpen"
+      v-model:is-delete-open="isDeleteOpen"
+      :item="selectedItem"
+      @refreshTable="getSuppliers"
+    />
   </div>
 </template>
 
 <style lang="scss">
-.dp__range_end, .dp__range_start, .dp__active_date {
+.dp__range_end,
+.dp__range_start,
+.dp__active_date {
   background: var(--initial-loader-color);
   color: #fff;
 }
 
 .dp__main {
-  --dp-font-family: 'Cairo', 'Tahoma', sans-serif;
-  min-width: 250px;
-  max-width: 100%;
-  
+  --dp-font-family: "Cairo", "Tahoma", sans-serif;
+
+  max-inline-size: 100%;
+  min-inline-size: 250px;
+
   .dp--menu-wrapper {
-    min-width: 380px;
+    min-inline-size: 380px;
   }
 }
 </style>

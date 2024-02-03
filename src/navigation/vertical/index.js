@@ -40,20 +40,20 @@ export default [
     icon: { icon: 'carbon:store' },
     permission: "read-dashboard",
     children: [
-      // {
-      //   title: 'المخزن',
-      //   to: { name: 'stores' },
+      {
+        title: 'المخزن',
+        to: { name: 'stores' },
 
-      //   // icon: { icon: 'carbon:store' },
-      //   // permission: "read-store",
-      // },
-      // {
-      //   title: 'المخزون',
-      //   to: { name: 'stocks' },
+        // icon: { icon: 'carbon:store' },
+        // permission: "read-store",
+      },
+      {
+        title: 'المخزون',
+        to: { name: 'stocks' },
 
-      //   // icon: { icon: 'material-symbols:production-quantity-limits-sharp' },
-      //   // permission: "read-stock",
-      // },
+        // icon: { icon: 'material-symbols:production-quantity-limits-sharp' },
+        // permission: "read-stock",
+      },
       {
         title: 'الموردون',
         to: { name: 'suppliers' },
