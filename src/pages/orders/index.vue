@@ -908,12 +908,14 @@ onMounted(() => {
               >
                 {{ t('forms.delivery_date') }}
               </th>
-              <th
+              <!--
+                <th
                 scope="col"
                 class="font-weight-semibold"
-              >
+                >
                 {{ t('forms.paid_amount_wallet') }}
-              </th>
+                </th>
+              -->
               <th
                 scope="col"
                 class="font-weight-semibold"
@@ -1100,14 +1102,16 @@ onMounted(() => {
               <td>
                 {{ handleDeliveryDate(order.delivery_date, order.created_at) }}
               </td>
-              <td>
+              <!--
+                <td>
                 <VChip
-                  style="cursor: pointer;"
-                  :class="{'text-error': order.wallet_amount_used <= 0, 'text-success': order.wallet_amount_used > 0}"
+                style="cursor: pointer;"
+                :class="{'text-error': order.wallet_amount_used <= 0, 'text-success': order.wallet_amount_used > 0}"
                 >
-                  {{ order.wallet_amount_used > 0 ? "نعم" : "لا" }}
+                {{ order.wallet_amount_used > 0 ? "نعم" : "لا" }}
                 </VChip>
-              </td>
+                </td>
+              -->
               <td>
                 <span v-if="order.payment_price">
                   {{ ConvertToArabicNumbers(Intl.NumberFormat().format(order.payment_price)) }}
