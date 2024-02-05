@@ -51,8 +51,8 @@ const salesAgents = ref([])
 const salesRepresentatives = ref([])
 const isAssignDeligateDialog = ref(false)
 const allOrdersSelected = ref(false)
-const currentPrintedInvoice = ref(null);
-const totalOrdersAmount = ref(0);
+const currentPrintedInvoice = ref(null)
+const totalOrdersAmount = ref(0)
 
 const filters = reactive({
   ref_no: null,
@@ -118,35 +118,35 @@ const canTakeOrder = order => {
   return false
 }
 
-const getOrderStatusColorClass = (orderStatusCode) => {
+const getOrderStatusColorClass = orderStatusCode => {
   if([104, 105, 106].includes(orderStatusCode)) {
-    return 'text-warning';
+    return 'text-warning'
   }
 
   if([103, 107, 108, 109].includes(orderStatusCode)) {
-    return 'text-error';
+    return 'text-error'
   }
 
   // order confirmed
   if(orderStatusCode == 101) {
-    return 'text-success';
+    return 'text-success'
   }
 
   // delivered
   if(orderStatusCode == 200) {
-    return 'text-delivered';
+    return 'text-delivered'
   }
 
   if(orderStatusCode == 103) {
-    return 'text-secondary';
+    return 'text-secondary'
   }
 
   // pending
   if(orderStatusCode == 102) {
-    return 'text-pending';
+    return 'text-pending'
   }
 
-  return '';
+  return ''
 }
 
 const canChangeOrderStatus = computed(() => hasRole(['production_manager', 'production_supervisor', 'logistic_manager', 'admin', 'general_manager']))
@@ -159,20 +159,20 @@ const storeMangerCanUpdateOrderStatus = order => {
   return hasRole('store_manager') && order.sales_representative_id == authUser.value?.id
 }
 
-const printOrderInvoice = async (order) => {
+const printOrderInvoice = async order => {
   if(hasRole(['production_manager'])) {
     try {
-      currentPrintedInvoice.value = order.ref_no;
+      currentPrintedInvoice.value = order.ref_no
       await ordersListStore.editOrder({ id: order.id, is_printed: true })
     } catch (error) {
-      console.error(error);
+      console.error(error)
     } finally {
-      currentPrintedInvoice.value = null;
+      currentPrintedInvoice.value = null
     }
   }
 
   // router.push(`orders/${order.ref_no}/invoice`);
-  window.open(`orders/${order.ref_no}/invoice`, '_blank');
+  window.open(`orders/${order.ref_no}/invoice`, '_blank')
 }
 
 watch(() => filters.country_ids, (newVal, oldVal) => {
@@ -190,9 +190,11 @@ const getOrders = () => {
     page: currentPage.value,
   }).then(response => {
     const ordersItems = response.data.data.data
+
+
     // ordersItems[0].order_state_id = 102
     // ordersItems[0].order_state_ar = 'معلق'
-    orders.value = ordersItems;
+    orders.value = ordersItems
     totalPage.value = response.data.data.last_page
     dataFrom.value = response.data.data.from
     dataTo.value = response.data.data.to
@@ -299,12 +301,12 @@ const clearFilter = () => {
   filterOrders()
 }
 
-const openDetails = (order) => {
+const openDetails = order => {
   router.push(`orders/${order.ref_no}`)
 }
 
-const openDetailsInNewTab = (order) => {
-  window.open(`orders/${order.ref_no}`, '_blank');
+const openDetailsInNewTab = order => {
+  window.open(`orders/${order.ref_no}`, '_blank')
 }
 
 const closePriniting = () => {
@@ -312,7 +314,7 @@ const closePriniting = () => {
   selectedOrder.value = {}
 }
 
-const openEdit = (order) => {
+const openEdit = order => {
   isEditOpen.value = true
   selectedOrder.value = order
 }
@@ -327,13 +329,13 @@ const ConvertToArabicNumbers = num => {
 }
 
 const handleDeliveryDate = (date, createdDate) => {
-  const dateArray = date.split('-');
+  const dateArray = date.split('-')
   if(dateArray[0].length < 4) {
-    dateArray.unshift(`${new Date(createdDate).getFullYear()}`);
-    date = dateArray.join('-');
+    dateArray.unshift(`${new Date(createdDate).getFullYear()}`)
+    date = dateArray.join('-')
   }
 
-  return ConvertToArabicNumbers(moment(date).format("DD-MM-YYYY"));
+  return ConvertToArabicNumbers(moment(date).format("DD-MM-YYYY"))
 }
 
 const formatDateTime = data => {
@@ -374,9 +376,9 @@ onMounted(() => {
 <template>
   <div>
     <div>
-      <v-expansion-panels class="mb-6">
-        <v-expansion-panel>
-          <v-expansion-panel-title expand-icon="mdi-menu-down">
+      <VExpansionPanels class="mb-6">
+        <VExpansionPanel>
+          <VExpansionPanelTitle expand-icon="mdi-menu-down">
             <div class="py-2 d-flex align-center gap-1">
               <span>
                 <VIcon
@@ -387,53 +389,56 @@ onMounted(() => {
               </span>
               <span style="font-weight: 400;">البحث في الطلبات</span>
             </div>
-          </v-expansion-panel-title>
-          <v-expansion-panel-text>
+          </VExpansionPanelTitle>
+          <VExpansionPanelText>
             <div class="py-4 px-2">
               <VRow>
-                <VCol cols="6"
-                    class="d-flex align-center gap-3"
-                  >
-                    <div class="icon">
-                      <VIcon
-                        icon="solar:delivery-broken"
-                        color="primary"
-                      />
-                    </div>
-                    <VTextField  v-model="filters.ref_no" 
-                      label="البحث برقم الطلب"
-                      :disabled="isLoading"
+                <VCol
+                  cols="6"
+                  class="d-flex align-center gap-3"
+                >
+                  <div class="icon">
+                    <VIcon
+                      icon="solar:delivery-broken"
+                      color="primary"
                     />
+                  </div>
+                  <VTextField
+                    v-model="filters.ref_no" 
+                    label="البحث برقم الطلب"
+                    :disabled="isLoading"
+                  />
                 </VCol>
-                <VCol cols="6"
-                      class="d-flex align-center gap-3"
-                    >
-                      <div class="icon">
-                        <VIcon
-                          icon="clarity:users-line"
-                          color="primary"
-                        />
-                      </div>
-                      <VSelect
-                        v-model="filters.customer_id"
-                        :items="customers"
-                        label="البحث باسم أو رقم جوال العميل"
-                        item-title="name_mobile"
-                        item-value="id"
-                        :disabled="isLoading || isLoadingCustomers"
-                        :loading="isLoadingCustomers"
-                      >
-                        <template #prepend-item>
-                          <VTextField
-                            v-model="searchTerm"
-                            class="mx-2"
-                            clearable
-                            placeholder="ابحث باسم أو رقم جوال العميل"
-                            @input="searchCustomer"
-                          />
-                          <VDivider class="mt-2" />
-                        </template>
-                      </VSelect>
+                <VCol
+                  cols="6"
+                  class="d-flex align-center gap-3"
+                >
+                  <div class="icon">
+                    <VIcon
+                      icon="clarity:users-line"
+                      color="primary"
+                    />
+                  </div>
+                  <VSelect
+                    v-model="filters.customer_id"
+                    :items="customers"
+                    label="البحث باسم أو رقم جوال العميل"
+                    item-title="name_mobile"
+                    item-value="id"
+                    :disabled="isLoading || isLoadingCustomers"
+                    :loading="isLoadingCustomers"
+                  >
+                    <template #prepend-item>
+                      <VTextField
+                        v-model="searchTerm"
+                        class="mx-2"
+                        clearable
+                        placeholder="ابحث باسم أو رقم جوال العميل"
+                        @input="searchCustomer"
+                      />
+                      <VDivider class="mt-2" />
+                    </template>
+                  </VSelect>
                 </VCol>
                 <VCol
                   cols="12"
@@ -699,9 +704,9 @@ onMounted(() => {
                 </VCol>
               </VRow>
             </div>
-          </v-expansion-panel-text>
-        </v-expansion-panel>
-      </v-expansion-panels>
+          </VExpansionPanelText>
+        </VExpansionPanel>
+      </VExpansionPanels>
 
       <VCard :loading="isLoading">
         <VCardTitle class="d-flex align-center">
@@ -754,7 +759,10 @@ onMounted(() => {
                 />
               </VCard>
             </div>
-            <div v-else class="d-flex align-center flex-wrap gap-3">
+            <div
+              v-else
+              class="d-flex align-center flex-wrap gap-3"
+            >
               <VCard class="py-3 px-4 w-100 w-sm-auto">
                 <p class="mb-3">
                   <VAvatar
@@ -777,7 +785,10 @@ onMounted(() => {
                   <small>طلب</small>
                 </div>
               </VCard>
-              <VCard v-if="totalOrdersAmount" class="py-3 px-4 w-100 w-sm-auto">
+              <VCard
+                v-if="totalOrdersAmount"
+                class="py-3 px-4 w-100 w-sm-auto"
+              >
                 <p class="mb-3">
                   <VAvatar
                     color="success"
@@ -901,8 +912,15 @@ onMounted(() => {
                 scope="col"
                 class="font-weight-semibold"
               >
+                {{ t('forms.paid_amount_wallet') }}
+              </th>
+              <th
+                scope="col"
+                class="font-weight-semibold"
+              >
                 {{ t('forms.paid_amount') }}
               </th>
+              
               <th
                 scope="col"
                 class="font-weight-semibold"
@@ -946,8 +964,8 @@ onMounted(() => {
                           variant="plain"
                           color="default"
                           size="x-small"
-                          @click="printOrderInvoice(order)"
                           :loading="currentPrintedInvoice == order.ref_no"
+                          @click="printOrderInvoice(order)"
                         >
                           <VIcon
                             :size="22"
@@ -1034,8 +1052,10 @@ onMounted(() => {
                   v-if="canChangeOrderStatus || storeMangerCanUpdateOrderStatus(order) || delegateCanUpdateOrderStatus(order)" 
                   @click="openEdit(order)"
                 >
-                  <VChip style="cursor: pointer;"
-                  :class="getOrderStatusColorClass(order.order_state_id)">
+                  <VChip
+                    style="cursor: pointer;"
+                    :class="getOrderStatusColorClass(order.order_state_id)"
+                  >
                     {{ order.order_state_ar }}
                   </VChip>
                 </span>
@@ -1081,12 +1101,19 @@ onMounted(() => {
                 {{ handleDeliveryDate(order.delivery_date, order.created_at) }}
               </td>
               <td>
+                <VChip
+                  style="cursor: pointer;"
+                  :class="{'text-error': order.wallet_amount_used <= 0, 'text-success': order.wallet_amount_used > 0}"
+                >
+                  {{ order.wallet_amount_used > 0 ? "نعم" : "لا" }}
+                </VChip>
+              </td>
+              <td>
                 <span v-if="order.payment_price">
                   {{ ConvertToArabicNumbers(Intl.NumberFormat().format(order.payment_price)) }}
                 </span>
                 <span v-else>--</span>
               </td>
-            
               <td>
                 <span v-if="order.remain_amount">
                   {{ ConvertToArabicNumbers(Intl.NumberFormat().format(order.remain_amount)) }}
@@ -1095,7 +1122,7 @@ onMounted(() => {
               </td>
                 
               <td>
-                {{ ConvertToArabicNumbers(Intl.NumberFormat().format(order.total_amount_after_discount)) }}
+                {{ ConvertToArabicNumbers(Intl.NumberFormat().format(parseFloat(order.total_amount_after_discount) + parseFloat(order.wallet_amount_used ?? 0))) }}
               </td>
               <!--
                 <td>
@@ -1142,7 +1169,8 @@ onMounted(() => {
       @close="closePriniting"
     />
     
-    <AddOrdersDialog v-if="isAddOpen"
+    <AddOrdersDialog
+      v-if="isAddOpen"
       v-model:is-add-open="isAddOpen"
       :countries="countries"
       :cities="cities"
@@ -1150,14 +1178,16 @@ onMounted(() => {
       :delivery-periods="deliveryPeriods"
       @refreshTable="getOrders"
     />
-    <EditOrderStatusDialog v-if="isEditOpen"
+    <EditOrderStatusDialog
+      v-if="isEditOpen"
       v-model:is-edit-open="isEditOpen"
       :item="selectedOrder"
       :order-statuses="orderStatuses"
       @refreshTable="getOrders"
     />
 
-    <AssignOrderDeligationDialog v-if="isAssignDeligateDialog"
+    <AssignOrderDeligationDialog
+      v-if="isAssignDeligateDialog"
       v-model:is-open="isAssignDeligateDialog"
       :order-ids="selectedOrders"
       @refreshTable="getOrders"
@@ -1167,18 +1197,18 @@ onMounted(() => {
 
 <style lang="scss">
 .text-delivered {
-  color: #00BCD4;
+  color: #00bcd4;
 }
 
 .text-pending {
-  color: #5C6BC0;
+  color: #5c6bc0;
 }
 
 .v-table__wrapper {
   &::-webkit-scrollbar {
-    height: 15px;
+    block-size: 15px;
   }
-  
+
   // &::-webkit-scrollbar-track {
   //   background: #f1f1f1;
   // }
@@ -1190,7 +1220,7 @@ onMounted(() => {
 
 .w-sm-auto {
   @media screen and (min-width: 580px) {
-    width: auto !important;
+    inline-size: auto !important;
   }
 }
 </style>

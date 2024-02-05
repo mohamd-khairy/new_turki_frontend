@@ -55,21 +55,21 @@ const itemData = ref({
 
 const orderCurrency = computed(() => {
   if(order.value.order?.selected_address?.country_id == 4) {
-    return 'درهم';
+    return 'درهم'
   }
 
-  return 'ريال';
-});
+  return 'ريال'
+})
 
 const canEditAllFields = computed(() => {
   if(hasRole(['general_manager', 'store_manager', 'admin'])) {
     return true
   }
 
-  return false;
-});
+  return false
+})
 
-const openProductEdit = (item) => {
+const openProductEdit = item => {
   selectedProductItem.value = item
   isEditProductOpen.value = true
 }
@@ -223,17 +223,18 @@ const onFormSubmit = async () => {
 
 const _timerCouponsId = ref(null)
 const isLoadingCoupons = ref(false)
-const searchCoupon = (e) => {
+
+const searchCoupon = e => {
   clearTimeout(_timerCouponsId.value)
   _timerCouponsId.value = setTimeout(() => {
     isLoadingCoupons.value = true
     couponsStore.fetchCoupons({ search: e.target.value }).then(response => {
-      coupons.value = response.data?.data?.data || [];
+      coupons.value = response.data?.data?.data || []
     })
-    .finally(() => {
-      isLoadingCoupons.value = false
-    });
-  }, 800);
+      .finally(() => {
+        isLoadingCoupons.value = false
+      })
+  }, 800)
 }
 
 onMounted(() => {
@@ -262,7 +263,6 @@ onMounted(() => {
     productPreparations.value = response.data.data
   })
 })
-
 </script>
 
 <template>
@@ -408,7 +408,7 @@ onMounted(() => {
                   :class="{'text-error': order['sale price'] === 'undefined', 'text-success': order['sale price'] !== 'undefined' }"
                 >
                   {{
-                    order.order.total_amount_after_discount !== "undefined" ? ConvertToArabicNumbers(order.order.total_amount_after_discount) : ConvertToArabicNumbers(0)
+                    order.order.total_amount_after_discount !== "undefined" ? ConvertToArabicNumbers(parseFloat(order.order.total_amount_after_discount) + parseFloat(order.order.wallet_amount_used ?? 0)) : ConvertToArabicNumbers(0)
                   }} 
                   {{ orderCurrency }}
                 </VChip>
@@ -441,9 +441,9 @@ onMounted(() => {
             >
               <VRow>
                 <VCol
+                  v-if="canEditAllFields"
                   cols="12"
                   md="6"
-                  v-if="canEditAllFields"
                 >
                   <VSelect
                     v-model="itemData.order_state_id"
@@ -456,58 +456,60 @@ onMounted(() => {
                 </VCol>
                 
                 <VCol
+                  v-if="canEditAllFields"
                   cols="12"
                   md="6"
-                  v-if="canEditAllFields"
                 >
                   <VRow>
                     <VCol cols="12">
                       <VSelect
-                      v-model="itemData.discount_code"
-                      :items="coupons"
-                      :label="t('forms.coupon')"
-                      item-title="name"
-                      item-value="code"
-                      :loading="isLoadingCoupons"
-                    >
-                      <template #prepend-item>
-                        <VListItem>
-                          <VListItemContent>
-                            <VTextField
-                              placeholder="البحث في الكوبونات"
-                              @input="searchCoupon"
-                            />
-                          </VListItemContent>
-                        </VListItem>
-                        <VDivider class="mt-2" />
-                      </template>
-                    </VSelect>
-                    </VCol>
-                    <!-- <VCol cols="1" class="px-0">
-                      <VTooltip text="إزالة الكوبون من الطلب">
-                        <template #activator="{ props }">
-                          <VBtn
-                            v-bind="props"
-                            icon
-                            variant="plain"
-                            color="error"
-                            size="x-small"
-                            @click="removeDiscountCode"
-                          >
-                            <VIcon
-                              :size="22"
-                              icon="clarity:remove-line"
-                            />
-                          </VBtn>
+                        v-model="itemData.discount_code"
+                        :items="coupons"
+                        :label="t('forms.coupon')"
+                        item-title="name"
+                        item-value="code"
+                        :loading="isLoadingCoupons"
+                      >
+                        <template #prepend-item>
+                          <VListItem>
+                            <VListItemContent>
+                              <VTextField
+                                placeholder="البحث في الكوبونات"
+                                @input="searchCoupon"
+                              />
+                            </VListItemContent>
+                          </VListItem>
+                          <VDivider class="mt-2" />
                         </template>
+                      </VSelect>
+                    </VCol>
+                    <!--
+                      <VCol cols="1" class="px-0">
+                      <VTooltip text="إزالة الكوبون من الطلب">
+                      <template #activator="{ props }">
+                      <VBtn
+                      v-bind="props"
+                      icon
+                      variant="plain"
+                      color="error"
+                      size="x-small"
+                      @click="removeDiscountCode"
+                      >
+                      <VIcon
+                      :size="22"
+                      icon="clarity:remove-line"
+                      />
+                      </VBtn>
+                      </template>
                       </VTooltip>
-                    </VCol> -->
+                      </VCol> 
+                    -->
                   </VRow>
                 </VCol>
                 <VCol
+                  v-if="canEditAllFields"
                   cols="12"
                   md="6"
-                  v-if="canEditAllFields"
                 >
                   <VTextField
                     v-model="itemData.delivery_date"
@@ -516,9 +518,9 @@ onMounted(() => {
                   />
                 </VCol>
                 <VCol
+                  v-if="canEditAllFields"
                   cols="12"
                   md="6"
-                  v-if="canEditAllFields"
                 >
                   <VSelect
                     v-model="itemData.delivery_period_id"
@@ -529,9 +531,9 @@ onMounted(() => {
                   />
                 </VCol>
                 <VCol
+                  v-if="canEditAllFields"
                   cols="12"
                   md="6"
-                  v-if="canEditAllFields"
                 >
                   <VSelect
                     v-model="itemData.payment_type_id"
@@ -542,9 +544,9 @@ onMounted(() => {
                   />
                 </VCol>
                 <VCol
+                  v-if="canEditAllFields"
                   cols="12"
                   md="6"
-                  v-if="canEditAllFields"
                 >
                   <VSelect
                     v-model="itemData.paid"
@@ -563,9 +565,9 @@ onMounted(() => {
                   />
                 </VCol>
                 <VCol
+                  v-if="canEditAllFields"
                   cols="12"
                   md="6"
-                  v-if="canEditAllFields"
                 >
                   <VSelect
                     v-model="itemData.address_id"
@@ -576,9 +578,9 @@ onMounted(() => {
                   />
                 </VCol>
                 <VCol
+                  v-if="canEditAllFields"
                   cols="12"
                   md="6"
-                  v-if="canEditAllFields"
                 >
                   <VTextField
                     v-model="itemData.delivery_fee"
@@ -612,8 +614,8 @@ onMounted(() => {
                   />
                 </VCol>
                 <VCol
-                  cols="12"
                   v-if="canEditAllFields"
+                  cols="12"
                 >
                   <VTextarea
                     v-model="itemData.comment"
@@ -654,142 +656,147 @@ onMounted(() => {
         </VCard>
         <VCard>
           <VCardText>
-          <div class="order-products">
-            <div class="d-flex justify-space-between align-center flex-wrap mb-3">
-              <h2 class="py-2">
-                <VIcon color="primary" icon="arcticons:destiny-item-manager" />
-                <span class="ms-2">
-                  المنتجات
-                </span>
-              </h2>
-              <VBtn v-if="canEditAllFields"
-                color="primary"
-                @click="AddNewProductOpen(order.order)"
-              >
-                <VIcon
-                  :size="22"
-                  icon="lets-icons:add-light"
-                />
-                <span>إضافة منتج جديد</span>
-              </VBtn>
-            </div>
-            <div class="products-list">
-              <div class="product table-responsive">
-                <VTable class="table">
-                  <thead>
-                    <tr class="border-b-sm">
-                      <th>
-                        الاسم
-                      </th>
-                      <th>
-                        الأحجام
-                      </th>
-                      <th>
-                        التقطيع
-                      </th>
-                      <th>
-                        التجهيز
-                      </th>
-                      <th>
-                        الكمية
-                      </th>
-                      <th>الكرشة</th>
-                      <th>الكوارع</th>
-                      <th>اللية</th>
-                      <th>الرأس</th>
-                      <th>الشلوطة</th>
-                      <th>
-                        السعر
-                      </th>
-                      <th v-if="canEditAllFields">
-                        الاجراءات
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr
-                      v-for="product in order.products"
-                      :key="product.id"
-                      style=" border-bottom: 1px solid;"
-                    >
-                      <td class="px-2">
-                        <span>{{ product.product ? product.product.name_ar : "لا يوجد اسم" }}</span>
-                      </td>
-                      <td>{{ product.size ? product.size.name_ar : "لا يوجد" }}</td>
-                      <td>{{ product.cut ? product.cut.name_ar : "لا يوجد" }}</td>
-                      <td>{{ product.preparation ? product.preparation.name_ar : "لا يوجد" }}</td>
-                      <td class="px-2">
-                        <span class="d-block  text-base">
-                          {{ ConvertToArabicNumbers(product.quantity) }}
-                        </span>
-                      </td>
-                      <td>{{ product.is_karashah ? "بدون" : "" }}</td>
-                      <td>{{ product.is_kwar3 ? "بدون" : "" }}</td>
-                      <td>{{ product.is_lyh ? "بدون" : "" }}</td>
-                      <td>{{ product.is_Ras ? "بدون" : "" }}</td>
-                      <td>{{ product.shalwata ? "مع شلوطة" : "بدون" }}</td>
-                  
-                      <td class="px-2">
-                        <span class="text-success whitespace-nowrap font-weight-bold">
-                          {{ product.total_price ? ConvertToArabicNumbers(Intl.NumberFormat().format(product.total_price)) + orderCurrency : "غير معروف" }} 
-                        </span>
-                      </td>
-                      <td v-if="canEditAllFields">
-                        <div class="d-flex align-center gap-2">
-                          <VTooltip text="تعديل المنتج">
-                            <template #activator="{ props }">
-                              <VBtn
-                                v-bind="props"
-                                icon
-                                variant="plain"
-                                color="default"
-                                size="x-small"
-                                @click="openProductEdit(product)"
-                              >
-                                <VIcon
-                                  :size="22"
-                                  icon="ph:pencil-line"
-                                />
-                              </VBtn>
-                            </template>
-                          </VTooltip>
-                          <VTooltip text="حذف المنتج">
-                            <template #activator="{ props }">
-                              <VBtn
-                                v-bind="props"
-                                icon
-                                variant="plain"
-                                color="default"
-                                size="x-small"
-                                @click="deleteProduct(product)"
-                              >
-                                <VIcon
-                                  v-if="!isDeleteing"
-                                  :size="22"
-                                  icon="mingcute:delete-line"
-                                />
-                                <VIcon
-                                  v-else
-                                  icon="mingcute:loading-line"
-                                  class="loading"
-                                  size="32"
-                                />
-                              </VBtn>
-                            </template>
-                          </VTooltip>
-                        </div>
-                      </td>
-                    </tr>
-                  </tbody>
-                </VTable>
+            <div class="order-products">
+              <div class="d-flex justify-space-between align-center flex-wrap mb-3">
+                <h2 class="py-2">
+                  <VIcon
+                    color="primary"
+                    icon="arcticons:destiny-item-manager"
+                  />
+                  <span class="ms-2">
+                    المنتجات
+                  </span>
+                </h2>
+                <VBtn
+                  v-if="canEditAllFields"
+                  color="primary"
+                  @click="AddNewProductOpen(order.order)"
+                >
+                  <VIcon
+                    :size="22"
+                    icon="lets-icons:add-light"
+                  />
+                  <span>إضافة منتج جديد</span>
+                </VBtn>
               </div>
-            </div>
+              <div class="products-list">
+                <div class="product table-responsive">
+                  <VTable class="table">
+                    <thead>
+                      <tr class="border-b-sm">
+                        <th>
+                          الاسم
+                        </th>
+                        <th>
+                          الأحجام
+                        </th>
+                        <th>
+                          التقطيع
+                        </th>
+                        <th>
+                          التجهيز
+                        </th>
+                        <th>
+                          الكمية
+                        </th>
+                        <th>الكرشة</th>
+                        <th>الكوارع</th>
+                        <th>اللية</th>
+                        <th>الرأس</th>
+                        <th>الشلوطة</th>
+                        <th>
+                          السعر
+                        </th>
+                        <th v-if="canEditAllFields">
+                          الاجراءات
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr
+                        v-for="product in order.products"
+                        :key="product.id"
+                        style=" border-bottom: 1px solid;"
+                      >
+                        <td class="px-2">
+                          <span>{{ product.product ? product.product.name_ar : "لا يوجد اسم" }}</span>
+                        </td>
+                        <td>{{ product.size ? product.size.name_ar : "لا يوجد" }}</td>
+                        <td>{{ product.cut ? product.cut.name_ar : "لا يوجد" }}</td>
+                        <td>{{ product.preparation ? product.preparation.name_ar : "لا يوجد" }}</td>
+                        <td class="px-2">
+                          <span class="d-block  text-base">
+                            {{ ConvertToArabicNumbers(product.quantity) }}
+                          </span>
+                        </td>
+                        <td>{{ product.is_karashah ? "بدون" : "" }}</td>
+                        <td>{{ product.is_kwar3 ? "بدون" : "" }}</td>
+                        <td>{{ product.is_lyh ? "بدون" : "" }}</td>
+                        <td>{{ product.is_Ras ? "بدون" : "" }}</td>
+                        <td>{{ product.shalwata ? "مع شلوطة" : "بدون" }}</td>
+                  
+                        <td class="px-2">
+                          <span class="text-success whitespace-nowrap font-weight-bold">
+                            {{ product.total_price ? ConvertToArabicNumbers(Intl.NumberFormat().format(product.total_price)) + orderCurrency : "غير معروف" }} 
+                          </span>
+                        </td>
+                        <td v-if="canEditAllFields">
+                          <div class="d-flex align-center gap-2">
+                            <VTooltip text="تعديل المنتج">
+                              <template #activator="{ props }">
+                                <VBtn
+                                  v-bind="props"
+                                  icon
+                                  variant="plain"
+                                  color="default"
+                                  size="x-small"
+                                  @click="openProductEdit(product)"
+                                >
+                                  <VIcon
+                                    :size="22"
+                                    icon="ph:pencil-line"
+                                  />
+                                </VBtn>
+                              </template>
+                            </VTooltip>
+                            <VTooltip text="حذف المنتج">
+                              <template #activator="{ props }">
+                                <VBtn
+                                  v-bind="props"
+                                  icon
+                                  variant="plain"
+                                  color="default"
+                                  size="x-small"
+                                  @click="deleteProduct(product)"
+                                >
+                                  <VIcon
+                                    v-if="!isDeleteing"
+                                    :size="22"
+                                    icon="mingcute:delete-line"
+                                  />
+                                  <VIcon
+                                    v-else
+                                    icon="mingcute:loading-line"
+                                    class="loading"
+                                    size="32"
+                                  />
+                                </VBtn>
+                              </template>
+                            </VTooltip>
+                          </div>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </VTable>
+                </div>
+              </div>
             </div>
           </VCardText>
         </VCard>
       </div>
     </div>
-    <AddNewProduct v-if="isAddProductOpen"
+    <AddNewProduct
+      v-if="isAddProductOpen"
       v-model:isAddOpen="isAddProductOpen"
       :order="selectedProductItem"
       :sizes="productSizes"
@@ -797,12 +804,14 @@ onMounted(() => {
       :preparations="productPreparations"
       @refreshTable="getOrderDetails"
     />
-    <AddProductCoupon v-if="isAddProductCouponOpen"
+    <AddProductCoupon
+      v-if="isAddProductCouponOpen"
       v-model:isAddOpen="isAddProductCouponOpen"
       @addProductCoupon="addProductCoupon"
     />
 
-    <EditOrderItemDialog v-if="isEditProductOpen"
+    <EditOrderItemDialog
+      v-if="isEditProductOpen"
       v-model:isEditProductOpen="isEditProductOpen"
       :item="selectedProductItem"
       :sizes="productSizes"

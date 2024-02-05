@@ -227,6 +227,7 @@
     "payment_type_name": "طريقة الدفع",
     "total_amount_after_discount": "المبلغ الإجمالي بعدالخصم",
     "paid_amount": "المبلغ المدفوع",
+    "paid_amount_wallet": "المحفظة",
     "remain_amount": "المبلغ المتبقي",
     "description": "الوصف",
     "product_images": "صور المنتج",

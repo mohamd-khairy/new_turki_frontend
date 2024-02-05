@@ -37,38 +37,39 @@ const printOrder = () => {
 
 const orderCurrency = computed(() => {
   if(order.value.order?.selected_address?.country_id == 4) {
-    return 'درهم';
+    return 'درهم'
   }
 
-  return 'ريال';
-});
+  return 'ريال'
+})
 
-const isUAEOrder = computed(() => order.value.order?.selected_address?.country_id == 4);
+const isUAEOrder = computed(() => order.value.order?.selected_address?.country_id == 4)
 
 const getOrderDetails = id => {
   ordersListStore.fetchOrder(id).then(response => {
     order.value = response?.data.data
-    isLoading.value = false;
+    isLoading.value = false
 
     setTimeout(() => {
-      printOrder();
-    }, 500);
+      printOrder()
+    }, 500)
   }).catch(error => {
     isLoading.value = false
   }).finally(() => {
     setTimeout(() => {
       // router.push(`/orders`)
-      window.close();
-    }, 1500);
-  });
+      window.close()
+    }, 1500)
+  })
 }
 
 const getTodayDate = () => {
-  const today = new Date();
-  const year = today.getFullYear();
-  const month = today.getMonth() + 1; // Months are zero-indexed, so add 1
-  const day = today.getDate();
-  return `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+  const today = new Date()
+  const year = today.getFullYear()
+  const month = today.getMonth() + 1 // Months are zero-indexed, so add 1
+  const day = today.getDate()
+  
+  return `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`
 }
 
 onMounted(() => {
@@ -101,21 +102,29 @@ onMounted(() => {
         justify="space-between"
         class="mb-2 pa-0"
       >
-      <!-- <VCol cols="12">
+        <!--
+          <VCol cols="12">
           <div class="d-flex justify-space-between">
-            <div></div>
-            <VBtn
-              class="print_sec"
-              @click="printOrder"
-            >
-              طباعة الفاتورة
-            </VBtn>
+          <div></div>
+          <VBtn
+          class="print_sec"
+          @click="printOrder"
+          >
+          طباعة الفاتورة
+          </VBtn>
           </div>
-        </VCol> -->
-        <VCol cols="12" class="py-0">
+          </VCol> 
+        -->
+        <VCol
+          cols="12"
+          class="py-0"
+        >
           <div class="d-flex justify-space-between align-center">
             <div>
-              <h2 class="mb-2" style="font-size: 1.4rem;">
+              <h2
+                class="mb-2"
+                style="font-size: 1.4rem;"
+              >
                 شركة المرعى للتجارة (تركي للذبائح)
               </h2>
               <h4 class="d-flex align-center gap-3 mb-3 text-base">
@@ -148,51 +157,92 @@ onMounted(() => {
         class="mb-3"
       >
         <VCol cols="12">
-          <h3 class="pa-2 mb-4" style="background-color: #ddd;font-size: .8rem;">بيانات الفاتورة</h3>
+          <h3
+            class="pa-2 mb-4"
+            style="background-color: #ddd;font-size: 0.8rem;"
+          >
+            بيانات الفاتورة
+          </h3>
           <VRow>
-            <VCol cols="6" class="d-flex align-center gap-3 text-base py-1">
+            <VCol
+              cols="6"
+              class="d-flex align-center gap-3 text-base py-1"
+            >
               <h4>رقم الفاتورة:</h4>
-              <h2 v-if="order.order.payment">{{ order.order.payment.order_ref_no }}</h2>
+              <h2 v-if="order.order.payment">
+                {{ order.order.payment.order_ref_no }}
+              </h2>
               <span v-else>لا يوجد</span>
             </VCol>
-            <VCol cols="6" class="d-flex align-center gap-3 text-base py-1">
+            <VCol
+              cols="6"
+              class="d-flex align-center gap-3 text-base py-1"
+            >
               <h4>تاريخ الفاتورة:</h4>
               <h4>
                 {{ ConvertToArabicNumbers(getTodayDate().split("-").reverse().join("-")) }}
               </h4>
             </VCol>
-            <VCol cols="6" class="d-flex align-center gap-3 text-base py-1">
-                <h4>تاريخ التسليم: </h4>
-                <h4>
-                  {{ ConvertToArabicNumbers(order.order.delivery_date.toString().split("-").reverse().join("-")) }}  
-                </h4>
-              </VCol>
-              <VCol cols="6" class="d-flex align-center gap-3 text-base py-1">
-                <h4>وقت التسليم: </h4>
-                <h4>
-                  {{ order.order.delivery_period ? order.order.delivery_period.name_ar : "لا يوجد" }}  
-                </h4>
-              </VCol>
+            <VCol
+              cols="6"
+              class="d-flex align-center gap-3 text-base py-1"
+            >
+              <h4>تاريخ التسليم: </h4>
+              <h4>
+                {{ ConvertToArabicNumbers(order.order.delivery_date.toString().split("-").reverse().join("-")) }}  
+              </h4>
+            </VCol>
+            <VCol
+              cols="6"
+              class="d-flex align-center gap-3 text-base py-1"
+            >
+              <h4>وقت التسليم: </h4>
+              <h4>
+                {{ order.order.delivery_period ? order.order.delivery_period.name_ar : "لا يوجد" }}  
+              </h4>
+            </VCol>
           </VRow>
         </VCol>
-        <VCol cols="12" class="mb-3">
-          <h3 class="pa-2 mb-4" style="background-color: #ddd;font-size: .8rem;">بيانات العميل</h3>
+        <VCol
+          cols="12"
+          class="mb-3"
+        >
+          <h3
+            class="pa-2 mb-4"
+            style="background-color: #ddd;font-size: 0.8rem;"
+          >
+            بيانات العميل
+          </h3>
           <VRow>
-            <VCol cols="6" class="d-flex align-center gap-3 text-base py-1">
+            <VCol
+              cols="6"
+              class="d-flex align-center gap-3 text-base py-1"
+            >
               <h4>اسم العميل: </h4>
               <h4>{{ order.order.customer.name }}</h4>
             </VCol>
-            <VCol cols="6" class="d-flex align-center gap-3 text-base py-1">
+            <VCol
+              cols="6"
+              class="d-flex align-center gap-3 text-base py-1"
+            >
               <h4>رقم الهاتف:</h4>
-              <h4 dir="ltr">{{ order.order.customer.mobile }}</h4>
-            </VCol>
-            <VCol cols="6" class="d-flex align-center gap-3 text-base py-1">
-              <h4> العنوان :</h4>
-              <h4>
-              {{ ConvertToArabicNumbers(order.order.selected_address.address) }}  
+              <h4 dir="ltr">
+                {{ order.order.customer.mobile }}
               </h4>
             </VCol>
-            <VCol cols="6" class="d-flex align-center gap-3 text-base py-1">
+            <VCol
+              cols="6"
+              class="d-flex align-center gap-3 text-base py-1"
+            >
+              <h4> العنوان :</h4>
+              <h4>
+                {{ ConvertToArabicNumbers(order.order.selected_address.address) }}  
+              </h4>
+            </VCol>
+            <VCol
+              cols="6"
+              class="d-flex align-center gap-3 text-base py-1"
+            >
               <h4>طريقة الدفع :</h4>
               <h4>
                 {{ order.order.payment_type ? order.order.payment_type.name_ar : "لا يوجد" }}
@@ -206,18 +256,36 @@ onMounted(() => {
           <VTable class="mb-4">
             <thead>
               <tr>
-                <th class="text-base">الذبيحة</th>
-                <th class="text-base">الحجم</th>
-                <th class="text-base">الكمية</th>
-                <th class="text-base">التقطيع</th>
-                <th class="text-base">التجهيز</th>
-                <!-- <th>الكرشة</th>
-                <th>الكوارع</th>
-                <th>اللية</th>
-                <th>الرأس</th> -->
-                <th class="text-base">الشلوطة</th>
-                <th class="text-base">السعر</th>
-                <th class="text-base">الاجمالي</th>
+                <th class="text-base">
+                  الذبيحة
+                </th>
+                <th class="text-base">
+                  الحجم
+                </th>
+                <th class="text-base">
+                  الكمية
+                </th>
+                <th class="text-base">
+                  التقطيع
+                </th>
+                <th class="text-base">
+                  التجهيز
+                </th>
+                <!--
+                  <th>الكرشة</th>
+                  <th>الكوارع</th>
+                  <th>اللية</th>
+                  <th>الرأس</th> 
+                -->
+                <th class="text-base">
+                  الشلوطة
+                </th>
+                <th class="text-base">
+                  السعر
+                </th>
+                <th class="text-base">
+                  الاجمالي
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -226,106 +294,160 @@ onMounted(() => {
                 :key="product.id"
               >
                 <td><small>{{ product.product ? product.product.name_ar : "لا يوجد" }}</small></td>
-                <td><small>
-                  {{ product.size ? product.size.name_ar : "لا يوجد" }}</small></td>
-                <td><small>
-                  {{ product.quantity ? product.quantity : "لا يوجد" }}</small></td>
-                <td><small>
-                  {{ product.cut ? product.cut.name_ar : "لا يوجد" }}</small></td>
-                <td><small>
-                  {{ product.preparation ? product.preparation.name_ar : "لا يوجد" }}</small></td>
-                <!-- <td><small>
+                <td>
+                  <small>
+                    {{ product.size ? product.size.name_ar : "لا يوجد" }}</small>
+                </td>
+                <td>
+                  <small>
+                    {{ product.quantity ? product.quantity : "لا يوجد" }}</small>
+                </td>
+                <td>
+                  <small>
+                    {{ product.cut ? product.cut.name_ar : "لا يوجد" }}</small>
+                </td>
+                <td>
+                  <small>
+                    {{ product.preparation ? product.preparation.name_ar : "لا يوجد" }}</small>
+                </td>
+                <!--
+                  <td><small>
                   {{ product.is_karashah ? "بدون" : "" }}</small></td>
-                <td><small>
+                  <td><small>
                   {{ product.is_kwar3 ? "بدون" : "" }}</small></td>
-                <td><small>
+                  <td><small>
                   {{ product.is_lyh ? "بدون" : "" }}</small></td>
-                <td><small>
-                  {{ product.is_Ras ? "بدون" : "" }}</small></td> -->
-                <td><small>
-                  {{ product.shalwata ? "مع شلوطة" : "بدون" }}</small></td>
-                <td><small>
-                  {{ product.price ?? (product.total_price / product.quantity) }}</small></td>
-                <td><small>
-                  {{ product.total_price ?? "لا يوجد" }}</small></td>
+                  <td><small>
+                  {{ product.is_Ras ? "بدون" : "" }}</small></td> 
+                -->
+                <td>
+                  <small>
+                    {{ product.shalwata ? "مع شلوطة" : "بدون" }}</small>
+                </td>
+                <td>
+                  <small>
+                    {{ product.price ? ConvertToArabicNumbers(product.price) : ConvertToArabicNumbers(product.total_price / product.quantity) }}</small>
+                </td>
+                <td>
+                  <small>
+                    {{ product.total_price ? ConvertToArabicNumbers(product.total_price) : "لا يوجد" }}</small>
+                </td>
               </tr>
             </tbody>
           </VTable>
-          <h3 class="d-flex align-center justify-space-between pa-2 mb-3" style="background-color: #ddd;font-size: .8rem;">
+          <h3
+            class="d-flex align-center justify-space-between pa-2 mb-3"
+            style="background-color: #ddd;font-size: 0.8rem;"
+          >
             <span class="text-base">بيانات الدفع</span>
             <small class="text-base">جميع الأسعار تشمل الضريبة</small>
           </h3>
           <VRow class="mb-4">
-            <VCol cols="6" class="d-flex align-center gap-3 text-base py-1">
+            <VCol
+              cols="6"
+              class="d-flex align-center gap-3 text-base py-1"
+            >
               <span> المبلغ المسدد :</span>
               <span v-if="order.order.payment">
                 {{ order.order.payment ? ConvertToArabicNumbers(order.order.payment.price) : 0 }} <small>{{ orderCurrency }}</small> 
               </span>
             </VCol>
-            <VCol cols="6" class="d-flex align-center gap-3 text-base py-1">
+            <VCol
+              cols="6"
+              class="d-flex align-center gap-3 text-base py-1"
+            >
               <span> إجمالي المتبقي	: </span>
               <span>
-                {{ order.order.payment ? order.order.total_amount_after_discount - order.order.payment.price < 0 ? ConvertToArabicNumbers(0) : ConvertToArabicNumbers(order.order.total_amount_after_discount - order.order.payment.price) : ConvertToArabicNumbers(order.order.total_amount_after_discount) }} 
+                {{ ConvertToArabicNumbers(order.order.remain_amount) }}
                 <small>{{ orderCurrency }}</small>
               </span>
             </VCol>
-            <VCol cols="6" class="d-flex align-center gap-3 text-base py-1">
+            <VCol
+              cols="6"
+              class="d-flex align-center gap-3 text-base py-1"
+            >
               <span>الخصم :</span>
               <span>
                 {{ ConvertToArabicNumbers(order.order.discount_applied) ?? 0 }} 
                 <small>{{ orderCurrency }}</small>
               </span>
             </VCol>
-            <VCol cols="6" class="d-flex align-center gap-3 text-base py-1">
+            <VCol
+              cols="6"
+              class="d-flex align-center gap-3 text-base py-1"
+            >
               <span> الإجمالي غير شامل الضريبة بعد الخصم : </span>
               <span>
                 {{ ConvertToArabicNumbers(order.order.total_amount_after_tax) ?? 0 }} 
                 <small>{{ orderCurrency }}</small>
               </span>
             </VCol>
-            <VCol cols="6" class="d-flex align-center gap-3 text-base py-1">
+            <VCol
+              cols="6"
+              class="d-flex align-center gap-3 text-base py-1"
+            >
               <span>ضريبة القيمة المضافة : </span>
               <span>
                 {{ ConvertToArabicNumbers(order.order.tax_fees) }} 
                 <small>{{ orderCurrency }}</small>
               </span>
             </VCol>
-            <VCol cols="6" class="d-flex align-center gap-3 text-base py-1">
+            <VCol
+              cols="6"
+              class="d-flex align-center gap-3 text-base py-1"
+            >
               <span> الإجمالي شامل الضريبة : </span>
               <span>
                 {{ ConvertToArabicNumbers(Number(order.order.order_subtotal)) }} 
                 <small>{{ orderCurrency }}</small>
               </span>
             </VCol>
-            <VCol cols="12" class="pt-3">
-            <hr />
+            <VCol
+              cols="12"
+              class="pt-3"
+            >
+              <hr>
             </VCol>
-            <VCol cols="12" class="d-flex align-center gap-3 text-base py-1">
+            <VCol
+              cols="12"
+              class="d-flex align-center gap-3 text-base py-1"
+            >
               <span> الإجمالي شامل الضريبة بعد الخصم : </span>
               <h3>
-                {{ ConvertToArabicNumbers(order.order.total_amount_after_discount) ?? 0 }} 
+                {{ ConvertToArabicNumbers(parseFloat(order.order.total_amount_after_discount) + parseFloat(order.order.wallet_amount_used ?? 0)) ?? 0 }} 
                 <small>{{ orderCurrency }}</small>
               </h3>
             </VCol>
-            <VCol v-if="order.order && order.order.boxes_count"
-              cols="6" class="d-flex align-center gap-3 text-base py-1">
-                <h4>عدد الكراتين </h4>
-                <h4>
-                  {{ order.order.boxes_count }}  
-                </h4>
-              </VCol>
-              <VCol v-if="order.order && order.order.dishes_count" 
-              cols="6" class="d-flex align-center gap-3 text-base py-1">
-                <h4>عدد الأطباق</h4>
-                <h4>
-                  {{ order.order.dishes_count }}  
-                </h4>
-              </VCol>
+            <VCol
+              v-if="order.order && order.order.boxes_count"
+              cols="6"
+              class="d-flex align-center gap-3 text-base py-1"
+            >
+              <h4>عدد الكراتين </h4>
+              <h4>
+                {{ ConvertToArabicNumbers(order.order.boxes_count) }}  
+              </h4>
+            </VCol>
+            <VCol
+              v-if="order.order && order.order.dishes_count" 
+              cols="6"
+              class="d-flex align-center gap-3 text-base py-1"
+            >
+              <h4>عدد الأطباق</h4>
+              <h4>
+                {{ ConvertToArabicNumbers(order.order.dishes_count) }}  
+              </h4>
+            </VCol>
           </VRow>
-          <h3 class="d-flex align-center justify-space-between pa-2 mb-1 text-base" style="background-color: #ddd;">
+          <h3
+            class="d-flex align-center justify-space-between pa-2 mb-1 text-base"
+            style="background-color: #ddd;"
+          >
             ملاحظات
           </h3>
-          <p class="text-base">{{ order.order.comment ?? "لا يوجد" }}</p>
+          <p class="text-base">
+            {{ order.order.comment ?? "لا يوجد" }}
+          </p>
         </VCol>
       </VRow>
       <VRow
@@ -354,13 +476,14 @@ onMounted(() => {
 
 <style scoped lang="scss">
 .invoice-container {
-  margin-top: -100px;
+  margin-block-start: -100px;
 
   .text-base {
     font-size: 1.2rem !important;
     font-weight: 600;
   }
 }
+
 .loader_wrap {
   text-align: center;
 
