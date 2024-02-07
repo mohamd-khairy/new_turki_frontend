@@ -122,12 +122,23 @@ onMounted(() => {
           <div class="d-flex justify-space-between align-center">
             <div>
               <h2
+                v-if="isUAEOrder"
+                class="mb-2"
+                style="font-size: 1.4rem;"
+              >
+                شركة خيرات المرعى لتجارة اللحوم الطازجة ش.ذ.م.م
+              </h2>
+              <h2
+                v-else
                 class="mb-2"
                 style="font-size: 1.4rem;"
               >
                 شركة المرعى للتجارة (تركي للذبائح)
               </h2>
-              <h4 class="d-flex align-center gap-3 mb-3 text-base">
+              <h4
+                v-if="isUAEOrder"
+                class="d-flex align-center gap-3 mb-3 text-base"
+              >
                 <span>رقم السجل الضريبي: </span>
                 <span>
                   {{ ConvertToArabicNumbers(310841577800003) }}
