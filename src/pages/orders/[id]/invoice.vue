@@ -138,6 +138,10 @@ onMounted(() => {
               <h4
                 v-if="isUAEOrder"
                 class="d-flex align-center gap-3 mb-3 text-base"
+              />
+              <h4
+                v-else
+                class="d-flex align-center gap-3 mb-3 text-base"
               >
                 <span>رقم السجل الضريبي: </span>
                 <span>
@@ -147,7 +151,7 @@ onMounted(() => {
               <h4 class="d-flex align-center gap-3 mb-2 text-base">
                 <span>سجل تجاري: </span>
                 <span v-if="isUAEOrder">
-                  {{ ConvertToArabicNumbers(100313508200003) }}
+                  <!-- {{ ConvertToArabicNumbers(100313508200003) }} -->
                 </span>
                 <span v-else>
                   {{ ConvertToArabicNumbers(1010476540) }}
