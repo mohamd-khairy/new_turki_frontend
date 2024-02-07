@@ -148,12 +148,16 @@ onMounted(() => {
                   {{ ConvertToArabicNumbers(310841577800003) }}
                 </span>
               </h4>
-              <h4 class="d-flex align-center gap-3 mb-2 text-base">
+              <h4
+                v-if="isUAEOrder"
+                class="d-flex align-center gap-3 mb-2 text-base"
+              />
+              <h4
+                v-else
+                class="d-flex align-center gap-3 mb-2 text-base"
+              >
                 <span>سجل تجاري: </span>
-                <span v-if="isUAEOrder">
-                  <!-- {{ ConvertToArabicNumbers(100313508200003) }} -->
-                </span>
-                <span v-else>
+                <span>
                   {{ ConvertToArabicNumbers(1010476540) }}
                 </span>
               </h4>
