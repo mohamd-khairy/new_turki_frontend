@@ -78,7 +78,12 @@ export default [
     ],
     permission: "read-permission",
   },
- 
+  {
+    title: 'الفواتير',
+    to: { name: 'invoices' },
+    icon: { icon: 'uil:invoice' },
+    permission: "read-product",
+  },
   {
     title: 'Coupons',
     to: { name: 'coupons' },

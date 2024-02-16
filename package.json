@@ -41,7 +41,6 @@
         "vue3-google-map": "^0.18.0",
         "vue3-perfect-scrollbar": "^1.6.0",
         "vuejs-paginate": "^2.1.0",
-        "vuetify": "^3.0.3",
         "webfontloader": "^1.6.28"
     },
     "devDependencies": {
@@ -77,7 +76,8 @@
         "vite-plugin-pages": "^0.27.1",
         "vite-plugin-vue-layouts": "^0.7.0",
         "vite-plugin-vuetify": "1.0.0",
-        "vue-tsc": "^1.0.9"
+        "vue-tsc": "^1.0.9",
+        "vuetify": "^3.5.4"
     },
     "packageManager": "yarn@1.22.18",
     "resolutions": {
