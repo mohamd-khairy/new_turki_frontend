@@ -1,7 +1,8 @@
 <script setup>
-import moment from "moment"
-import { useI18n } from "vue-i18n"
 import { useSettingsStore } from "@/store/Settings"
+import moment from "moment"
+import { onMounted } from "vue"
+import { useI18n } from "vue-i18n"
 
 const { t } = useI18n()
 
@@ -18,8 +19,10 @@ const isAddOpen = ref(false)
 const isDeleteOpen = ref(false)
 const selectedItem = ref({})
 const isEditOpen = ref(false)
+const isLoading = ref(false)
 
 const getItems = () => {
+  isLoading.value = true
   settingsListStore.fetchProductSize({
     q: searchQuery.value,
   }).then(response => {
@@ -29,6 +32,8 @@ const getItems = () => {
     currentPage.value = 1
   }).catch(error => {
     console.log(error)
+  }).finally(() => {
+    isLoading.value = false
   })
 }
 
@@ -102,11 +107,15 @@ const formatDateTime = data => {
 
   return { date, time }
 }
+
+onMounted(() => {
+  getItems()
+})
 </script>
 
 <template>
   <div>
-    <VCard>
+    <VCard :loading="isLoading">
       <VCardTitle class="d-flex align-center">
         <VIcon icon="game-icons:weight-scale" size="24" color="primary"></VIcon>
         <span class="mx-1">{{ t('Product_Size') }}</span>
@@ -256,16 +265,23 @@ const formatDateTime = data => {
         />
       </VCardText>
     </VCard>
-        <AddProductSizeDialog v-model:isAddOpen="isAddOpen" @refreshTable="getItems"/>
-        <EditProductSizeDialog
-          v-model:isEditOpen="isEditOpen"
-          :item="selectedItem"
-          @refreshTable="getItems"
-        />
-        <DeleteProductSizeDialog
-          v-model:isDeleteOpen="isDeleteOpen"
-          :item="selectedItem"
-          @refreshTable="getItems"
-        />
+
+    <AddProductSizeDialog 
+      v-if="isAddOpen" 
+      v-model:isAddOpen="isAddOpen" 
+      @refreshTable="getItems"
+    />
+    <EditProductSizeDialog
+      v-if="isEditOpen"
+      v-model:isEditOpen="isEditOpen"
+      :item="selectedItem"
+      @refreshTable="getItems"
+    />
+    <DeleteProductSizeDialog
+      v-if="isDeleteOpen"
+      v-model:isDeleteOpen="isDeleteOpen"
+      :item="selectedItem"
+      @refreshTable="getItems"
+    />
   </div>
 </template>

@@ -1,16 +1,19 @@
 <script setup>
-import { useEmployeesStore } from "@/store/Employees"
-import { useProductsStore } from "@/store/Products"
-import { useStocksStore } from "@/store/Stocks"
-import { useStoresStore } from "@/store/Stores"
-import { useSuppliersStore } from "@/store/Suppliers"
-import { requiredValidator } from '@validators'
+import { useEmployeesStore } from "@/store/Employees";
+import { useProductsStore } from "@/store/Products";
+import { useSettingsStore } from "@/store/Settings";
+import { useStocksStore } from "@/store/Stocks";
+import { useStoresStore } from "@/store/Stores";
+import { useSuppliersStore } from "@/store/Suppliers";
+import { requiredValidator } from '@validators';
 
+const settingsListStore = useSettingsStore()
 const stocksStore = useStocksStore()
 const storesStore = useStoresStore()
 const productListStore = useProductsStore()
 const employeesStore = useEmployeesStore()
 const suppliersStore = useSuppliersStore()
+const router = useRouter()
 
 const isSubmitting = ref(false)
 const stores = ref([])
@@ -33,7 +36,6 @@ const itemData = ref({
 })
 
 const { t } = useI18n()
-const router = useRouter()
 const refForm = ref(null)
 
 const onFormSubmit = async () => {
@@ -41,8 +43,20 @@ const onFormSubmit = async () => {
 
   const res = await refForm.value.validate()
   if (res.valid) {
-    stocksStore.store(itemData.value).then(response => {
-      getOrderDetails()
+    const formData = new FormData()
+    formData.append('product_id', itemData.value.product_id);
+    formData.append('invoice', itemData.value.invoice[0]);
+    formData.append('store_id', itemData.value.store_id);
+    formData.append('supplier_id', itemData.value.supplier_id);
+    formData.append('user_id', itemData.value.user_id);
+    formData.append('product_name', itemData.value.product_name);
+    formData.append('quantity', itemData.value.quantity);
+    formData.append('price', itemData.value.price);
+    formData.append('tax', itemData.value.tax);
+    formData.append('invoice_price', itemData.value.invoice_price);
+    formData.append('notes', itemData.value.notes);
+
+    stocksStore.store(formData).then(response => {
       settingsListStore.alertColor = "success"
       settingsListStore.alertMessage = "تم تعديل حالة الطلب بنجاح"
       settingsListStore.isAlertShow = true
@@ -50,6 +64,8 @@ const onFormSubmit = async () => {
         settingsListStore.isAlertShow = false
         settingsListStore.alertMessage = ""
       }, 1000)
+      
+      router.push({ name: 'stocks' });
     }).catch(error => {
       if (error.response.data.errors) {
         const errs = Object.keys(error.response.data.errors)

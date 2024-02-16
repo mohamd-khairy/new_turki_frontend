@@ -6,9 +6,9 @@ const axiosIns = axios.create({
 // You can add your headers here
 // ================================
   // baseURL: 'https://new-turki-project-api.test/api/v2',
-  baseURL: 'https://almaraacompany.com/dashboard/api/v2',
+  // baseURL: 'https://almaraacompany.com/dashboard/api/v2', // production api
 
-  // baseURL: 'https://turki.almaraacompany.com/admin/api/v2',
+  baseURL: 'https://turki.almaraacompany.com/admin/api/v2', // test api
   headers: {
     Accept: "application/json",
     Authorization: `Bearer ${token}`,
