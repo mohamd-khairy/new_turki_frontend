@@ -1,8 +1,8 @@
 <script setup>
-import { useCitiesStore } from "@/store/Cities";
-import { useEmployeesStore } from "@/store/Employees";
-import { useStocksStore } from "@/store/Stocks";
-import moment from "moment/moment";
+import { useCitiesStore } from "@/store/Cities"
+import { useEmployeesStore } from "@/store/Employees"
+import { useStocksStore } from "@/store/Stocks"
+import moment from "moment/moment"
 
 const stocksStore = useStocksStore()
 const citiesListStore = useCitiesStore()
@@ -36,6 +36,7 @@ const router = useRouter()
 
 const getStores = () => {
   isLoading.value = true
+
   // products.value = []
   stocksStore.getAll({
     ...filters,
@@ -43,7 +44,7 @@ const getStores = () => {
     per_page: rowPerPage.value,
     page: currentPage.value,
   }).then(response => {
-    stocksItems.value = response.data?.data?.data;
+    stocksItems.value = response.data?.data?.data
     totalPage.value = response.data.data.last_page
     dataFrom.value = response.data.data.from
     dataTo.value = response.data.data.to
@@ -65,26 +66,26 @@ const paginationData = computed(() => {
   return ` عرض من ${ConvertToArabicNumbers(dataFrom.value)} إلي ${ConvertToArabicNumbers(dataTo.value)} من ${ConvertToArabicNumbers(totalItems.value)} الإجمالي `
 })
 
-const openDelete = (store) => {
+const openDelete = store => {
   isDeleteOpen.value = true
   selectedItem.value = store
 }
 
-const openEdit = (store) => {
+const openEdit = store => {
   isEditOpen.value = true
   selectedItem.value = store
 }
 
 const filterItems = () => {
   isFiltered.value = true
-  getStores();
+  getStores()
 }
 
 const clearFilter = () => {
   filters.city_id = null
   filters.user_id = null
 
-  getStores();
+  getStores()
 }
 
 const ConvertToArabicNumbers = num => {
@@ -103,22 +104,22 @@ const formatDateTime = data => {
 }
 
 watch(rowPerPage, () => {
-  getStores();
+  getStores()
 })
 
 watch(() => currentPage.value, () => {
-  getStores();
+  getStores()
 })
 
 onMounted(() => {
-  getStores();
+  getStores()
 
   citiesListStore.fetchCities({}).then(response => {
     cities.value = response?.data.data
   })
 
   employeesStore.fetchEmployees({ pageSize: -1 }).then(response => {
-    employees.value = response.data.data?.data;
+    employees.value = response.data.data?.data
   })
 })
 </script>
@@ -128,11 +129,23 @@ onMounted(() => {
     <VCard class="mb-5 pa-5">
       <VForm @submit.stop>
         <VRow justify="space-between">
-          <VCol cols="12" lg="8">
+          <VCol
+            cols="12"
+            lg="8"
+          >
             <VRow>
-              <VCol cols="12" lg="4" md="3" sm="6" class="d-flex align-center gap-3">
+              <VCol
+                cols="12"
+                lg="4"
+                md="3"
+                sm="6"
+                class="d-flex align-center gap-3"
+              >
                 <div class="icon">
-                  <VIcon icon="solar:city-broken" color="primary"></VIcon>
+                  <VIcon
+                    icon="solar:city-broken"
+                    color="primary"
+                  />
                 </div>
                 <VSelect
                   v-model="filters.city_id"
@@ -142,9 +155,18 @@ onMounted(() => {
                   item-value="id"
                 />
               </VCol>
-              <VCol cols="12" lg="4" md="3" sm="6" class="d-flex align-center gap-3">
+              <VCol
+                cols="12"
+                lg="4"
+                md="3"
+                sm="6"
+                class="d-flex align-center gap-3"
+              >
                 <div class="icon">
-                  <VIcon icon="clarity:users-line" color="primary"></VIcon>
+                  <VIcon
+                    icon="clarity:users-line"
+                    color="primary"
+                  />
                 </div>
                 <VSelect
                   v-model="filters.user_id"
@@ -157,7 +179,8 @@ onMounted(() => {
             </VRow>
           </VCol>
           <VCol
-          cols="12" lg="4"
+            cols="12"
+            lg="4"
             class="d-flex align-center justify-end gap-3"
           >
             <VBtn
@@ -192,10 +215,11 @@ onMounted(() => {
     </VCard>
     <VCard :loading="isLoading">
       <VCardTitle class="d-flex align-center gap-2">
-        <VIcon icon="material-symbols:production-quantity-limits-sharp"
+        <VIcon
+          icon="material-symbols:production-quantity-limits-sharp"
           size="24"
           color="primary"
-        ></VIcon>
+        />
         <span class="mx-1">المخزون</span>
       </VCardTitle>
       <VCardText class="d-flex align-center flex-wrap gap-2 py-4">
@@ -207,157 +231,158 @@ onMounted(() => {
             :items="[5, 10, 20, 30, 50, 100]"
           />
         </div>
-        <!--         👉 Create product :to="{ name: 'apps-product-add' }"-->
-        <VBtn
+        <!--         👉 Create product :to="{ name: 'apps-product-add' }" -->
+        <!--
+          <VBtn
           prepend-icon="tabler-plus"
           to="/stocks/create"
           type="link"
           :disabled="isLoading"
-        >
+          >
           إضافة مخزون
-        </VBtn>
-
-        <VSpacer/>
-
-
+          </VBtn>
+        -->
+        <VSpacer />
       </VCardText>
 
-      <VDivider/>
+      <VDivider />
 
       <VTable class="text-no-wrap product-list-table">
         <thead>
-        <tr>
-          <th
-            scope="col"
-            class="font-weight-semibold"
-          >
-            #
-          </th>
-          <th
-            scope="col"
-            class="font-weight-semibold"
-          >
-            المنتج
-          </th>
-          <th
-            scope="col"
-            class="font-weight-semibold"
-          >
-            الكمية
-          </th>
-          <th
-            scope="col"
-            class="font-weight-semibold"
-          >
-            السعر
-          </th>
-          <th
-            scope="col"
-            class="font-weight-semibold"
-          >
-            المخزن
-          </th>
-          <th
-            scope="col"
-            class="font-weight-semibold"
-          >
-            المزود
-          </th>
-          <th
-            scope="col"
-            class="font-weight-semibold"
-          >
-            المسئول
-          </th>
-          <th
-            scope="col"
-            class="font-weight-semibold"
-          >
-            {{ t('forms.created_at') }}
-          </th>
-          <th
-            scope="col"
-            class="font-weight-semibold"
-          >
-            {{ t('forms.actions') }}
-          </th>
-        </tr>
+          <tr>
+            <th
+              scope="col"
+              class="font-weight-semibold"
+            >
+              #
+            </th>
+            <th
+              scope="col"
+              class="font-weight-semibold"
+            >
+              المنتج
+            </th>
+            <th
+              scope="col"
+              class="font-weight-semibold"
+            >
+              الكمية
+            </th>
+            <th
+              scope="col"
+              class="font-weight-semibold"
+            >
+              السعر
+            </th>
+            <th
+              scope="col"
+              class="font-weight-semibold"
+            >
+              المخزن
+            </th>
+            <th
+              scope="col"
+              class="font-weight-semibold"
+            >
+              المورد
+            </th>
+            <th
+              scope="col"
+              class="font-weight-semibold"
+            >
+              المسئول
+            </th>
+            <th
+              scope="col"
+              class="font-weight-semibold"
+            >
+              {{ t('forms.created_at') }}
+            </th>
+            <th
+              scope="col"
+              class="font-weight-semibold"
+            >
+              {{ t('forms.actions') }}
+            </th>
+          </tr>
         </thead>
 
         <tbody>
-        <tr
-          v-for="(store, i) in stocksItems"
-          :key="store.id"
-        >
-          <td>
-            {{ store.id }}
-          </td>
-          <td>
-            {{ store.product_name }}
-          </td>
-          <td>
-            <span class="font-weight-bold">{{ store.quantity }}</span>
-          </td>
-          <td>
-            <span class="font-weight-bold">{{ store.price }}</span>
-            <small class="d-inline-block ms-1">ريال</small>
-          </td>
-          <td>
-            {{ store.store?.name }}
-          </td>
-          <td>
-            {{ store.supplier?.name }}
-          </td>
-          <td>
-            {{ store.user?.username }}
-          </td>
-          <td>
-            {{ ConvertToArabicNumbers(formatDateTime(store.created_at).date) }}
-          </td>
-          <td class="d-flex align-center gap-2">
-            <VBtn
-              icon
-              variant="plain"
-              color="default"
-              size="x-small"
-              @click="openEdit(store)"
-            >
-              <VIcon
+          <tr
+            v-for="(store, i) in stocksItems"
+            :key="store.id"
+          >
+            <td>
+              {{ store.id }}
+            </td>
+            <td>
+              {{ store.product_name }}
+            </td>
+            <td>
+              <span class="font-weight-bold">{{ store.quantity }}</span>
+            </td>
+            <td>
+              <span class="font-weight-bold">{{ store.price }}</span>
+              <small class="d-inline-block ms-1">ريال</small>
+            </td>
+            <td>
+              {{ store.store?.name }}
+            </td>
+            <td>
+              {{ store.invoice?.supplier?.name }}
+            </td>
+            <td>
+              {{ store.invoice?.user?.username }}
+            </td>
+            <td>
+              {{ ConvertToArabicNumbers(formatDateTime(store.created_at).date) }}
+            </td>
+            <td class="d-flex align-center gap-2">
+              <!--
+                <VBtn
+                icon
+                variant="plain"
+                color="default"
+                size="x-small"
+                @click="openEdit(store)"
+                >
+                <VIcon
                 :size="22"
                 icon="tabler-pencil"
-              />
-            </VBtn>
-            <VBtn
-              icon
-              variant="plain"
-              color="default"
-              size="x-small"
-              @click="openDelete(store)"
-            >
-              <VIcon
-                :size="22"
-                icon="tabler-trash"
-              />
-            </VBtn>
-          </td>
-        </tr>
+                />
+                </VBtn> 
+              -->
+              <VBtn
+                icon
+                variant="plain"
+                color="default"
+                size="x-small"
+                @click="openDelete(store)"
+              >
+                <VIcon
+                  :size="22"
+                  icon="tabler-trash"
+                />
+              </VBtn>
+            </td>
+          </tr>
         </tbody>
 
         <!-- 👉 table footer  -->
         <tfoot v-show="!stocksItems.length">
-        <tr>
-          <td
-            colspan="8"
-            class="text-center text-body-1"
-          >
-            لا يوجد بيانات
-          </td>
-        </tr>
+          <tr>
+            <td
+              colspan="8"
+              class="text-center text-body-1"
+            >
+              لا يوجد بيانات
+            </td>
+          </tr>
         </tfoot>
       </VTable>
       <!-- !SECTION -->
 
-      <VDivider/>
+      <VDivider />
 
       <!-- SECTION Pagination -->
       <VCardText class="d-flex align-center flex-wrap justify-space-between gap-4 py-3">
@@ -374,6 +399,11 @@ onMounted(() => {
       </VCardText>
     </VCard>
 
-    <DeleteStockDialog v-if="isDeleteOpen" v-model:is-delete-open="isDeleteOpen" :item="selectedItem" @refreshTable="getStores"/>
+    <DeleteStockDialog
+      v-if="isDeleteOpen"
+      v-model:is-delete-open="isDeleteOpen"
+      :item="selectedItem"
+      @refreshTable="getStores"
+    />
   </div>
 </template>

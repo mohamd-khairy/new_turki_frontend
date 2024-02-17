@@ -48,18 +48,18 @@ export default [
         // permission: "read-product",
       },
       {
-        title: 'المخزن',
-        to: { name: 'stores' },
-
-        // icon: { icon: 'carbon:store' },
-        // permission: "read-store",
-      },
-      {
         title: 'المخزون',
         to: { name: 'stocks' },
 
         // icon: { icon: 'material-symbols:production-quantity-limits-sharp' },
         // permission: "read-stock",
+      },
+      {
+        title: 'المخزن',
+        to: { name: 'stores' },
+
+        // icon: { icon: 'carbon:store' },
+        // permission: "read-store",
       },
       {
         title: 'الموردون',
