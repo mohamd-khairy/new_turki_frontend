@@ -41,6 +41,13 @@ export default [
     permission: "read-dashboard",
     children: [
       {
+        title: 'الفواتير',
+        to: { name: 'invoices' },
+
+        // icon: { icon: 'uil:invoice' },
+        // permission: "read-product",
+      },
+      {
         title: 'المخزن',
         to: { name: 'stores' },
 
@@ -77,12 +84,6 @@ export default [
       },
     ],
     permission: "read-permission",
-  },
-  {
-    title: 'الفواتير',
-    to: { name: 'invoices' },
-    icon: { icon: 'uil:invoice' },
-    permission: "read-product",
   },
   {
     title: 'Coupons',
