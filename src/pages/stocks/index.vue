@@ -2,11 +2,13 @@
 import { useCitiesStore } from "@/store/Cities"
 import { useEmployeesStore } from "@/store/Employees"
 import { useStocksStore } from "@/store/Stocks"
+import { useStoresStore } from "@/store/Stores"
 import moment from "moment/moment"
 
 const stocksStore = useStocksStore()
 const citiesListStore = useCitiesStore()
 const employeesStore = useEmployeesStore()
+const storesStore = useStoresStore()
 
 const searchQuery = ref('')
 const rowPerPage = ref(5)
@@ -25,10 +27,12 @@ const isLoading = ref(false)
 const isFiltered = ref(false)
 const cities = ref([])
 const employees = ref([])
+const stores = ref([])
 
 const filters = reactive({
   city_id: null,
   user_id: null,
+  store_id: null,
 })
 
 const { t } = useI18n()
@@ -84,6 +88,7 @@ const filterItems = () => {
 const clearFilter = () => {
   filters.city_id = null
   filters.user_id = null
+  filters.store_id = null
 
   getStores()
 }
@@ -120,6 +125,10 @@ onMounted(() => {
 
   employeesStore.fetchEmployees({ pageSize: -1 }).then(response => {
     employees.value = response.data.data?.data
+  })
+
+  storesStore.getAll({ pageSize: -1 }).then(response => {
+    stores.value = response.data.data?.data
   })
 })
 </script>
@@ -173,6 +182,27 @@ onMounted(() => {
                   :items="employees"
                   label="المسئول"
                   item-title="username"
+                  item-value="id"
+                />
+              </VCol>
+              <VCol
+                cols="12"
+                lg="4"
+                md="3"
+                sm="6"
+                class="d-flex align-center gap-3"
+              >
+                <div class="icon">
+                  <VIcon
+                    icon="clarity:users-line"
+                    color="primary"
+                  />
+                </div>
+                <VSelect
+                  v-model="filters.store_id"
+                  :items="stores"
+                  label="المخزن"
+                  item-title="name"
                   item-value="id"
                 />
               </VCol>

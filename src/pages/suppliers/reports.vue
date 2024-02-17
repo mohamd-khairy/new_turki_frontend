@@ -1,6 +1,6 @@
 <script setup>
-import { useSuppliersStore } from "@/store/Suppliers";
-import moment from "moment";
+import { useSuppliersStore } from "@/store/Suppliers"
+import moment from "moment"
 
 const route = useRoute()
 const router = useRouter()
@@ -38,40 +38,47 @@ const printOrder = () => {
 
 // const isUAEOrder = computed(() => order.value.order?.selected_address?.country_id == 4);
 
-const getSuppliers = (routeQuery) => {
+const getSuppliers = routeQuery => {
   isLoading.value = true
   suppliersStore.getAll({
     ...routeQuery,
     per_page: 100,
   }).then(response => {
-    suppliersItems.value = response.data?.data?.data;
+    suppliersItems.value = response.data?.data?.data
+
     setTimeout(() => {
-      printOrder();
-    }, 500);
+      printOrder()
+    }, 500)
   }).catch(error => {
     console.log(error)
   }).finally(() => {
-    isLoading.value = false;
+    isLoading.value = false
     setTimeout(() => {
-      window.close();
-    }, 1500);
-  });
+      window.close()
+    }, 1500)
+  })
 }
 
+const totalPrice = computed(() =>
+  suppliersItems.value.reduce((sum, item) => (parseFloat(sum) + parseFloat(item.balance)), 0),
+)
+
+
 const getTodayDate = () => {
-  const today = new Date();
-  const year = today.getFullYear();
-  const month = today.getMonth() + 1; // Months are zero-indexed, so add 1
-  const day = today.getDate();
-  return `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+  const today = new Date()
+  const year = today.getFullYear()
+  const month = today.getMonth() + 1 // Months are zero-indexed, so add 1
+  const day = today.getDate()
+  
+  return `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`
 }
 
 onMounted(() => {
-  const routeQuery = route.query;
+  const routeQuery = route.query
 
-  console.log({routeQuery});
+  console.log({ routeQuery })
 
-  getSuppliers(routeQuery);
+  getSuppliers(routeQuery)
 })
 </script>
 
@@ -98,7 +105,10 @@ onMounted(() => {
         justify="space-between"
         class="mb-2 pa-0"
       >
-        <VCol cols="12" class="py-0">
+        <VCol
+          cols="12"
+          class="py-0"
+        >
           <div class="d-flex justify-space-between align-center">
             <div>
               <h4 class="d-flex align-center gap-3 mb-3 text-base">
@@ -119,12 +129,23 @@ onMounted(() => {
           <VTable class="mb-4">
             <thead>
               <tr>
-                <th class="text-base">#</th>
-                <th class="text-base">الاسم</th>
-                <th class="text-base">الهاتف</th>
-                <th class="text-base">الرصيد</th>
-                <th class="text-base">المنطقة</th>
-                <th class="text-base">تاريخ الإنشاء</th>
+                <th class="text-base">
+                  #
+                </th>
+                <th class="text-base">
+                  الاسم
+                </th>
+                <th class="text-base">
+                  الهاتف
+                </th>
+                <th class="text-base">
+                  المنطقة
+                </th>
+                <th class="text-base">
+                  الرصيد
+                </th>
+              
+                <!-- <th class="text-base">تاريخ الإنشاء</th> -->
               </tr>
             </thead>
             <tbody>
@@ -142,13 +163,31 @@ onMounted(() => {
                   <small>{{ supplier.mobile }}</small>
                 </td>
                 <td>
-                  <small>{{ supplier.balance }}</small>
-                </td>
-                <td>
                   <small>{{ supplier.city?.name_ar }}</small>
                 </td>
                 <td>
+                  <small>{{ supplier.balance }}</small>
+                </td>
+               
+                <!--
+                  <td>
                   <small>{{ ConvertToArabicNumbers(formatDateTime(supplier.created_at).date) }}</small>
+                  </td>
+                -->
+              </tr>
+              <tr>
+                <td
+                  colspan="3"
+                  class="text-center"
+                >
+                  <small>المجموع</small>  
+                </td>
+              
+                <td
+                  colspan="2"
+                  class="text-center"
+                >
+                  <small>{{ totalPrice }}</small>
                 </td>
               </tr>
             </tbody>
@@ -161,13 +200,14 @@ onMounted(() => {
 
 <style scoped lang="scss">
 .invoice-container {
-  margin-top: -100px;
+  margin-block-start: -100px;
 
   .text-base {
     font-size: 1.2rem !important;
     font-weight: 600;
   }
 }
+
 .loader_wrap {
   text-align: center;
 
