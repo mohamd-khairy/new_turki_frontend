@@ -1,7 +1,7 @@
+import isUserLoggedIn from "@/router/utils"
 import { setupLayouts } from 'virtual:generated-layouts'
 import { createRouter, createWebHistory } from 'vue-router'
 import routes from '~pages'
-import isUserLoggedIn from "@/router/utils"
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),

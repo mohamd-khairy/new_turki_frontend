@@ -80,6 +80,17 @@ const openEdit = store => {
   selectedItem.value = store
 }
 
+const isStockTransferOpen = ref(false)
+const isQuantityTransferOpen = ref(false)
+
+const openStockTransferDialog = () => {
+  isStockTransferOpen.value = true;
+}
+
+const openQuantityTransferDialog = () => {
+  isQuantityTransferOpen.value = true;
+}
+
 const filterItems = () => {
   isFiltered.value = true
   getStores()
@@ -243,7 +254,7 @@ onMounted(() => {
         </VRow>
       </VForm>
     </VCard>
-    <VCard :loading="isLoading">
+    <VCard :loading="isLoading" class="pa-4">
       <VCardTitle class="d-flex align-center gap-2">
         <VIcon
           icon="material-symbols:production-quantity-limits-sharp"
@@ -252,27 +263,44 @@ onMounted(() => {
         />
         <span class="mx-1">المخزون</span>
       </VCardTitle>
-      <VCardText class="d-flex align-center flex-wrap gap-2 py-4">
+      <VCardText class="d-flex align-center justify-space-between flex-wrap gap-2 py-4">
         <!-- 👉 Rows per page -->
-        <div style="width: 5rem;">
-          <VSelect
-            v-model="rowPerPage"
-            variant="outlined"
-            :items="[5, 10, 20, 30, 50, 100]"
-          />
+        <div class="d-flex gap-3">
+          <div style="width: 5rem;">
+            <VSelect
+              v-model="rowPerPage"
+              variant="outlined"
+              :items="[5, 10, 20, 30, 50, 100]"
+            />
+          </div>
+          <!--         👉 Create product :to="{ name: 'apps-product-add' }" -->
+          <!--
+            <VBtn
+            prepend-icon="tabler-plus"
+            to="/stocks/create"
+            type="link"
+            :disabled="isLoading"
+            >
+            إضافة مخزون
+            </VBtn>
+          -->
         </div>
-        <!--         👉 Create product :to="{ name: 'apps-product-add' }" -->
-        <!--
+        <div class="d-flex gap-3">
           <VBtn
-          prepend-icon="tabler-plus"
-          to="/stocks/create"
-          type="link"
-          :disabled="isLoading"
+            prepend-icon="mdi-transfer"
+            :disabled="isLoading"
+            @click.stop="openStockTransferDialog"
           >
-          إضافة مخزون
+            تحويل مخزني
           </VBtn>
-        -->
-        <VSpacer />
+          <VBtn
+            prepend-icon="fluent-mdl2:quantity"
+            :disabled="isLoading"
+            @click.stop="openQuantityTransferDialog"
+          >
+            تحويل كمية
+          </VBtn>
+        </div>
       </VCardText>
 
       <VDivider />
@@ -434,6 +462,16 @@ onMounted(() => {
       v-model:is-delete-open="isDeleteOpen"
       :item="selectedItem"
       @refreshTable="getStores"
+    />
+
+    <StockTransferDialog 
+      v-if="isStockTransferOpen" 
+      v-model:is-add-open="isStockTransferOpen"
+    />
+
+    <QuantityTransferDialog 
+      v-if="isQuantityTransferOpen" 
+      v-model:is-add-open="isQuantityTransferOpen"
     />
   </div>
 </template>

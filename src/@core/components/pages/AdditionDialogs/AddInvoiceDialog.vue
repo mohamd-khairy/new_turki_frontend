@@ -1,4 +1,5 @@
 <script setup>
+import { useCitiesStore } from "@/store/Cities";
 import { useEmployeesStore } from "@/store/Employees";
 import { useInvoicesStore } from "@/store/Invoices";
 import { useSettingsStore } from "@/store/Settings";
@@ -26,10 +27,12 @@ const employeesStore = useEmployeesStore()
 const storesStore = useStoresStore()
 const suppliersStore = useSuppliersStore()
 const invoicesStore = useInvoicesStore()
+const citiesListStore = useCitiesStore()
 
 const employees = ref([])
 const suppliers = ref([])
 const stores = ref([])
+const cities = ref([])
 const refForm = ref(null)
 const { t } = useI18n()
 
@@ -37,10 +40,10 @@ const itemData = reactive({
   store_id: null,
   supplier_id: null,
   user_id: null,
+  city_id: null,
   tax: 1,
   date: null,
   invoice: [],
-  invoice_price: null,
   notes: null,
 })
 
@@ -82,18 +85,25 @@ const onFormSubmit = async () => {
     formData.append('store_id', itemData.store_id);
     formData.append('supplier_id', itemData.supplier_id);
     formData.append('user_id', itemData.user_id);
+    formData.append('city_id', itemData.city_id);
     formData.append('tax', itemData.tax);
     formData.append('invoice', itemData.invoice[0]);
-    formData.append('invoice_price', itemData.invoice_price);
     formData.append('date', itemData.date);
     formData.append('notes', itemData.notes);
+
+    // calculate total invoice's price
+    let totalInvoicePrice = 0;
+
     storesItems.value.forEach((store, index) => {
+      totalInvoicePrice += parseFloat(store.price);
       for (const key in store) {
         if (Object.hasOwnProperty.call(store, key)) {
           formData.append(`stocks[${index}][${key}]`, store[key]);
         }
       }
     })
+
+    formData.append('invoice_price', totalInvoicePrice.toFixed(2));
 
     invoicesStore.store(formData).then(response => {
       emit('refreshTable')
@@ -141,6 +151,10 @@ const onFormSubmit = async () => {
 const getAllData = async () => {
   storesStore.getAll({ pageSize: -1 }).then(response => {
     stores.value = response.data.data?.data;
+  })
+
+  citiesListStore.fetchCities({ pageSize: -1 }).then(response => {
+    cities.value = response.data.data
   })
 
   employeesStore.fetchEmployees({ pageSize: -1 }).then(response => {
@@ -211,7 +225,7 @@ onMounted(() => {
                 :rules="[requiredValidator]"
               />
             </VCol>
-            <VCol
+            <!-- <VCol
               cols="12"
               md="6"
             >
@@ -222,16 +236,19 @@ onMounted(() => {
                 min="0"
                 :rules="[requiredValidator]"
               />
-            </VCol>
+            </VCol> -->
             <VCol
               cols="12"
               md="6"
             >
-              <VSwitch label="الضريبة" 
-              v-model="itemData.tax"
-              :true-value="1"
-              :false-value="0"
-              ></VSwitch>
+              <VSelect
+                v-model="itemData.city_id"
+                :items="cities"
+                label="المدينة"
+                item-title="name_ar"
+                item-value="id"
+                :rules="[requiredValidator]"
+              />
             </VCol>
             <VCol
               cols="12"
@@ -258,6 +275,16 @@ onMounted(() => {
                 item-value="id"
                 :rules="[requiredValidator]"
               />
+            </VCol>
+            <VCol
+              cols="12"
+              md="6"
+            >
+              <VSwitch label="الضريبة" 
+              v-model="itemData.tax"
+              :true-value="1"
+              :false-value="0"
+              ></VSwitch>
             </VCol>
             <VCol cols="12">
               <div class="d-flex justify-space-between align-center mb-6">

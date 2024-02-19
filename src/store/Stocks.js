@@ -18,6 +18,14 @@ export const useStocksStore = defineStore('StocksStore', {
     update(data) {
       return axios.post(`stocks/${data.id}`, data)
     },
+
+    transferStock(data) {
+      return axios.post(`transfer-stock`, data)
+    },
+
+    transferQuantity(data) {
+      return axios.post(`transfer-quantity`, data)
+    },
     
     delete(data) {
       return axios.delete(`stocks/${data.id}`)
