@@ -380,8 +380,11 @@ onMounted(() => {
               <span class="font-weight-bold">{{ store.quantity }}</span>
             </td>
             <td>
-              <span class="font-weight-bold">{{ store.price }}</span>
-              <small class="d-inline-block ms-1">ريال</small>
+              <span v-if="store.price">
+                <span class="font-weight-bold">{{ store.price }}</span>
+                <!-- <small class="d-inline-block ms-1">ريال</small> -->
+              </span>
+              <span v-else>--</span>
             </td>
             <td>
               {{ store.store?.name }}
@@ -467,11 +470,13 @@ onMounted(() => {
     <StockTransferDialog 
       v-if="isStockTransferOpen" 
       v-model:is-add-open="isStockTransferOpen"
+      @refreshTable="getStores"
     />
 
     <QuantityTransferDialog 
       v-if="isQuantityTransferOpen" 
       v-model:is-add-open="isQuantityTransferOpen"
+      @refreshTable="getStores"
     />
   </div>
 </template>

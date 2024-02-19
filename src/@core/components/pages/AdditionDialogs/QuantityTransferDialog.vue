@@ -147,7 +147,6 @@ onMounted(() => {
                 label="المخزن"
                 item-title="name"
                 item-value="id"
-                :rules="[requiredValidator]"
                 style="background-color: #fff;"
               />
             </VCol>
