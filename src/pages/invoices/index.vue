@@ -28,8 +28,9 @@ const isFiltered = ref(false)
 const cities = ref([])
 const employees = ref([])
 const filters = reactive({
-  // city_id: null,
-  // user_id: null,
+  city_id: null,
+  user_id: null,
+  date: null,
 })
 
 const getInvoices = () => {
@@ -68,9 +69,21 @@ const openDelete = (store) => {
   selectedItem.value = store
 }
 
-const openEdit = (store) => {
+const openEdit = (item) => {
   isEditOpen.value = true
-  selectedItem.value = store
+  selectedItem.value = {
+    ...item,
+    stocks: item.stocks.map(stock => ({
+      id: stock.id,
+      product_id: stock.product_id,
+      product_name: stock.product_name,
+      name_ar: stock.product_name,
+      name: stock.store.name,
+      store_id: stock.store.id,
+      quantity: stock.quantity,
+      price: stock.price,
+    }))
+  }
 }
 
 const openPayInvoice = (store) => {
@@ -87,6 +100,7 @@ const filterItems = () => {
 const clearFilter = () => {
   filters.city_id = null
   filters.user_id = null
+  filters.date = null
 
   getInvoices();
 }
@@ -116,11 +130,125 @@ watch(() => currentPage.value, () => {
 
 onMounted(() => {
   getInvoices();
+
+  citiesListStore.fetchCities({ pageSize: -1 }).then(response => {
+    cities.value = response.data.data
+  })
+
+  employeesStore.fetchEmployees({ pageSize: -1 }).then(response => {
+    employees.value = response.data.data?.data;
+  })
 })
 </script>
 
 <template>
   <div>
+    <VCard class="mb-5 pa-5">
+      <VForm @submit.stop>
+        <VRow justify="space-between">
+          <VCol
+            cols="12"
+            lg="8"
+          >
+            <VRow>
+              <VCol
+                cols="12"
+                lg="4"
+                md="3"
+                sm="6"
+                class="d-flex align-center gap-3"
+              >
+                <div class="icon">
+                  <VIcon
+                    icon="solar:city-broken"
+                    color="primary"
+                  />
+                </div>
+                <VSelect
+                  v-model="filters.city_id"
+                  :items="cities"
+                  label="المدينة"
+                  item-title="name_ar"
+                  item-value="id"
+                />
+              </VCol>
+              <VCol
+                cols="12"
+                lg="4"
+                md="3"
+                sm="6"
+                class="d-flex align-center gap-3"
+              >
+                <div class="icon">
+                  <VIcon
+                    icon="clarity:users-line"
+                    color="primary"
+                  />
+                </div>
+                <VSelect
+                  v-model="filters.user_id"
+                  :items="employees"
+                  label="المسئول"
+                  item-title="username"
+                  item-value="id"
+                />
+              </VCol>
+              <VCol
+                cols="12"
+                lg="4"
+                md="3"
+                sm="6"
+                class="d-flex align-center gap-3"
+              >
+                <div class="icon">
+                  <VIcon
+                    icon="clarity:users-line"
+                    color="primary"
+                  />
+                </div>
+                <VTextField
+                  v-model="filters.date"
+                  label="تاريخ الفاتورة"
+                  type="date"
+                />
+              </VCol>
+            </VRow>
+          </VCol>
+          <VCol
+            cols="12"
+            lg="4"
+            class="d-flex align-center justify-end gap-3"
+          >
+            <VBtn
+              v-if="!isLoading"
+              prepend-icon="solar:filter-bold-duotone"
+              :disabled="isLoading"
+              @click.stop="filterItems"
+            >
+              {{ t('Filter') }}
+            </VBtn>
+            <VBtn
+              v-else
+              class="position-relative"
+              style="width: 152px;max-width: 100%;"
+            >
+              <VIcon
+                icon="mingcute:loading-line"
+                class="loading"
+                size="32"
+              />
+            </VBtn>
+            <VBtn
+              prepend-icon="healthicons:x"
+              :disabled="isLoading"
+              @click.stop="clearFilter"
+            >
+              {{ t('Clear_Filter') }}
+            </VBtn>
+          </VCol>
+        </VRow>
+      </VForm>
+    </VCard>
     <VCard :loading="isLoading">
       <VCardTitle class="d-flex align-center gap-2">
         <VIcon icon="uil:invoice"

@@ -41,8 +41,6 @@ const storesItems = ref([
     quantity: 1,
   }
 ])
-const stores = ref([])
-const stocks = ref([])
 const form = ref()
 const isLoading = ref(false)
 
@@ -116,18 +114,6 @@ const dialogModelValueUpdate = val => {
   emit('update:isAddOpen', val)
 }
 
-const getAllData = async () => {
-  storesStore.getAll({ pageSize: -1 }).then(response => {
-    stores.value = response.data.data?.data;
-  })
-  stocksStore.getAll({ pageSize: -1 }).then(response => {
-    stocks.value = response.data.data?.data;
-  })
-}
-
-onMounted(() => {
-  getAllData();
-})
 </script>
 
 <template>
@@ -227,12 +213,14 @@ onMounted(() => {
                   cols="12"
                   md="6"
                 >
-                  <VSelect
+                  <AutoCompleteDropdown 
                     v-model="store.store_id"
-                    :items="stores"
-                    label="المخزن"
+                    :apiModel="storesStore"
+                    apiSearchMethod="getAll"
                     item-title="name"
                     item-value="id"
+                    label="المخزن"
+                    placeholder="البحث في المخزن"
                     :rules="[requiredValidator]"
                     style="background-color: #fff;"
                   />
@@ -241,12 +229,14 @@ onMounted(() => {
                   cols="12"
                   md="6"
                 >
-                  <VSelect
+                  <AutoCompleteDropdown 
                     v-model="store.stock_id"
-                    :items="stocks"
-                    label="المخزون"
+                    :apiModel="stocksStore"
+                    apiSearchMethod="getAll"
                     item-title="product_name"
                     item-value="id"
+                    label="المخزون"
+                    placeholder="البحث في المخزون"
                     :rules="[requiredValidator]"
                     style="background-color: #fff;"
                   />

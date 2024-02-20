@@ -209,12 +209,16 @@ onMounted(() => {
                     color="primary"
                   />
                 </div>
-                <VSelect
+                <AutoCompleteDropdown 
                   v-model="filters.store_id"
-                  :items="stores"
-                  label="المخزن"
+                  :apiModel="storesStore"
+                  apiSearchMethod="getAll"
                   item-title="name"
                   item-value="id"
+                  label="المخزن"
+                  placeholder="البحث في المخزن"
+                  :rules="[requiredValidator]"
+                  style="background-color: #fff;"
                 />
               </VCol>
             </VRow>

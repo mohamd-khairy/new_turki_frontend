@@ -2,7 +2,9 @@
 import { useCitiesStore } from "@/store/Cities";
 import { useEmployeesStore } from "@/store/Employees";
 import { useInvoicesStore } from "@/store/Invoices";
+import { useProductsStore } from "@/store/Products";
 import { useSettingsStore } from "@/store/Settings";
+import { useStocksStore } from "@/store/Stocks";
 import { useStoresStore } from "@/store/Stores";
 import { useSuppliersStore } from "@/store/Suppliers";
 import {
@@ -25,13 +27,14 @@ const emit = defineEmits([
 const settingsListStore = useSettingsStore()
 const employeesStore = useEmployeesStore()
 const storesStore = useStoresStore()
+const stocksStore = useStocksStore()
 const suppliersStore = useSuppliersStore()
 const invoicesStore = useInvoicesStore()
 const citiesListStore = useCitiesStore()
+const productsStore = useProductsStore()
 
 const employees = ref([])
 const suppliers = ref([])
-const stores = ref([])
 const cities = ref([])
 const refForm = ref(null)
 const { t } = useI18n()
@@ -50,12 +53,15 @@ const itemData = reactive({
 const storesItems = ref([
   {
     product_name: null,
+    product_id: null,
     quantity: 1,
     price: null,
   }
 ])
 
 const isLoading = ref(false)
+const isAddProduct = ref(false)
+
 const resetForm = () => {
   emit('update:isAddOpen', false)
 }
@@ -67,6 +73,7 @@ const dialogModelValueUpdate = val => {
 const addProductStore = () => {
   storesItems.value.push({
     product_name: null,
+    product_id: null,
     quantity: 1,
     price: null,
   })
@@ -75,6 +82,11 @@ const addProductStore = () => {
 const removeProductStore = (index) => {
   storesItems.value = storesItems.value.filter((store, i) => i != index);
 }
+
+const assignStockItem = (item) => {
+
+}
+
 
 const onFormSubmit = async () => {
   isLoading.value = true
@@ -98,7 +110,9 @@ const onFormSubmit = async () => {
       totalInvoicePrice += parseFloat(store.price);
       for (const key in store) {
         if (Object.hasOwnProperty.call(store, key)) {
-          formData.append(`stocks[${index}][${key}]`, store[key]);
+          if(store[key] && store[key] != '') {
+            formData.append(`stocks[${index}][${key}]`, store[key]);
+          }
         }
       }
     })
@@ -149,10 +163,6 @@ const onFormSubmit = async () => {
 }
 
 const getAllData = async () => {
-  storesStore.getAll({ pageSize: -1 }).then(response => {
-    stores.value = response.data.data?.data;
-  })
-
   citiesListStore.fetchCities({ pageSize: -1 }).then(response => {
     cities.value = response.data.data
   })
@@ -225,18 +235,6 @@ onMounted(() => {
                 :rules="[requiredValidator]"
               />
             </VCol>
-            <!-- <VCol
-              cols="12"
-              md="6"
-            >
-              <VTextField
-                v-model="itemData.invoice_price"
-                label="سعر الفاتورة"
-                type="number"
-                min="0"
-                :rules="[requiredValidator]"
-              />
-            </VCol> -->
             <VCol
               cols="12"
               md="6"
@@ -300,12 +298,14 @@ onMounted(() => {
                 cols="12"
                 md="6"
               >
-                <VSelect
+                <AutoCompleteDropdown 
                   v-model="store.store_id"
-                  :items="stores"
-                  label="المخزن"
+                  :apiModel="storesStore"
+                  apiSearchMethod="getAll"
                   item-title="name"
                   item-value="id"
+                  label="المخزن"
+                  placeholder="البحث في المخزن"
                   :rules="[requiredValidator]"
                   style="background-color: #fff;"
                 />
@@ -313,13 +313,35 @@ onMounted(() => {
                 <VCol
                   cols="12"
                   md="6"
+                  class="d-flex gap-2"
                 >
-                  <VTextField
+                  <VTextField v-if="isAddProduct"
                     v-model="store.product_name"
                     label="اسم المنتج"
                     :rules="[requiredValidator]"
                     style="background-color: #fff;"
                   />
+                  <AutoCompleteDropdown v-else
+                    v-model="store.product_id"
+                    :apiModel="productsStore"
+                    apiSearchMethod="fetchProducts"
+                    item-title="name_ar"
+                    item-value="id"
+                    label="المنتج"
+                    placeholder="البحث في المنتجات"
+                    :rules="[requiredValidator]"
+                    style="background-color: #fff;"
+                  />
+                  <VTooltip :text="isAddProduct ? 'اختيار من المنتجات' : 'إضافة منتج جديد'">
+                    <template #activator="{ props }">
+                      <VBtn v-bind="props"
+                      @click="isAddProduct = !isAddProduct" 
+                      flat class="position-relative" icon size="small">
+                        <VIcon v-if="isAddProduct" icon="ei:minus" size="30"></VIcon>
+                        <VIcon v-else icon="ei:plus" size="30"></VIcon>
+                      </VBtn>
+                    </template>
+                  </VTooltip>
                 </VCol>
                 <VCol
                   cols="10"
@@ -403,4 +425,5 @@ onMounted(() => {
       </VCardText>
     </VCard>
   </VDialog>
+
 </template>

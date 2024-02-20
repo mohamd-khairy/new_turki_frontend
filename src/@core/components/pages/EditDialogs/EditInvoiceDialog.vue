@@ -1,7 +1,10 @@
 <script setup>
+import { useCitiesStore } from "@/store/Cities";
 import { useEmployeesStore } from "@/store/Employees";
 import { useInvoicesStore } from "@/store/Invoices";
+import { useProductsStore } from "@/store/Products";
 import { useSettingsStore } from "@/store/Settings";
+import { useStocksStore } from "@/store/Stocks";
 import { useStoresStore } from "@/store/Stores";
 import { useSuppliersStore } from "@/store/Suppliers";
 import {
@@ -29,12 +32,15 @@ const emit = defineEmits([
 const settingsListStore = useSettingsStore()
 const employeesStore = useEmployeesStore()
 const storesStore = useStoresStore()
+const stocksStore = useStocksStore()
 const suppliersStore = useSuppliersStore()
 const invoicesStore = useInvoicesStore()
+const citiesListStore = useCitiesStore()
+const productsStore = useProductsStore()
 
 const employees = ref([])
 const suppliers = ref([])
-const stores = ref([])
+const cities = ref([])
 const refForm = ref(null)
 const { t } = useI18n()
 
@@ -42,11 +48,12 @@ const itemData = reactive({
   store_id: props.item.store_id,
   supplier_id: props.item.supplier_id,
   user_id: props.item.user_id,
+  city_id: props.item.city_id,
   tax: props.item.tax ? 1 : 0,
   date: props.item.date,
-  // invoice: [],
   invoice_price: props.item.invoice_price,
   notes: props.item.notes,
+  // invoice: [],
 })
 
 const storesItems = ref(props.item.stocks)
@@ -63,6 +70,7 @@ const dialogModelValueUpdate = val => {
 const addProductStore = () => {
   storesItems.value.push({
     product_name: null,
+    product_id: null,
     quantity: 1,
     price: null,
   })
@@ -77,10 +85,27 @@ const onFormSubmit = async () => {
 
   const res = await refForm.value.validate()
   if (res.valid) {
+    // calculate total invoice's price
+    let totalInvoicePrice = 0;
+    const storesFormatedItems = storesItems.value.map(store => {
+      totalInvoicePrice += parseFloat(store.price);
+      const formatedStore = {}
+      for (const key in store) {
+        if (Object.hasOwnProperty.call(store, key)) {
+          if(store[key] && store[key] != '') {
+            formatedStore[key] = store[key];
+          }
+        }
+      }
+
+      return formatedStore;
+    })
+
     const formData = {
       ...itemData,
+      invoice_price: totalInvoicePrice,
       id: props.item.id,
-      stocks: storesItems.value
+      stocks: storesFormatedItems
     }
 
     invoicesStore.update(formData).then(response => {
@@ -127,8 +152,8 @@ const onFormSubmit = async () => {
 }
 
 const getAllData = async () => {
-  storesStore.getAll({ pageSize: -1 }).then(response => {
-    stores.value = response.data.data?.data;
+  citiesListStore.fetchCities({ pageSize: -1 }).then(response => {
+    cities.value = response.data.data
   })
 
   employeesStore.fetchEmployees({ pageSize: -1 }).then(response => {
@@ -208,6 +233,19 @@ onMounted(() => {
                 label="سعر الفاتورة"
                 type="number"
                 min="0"
+                readonly
+              />
+            </VCol>
+            <VCol
+              cols="12"
+              md="6"
+            >
+              <VSelect
+                v-model="itemData.city_id"
+                :items="cities"
+                label="المدينة"
+                item-title="name_ar"
+                item-value="id"
                 :rules="[requiredValidator]"
               />
             </VCol>
@@ -260,27 +298,36 @@ onMounted(() => {
                 cols="12"
                 md="6"
               >
-                <VSelect
+                <AutoCompleteDropdown 
                   v-model="store.store_id"
-                  :items="stores"
-                  label="المخزن"
+                  :valueText="store.name"
+                  :apiModel="storesStore"
+                  apiSearchMethod="getAll"
                   item-title="name"
                   item-value="id"
+                  label="المخزن"
+                  placeholder="البحث في المخزن"
                   :rules="[requiredValidator]"
                   style="background-color: #fff;"
                 />
               </VCol>
-                <VCol
-                  cols="12"
-                  md="6"
-                >
-                  <VTextField
-                    v-model="store.product_name"
-                    label="اسم المنتج"
-                    :rules="[requiredValidator]"
-                    style="background-color: #fff;"
-                  />
-                </VCol>
+              <VCol
+                cols="12"
+                md="6"
+              >
+                <AutoCompleteDropdown 
+                  v-model="store.product_id"
+                  :valueText="store.name_ar"
+                  :apiModel="productsStore"
+                  apiSearchMethod="fetchProducts"
+                  item-title="name_ar"
+                  item-value="id"
+                  label="المخزون"
+                  placeholder="البحث في المخزون"
+                  :rules="[requiredValidator]"
+                  style="background-color: #fff;"
+                />
+              </VCol>
                 <VCol
                   cols="10"
                   md="6"

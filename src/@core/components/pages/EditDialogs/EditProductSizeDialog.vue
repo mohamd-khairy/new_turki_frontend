@@ -46,10 +46,7 @@ const storesItems = ref([
     quantity: 1,
   }
 ])
-const stores = ref([])
-const stocks = ref([])
 const refForm = ref(null)
-
 const resetForm = () => {
   emit('update:isEditOpen', false)
 }
@@ -133,18 +130,6 @@ const dialogModelValueUpdate = val => {
   emit('update:isEditOpen', val)
 }
 
-const getAllData = async () => {
-  storesStore.getAll({ pageSize: -1 }).then(response => {
-    stores.value = response.data.data?.data;
-  })
-  stocksStore.getAll({ pageSize: -1 }).then(response => {
-    stocks.value = response.data.data?.data;
-  })
-}
-
-onMounted(() => {
-  getAllData();
-})
 </script>
 
 <template>
@@ -244,12 +229,15 @@ onMounted(() => {
                   cols="12"
                   md="6"
                 >
-                  <VSelect
+                  <AutoCompleteDropdown 
                     v-model="store.store_id"
-                    :items="stores"
-                    label="المخزن"
+                    :model-value="store.store_id ? store : null"
+                    :apiModel="storesStore"
+                    apiSearchMethod="getAll"
                     item-title="name"
                     item-value="id"
+                    label="المخزن"
+                    placeholder="البحث في المخزن"
                     :rules="[requiredValidator]"
                     style="background-color: #fff;"
                   />
@@ -258,12 +246,15 @@ onMounted(() => {
                   cols="12"
                   md="6"
                 >
-                  <VSelect
+                  <AutoCompleteDropdown 
                     v-model="store.stock_id"
-                    :items="stocks"
-                    label="المخزون"
+                    :model-value="store.stock_id ? store : null"
+                    :apiModel="stocksStore"
+                    apiSearchMethod="getAll"
                     item-title="product_name"
                     item-value="id"
+                    label="المخزون"
+                    placeholder="البحث في المخزون"
                     :rules="[requiredValidator]"
                     style="background-color: #fff;"
                   />
