@@ -69,6 +69,31 @@ const canEditAllFields = computed(() => {
   return false
 })
 
+const removeDiscountCode = () => {
+  isDeleteing.value = true
+  ordersListStore.removeDiscount(order.value.order.id).then(() => {
+    settingsListStore.alertColor = "success"
+    settingsListStore.alertMessage = "تم إزالة الكوبون بنجاح"
+    settingsListStore.isAlertShow = true
+    getOrderDetails()
+
+    setTimeout(() => {
+      settingsListStore.isAlertShow = false
+      settingsListStore.alertMessage = ""
+    }, 2000)
+    isDeleteing.value = false
+  }).catch(error => {
+    isDeleteing.value = false
+    settingsListStore.alertColor = "error"
+    settingsListStore.alertMessage = "حدث خطأ ما !"
+    settingsListStore.isAlertShow = true
+    setTimeout(() => {
+      settingsListStore.isAlertShow = false
+      settingsListStore.alertMessage = ""
+    }, 2000)
+  })
+}
+
 const openProductEdit = item => {
   selectedProductItem.value = item
   isEditProductOpen.value = true
@@ -461,7 +486,7 @@ onMounted(() => {
                   md="6"
                 >
                   <VRow>
-                    <VCol cols="12">
+                    <VCol cols="11">
                       <VSelect
                         v-model="itemData.discount_code"
                         :items="coupons"
@@ -483,27 +508,30 @@ onMounted(() => {
                         </template>
                       </VSelect>
                     </VCol>
-                    <!--
-                      <VCol cols="1" class="px-0">
+                    
+                    <VCol
+                      v-if="order.order.applied_discount_code"
+                      cols="1"
+                      class="px-0"
+                    >
                       <VTooltip text="إزالة الكوبون من الطلب">
-                      <template #activator="{ props }">
-                      <VBtn
-                      v-bind="props"
-                      icon
-                      variant="plain"
-                      color="error"
-                      size="x-small"
-                      @click="removeDiscountCode"
-                      >
-                      <VIcon
-                      :size="22"
-                      icon="clarity:remove-line"
-                      />
-                      </VBtn>
-                      </template>
+                        <template #activator="{ props }">
+                          <VBtn
+                            v-bind="props"
+                            icon
+                            variant="plain"
+                            color="error"
+                            size="x-small"
+                            @click="removeDiscountCode"
+                          >
+                            <VIcon
+                              :size="22"
+                              icon="clarity:remove-line"
+                            />
+                          </VBtn>
+                        </template>
                       </VTooltip>
-                      </VCol> 
-                    -->
+                    </VCol>
                   </VRow>
                 </VCol>
                 <VCol

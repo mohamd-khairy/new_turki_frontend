@@ -107,6 +107,10 @@ const canEditOrder = order => {
     return true
   }
 
+  if(order.sales_representative_id == authUser.value?.id) {
+    return true
+  }
+
   return false
 }
 
