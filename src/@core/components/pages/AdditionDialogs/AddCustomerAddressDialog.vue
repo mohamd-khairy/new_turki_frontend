@@ -1,6 +1,6 @@
 <script setup>
-import { useEmployeesStore } from "@/store/Employees"
-import { useRolesStore } from "@/store/Roles"
+import { useEmployeesStore } from "@/store/Employees";
+import { useRolesStore } from "@/store/Roles";
 
 
 const props = defineProps({
@@ -19,10 +19,10 @@ const emit = defineEmits([
   'refreshTable',
 ])
 
-import { useCitiesStore } from "@/store/Cities"
-import { useCountriesStore } from "@/store/Countries"
-import { useSettingsStore } from "@/store/Settings"
-import { useI18n } from "vue-i18n"
+import { useCitiesStore } from "@/store/Cities";
+import { useCountriesStore } from "@/store/Countries";
+import { useSettingsStore } from "@/store/Settings";
+import { useI18n } from "vue-i18n";
 
 const { t } = useI18n()
 const rolesListStore = useRolesStore()
@@ -90,7 +90,7 @@ const onFormSubmit = async () => {
       settingsListStore.alertMessage = "تم إضافة العنصر بنجاح"
       settingsListStore.isAlertShow = true
       resetForm()
-      // emit('refreshTable')
+      emit('refreshTable', response.data.data)
       emit('update')
       
       setTimeout(() => {

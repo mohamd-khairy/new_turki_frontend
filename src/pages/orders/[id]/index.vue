@@ -25,6 +25,9 @@ const isLoading = ref(true)
 const isSubmitting = ref(false)
 const isDeleteing = ref(false)
 const isEditProductOpen = ref(false)
+const isAddCustomerAddressOpen = ref(false)
+const customerId = ref(null)
+
 const isAddProductOpen = ref(false)
 const isAddProductCouponOpen = ref(false)
 const selectedProductItem = ref({})
@@ -38,6 +41,7 @@ const refForm = ref(null)
 const orderStatus = ref([])
 const allOrderStatus = ref([])
 const customerAddresses = ref([])
+const addedCustomerAddress = ref(null);
 
 const itemData = ref({
   order_state_id: null,
@@ -132,6 +136,15 @@ const getCustomerAddresses = customerId => {
   })
 }
 
+const addNewCustomerAddress = () => {
+  isAddCustomerAddressOpen.value = true;
+}
+
+const updateNewCustomerAddress = (address) => {
+  customerAddresses.value.unshift(address);
+  itemData.value.address_id = address.id;
+}
+
 const getOrderDetails = () => {
   selectedProductItem.value = {
     shalwata: 0,
@@ -154,6 +167,8 @@ const getOrderDetails = () => {
     }
 
     if(orderDetails) {
+      customerId.value = orderDetails?.customer_id || null;
+
       itemData.value = {
         id: orderDetails.id,
         order_state_id: orderDetails.order_state_id,
@@ -168,6 +183,8 @@ const getOrderDetails = () => {
         dishes_count: orderDetails.dishes_count,
         comment: orderDetails.comment,
       }
+
+      addedCustomerAddress.value = orderDetails.address_id
     }
   }).catch(error => {
     console.error(error)
@@ -597,13 +614,37 @@ onMounted(() => {
                   cols="12"
                   md="6"
                 >
-                  <VSelect
-                    v-model="itemData.address_id"
-                    label="عنوان التوصيل"
-                    :items="customerAddresses"
-                    item-title="label"
-                    item-value="id"
-                  />
+                <VRow align="center">
+                  <VCol cols="11">
+                    <!-- :model-value="addedCustomerAddress" -->
+                    <VSelect
+                      v-model="itemData.address_id"
+                      label="عنوان التوصيل"
+                      :items="customerAddresses"
+                      item-title="label"
+                      item-value="id"
+                    />
+                  </VCol>
+                  <VCol cols="1">
+                    <VTooltip text="إضافة عنوان جديد">
+                        <template #activator="{ props }">
+                          <VBtn
+                            v-bind="props"
+                            icon
+                            variant="plain"
+                            color="error"
+                            size="x-small"
+                            @click="addNewCustomerAddress"
+                          >
+                            <VIcon
+                              :size="30"
+                              icon="ei:plus"
+                            />
+                          </VBtn>
+                        </template>
+                    </VTooltip>
+                  </VCol>
+                </VRow>
                 </VCol>
                 <VCol
                   v-if="canEditAllFields"
@@ -846,6 +887,12 @@ onMounted(() => {
       :cuts="productCuts"
       :preparations="productPreparations"
       @refreshTable="getOrderDetails"
+    />
+
+    <AddCustomerAddressDialog v-if="isAddCustomerAddressOpen"
+      v-model:is-add-open="isAddCustomerAddressOpen"
+      :customer-id="customerId"
+      @refreshTable="updateNewCustomerAddress"
     />
   </div>
 </template>
