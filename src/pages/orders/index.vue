@@ -218,6 +218,10 @@ watch(() => currentPage.value, () => {
   getOrders()
 })
 
+watch(() => authStore.currentUser, () => {
+  getOrders()
+})
+
 const _timerId = ref(null)
 const isLoadingCustomers = ref(false)
 const isCustomersMenuOpen = ref(false)
@@ -228,7 +232,7 @@ const updateCutomersMenu = (status) => {
 
 const searchCustomer = (e) => {
   clearTimeout(_timerId.value);
-  
+
   _timerId.value = setTimeout(() => {
     if(!isCustomersMenuOpen.value) return;
 
@@ -436,6 +440,7 @@ onMounted(() => {
                     label="البحث باسم أو رقم جوال العميل"
                     item-title="name_mobile"
                     item-value="id"
+                    clearable
                     :loading="isLoadingCustomers"
                     @update:search="searchCustomer"
                     @update:menu="updateCutomersMenu"
