@@ -195,21 +195,18 @@ const getOrders = () => {
   }).then(response => {
     const ordersItems = response.data.data.data
 
-
-    // ordersItems[0].order_state_id = 102
-    // ordersItems[0].order_state_ar = 'معلق'
     orders.value = ordersItems
     totalPage.value = response.data.data.last_page
     dataFrom.value = response.data.data.from
     dataTo.value = response.data.data.to
     totalOrders.value = response.data.data.total
     totalOrdersAmount.value = response.data.total
-    isLoading.value = false
     
     resetSelections()
   }).catch(error => {
-    isLoading.value = false
     console.log(error)
+  }).finally(() => {
+    isLoading.value = false
   })
 }
 
@@ -828,6 +825,8 @@ onMounted(() => {
           ></v-data-table> 
         -->
         <VTable 
+          height="600px"
+          fixed-header
           class="text-no-wrap product-list-table text-center"
         >
           <thead>
@@ -866,7 +865,7 @@ onMounted(() => {
               >
                 {{ t('forms.order_state_ar') }} <br>
                 <span
-                  v-if="canChangeOrderStatus || hasRole(['delegate', 'store_manager'])" 
+                  v-if="!isLoading && ( canChangeOrderStatus || hasRole(['delegate', 'store_manager']))" 
                   class="text-primary"
                 >( {{ t('forms.click_change_status') }} )</span>
               </th>
@@ -950,8 +949,20 @@ onMounted(() => {
               -->
             </tr>
           </thead>
-
-          <tbody v-if="!isLoading">
+          <tbody v-if="isLoading">
+            <tr v-for="tableRow in 9" :key="tableRow">
+              <td v-for="tableTD in 15" :key="tableTD">
+                <div>
+                  <v-skeleton-loader
+                  type="text"
+                  :height="40"
+                  :width="100"
+                  ></v-skeleton-loader>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+          <tbody v-else>
             <tr
               v-for="(order, i) in orders"
               :key="order.id"
@@ -1141,7 +1152,7 @@ onMounted(() => {
           </tbody>
 
           <!-- 👉 table footer  -->
-          <tfoot v-show="orders.length == 0">
+          <tfoot v-show="!isLoading && orders.length == 0">
             <tr>
               <td
                 colspan="8"
@@ -1204,6 +1215,13 @@ onMounted(() => {
 </template>
 
 <style lang="scss">
+.product-list-table {
+  .v-skeleton-loader__text {
+    max-width: 80%;
+    margin: 0;
+  }
+}
+
 .text-delivered {
   color: #00bcd4;
 }
@@ -1213,7 +1231,10 @@ onMounted(() => {
 }
 
 .v-table__wrapper {
+  // max-height: 500px;
+
   &::-webkit-scrollbar {
+    width: 15px;
     block-size: 15px;
   }
 
