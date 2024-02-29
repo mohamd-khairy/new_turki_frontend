@@ -220,12 +220,21 @@ watch(() => currentPage.value, () => {
 
 const _timerId = ref(null)
 const isLoadingCustomers = ref(false)
+const isCustomersMenuOpen = ref(false)
 
-const searchCustomer = e => {
-  clearTimeout(_timerId.value)
+const updateCutomersMenu = (status) => {
+  isCustomersMenuOpen.value = status
+}
+
+const searchCustomer = (e) => {
+  clearTimeout(_timerId.value);
+  
   _timerId.value = setTimeout(() => {
+    if(!isCustomersMenuOpen.value) return;
+
     isLoadingCustomers.value = true
-    employeesStore.fetchCustomers({ search: e.target.value, wallet: "all" })
+    customers.value = [];
+    employeesStore.fetchCustomers({ search: e, wallet: "all" })
       .then(response => {
         customers.value = response.data?.data?.data || []
       })
@@ -420,7 +429,18 @@ onMounted(() => {
                       color="primary"
                     />
                   </div>
-                  <VSelect
+                  
+                  <v-autocomplete
+                    v-model="filters.customer_id"
+                    :items="customers"
+                    label="البحث باسم أو رقم جوال العميل"
+                    item-title="name_mobile"
+                    item-value="id"
+                    :loading="isLoadingCustomers"
+                    @update:search="searchCustomer"
+                    @update:menu="updateCutomersMenu"
+                  ></v-autocomplete>
+                  <!-- <VSelect
                     v-model="filters.customer_id"
                     :items="customers"
                     label="البحث باسم أو رقم جوال العميل"
@@ -431,6 +451,7 @@ onMounted(() => {
                   >
                     <template #prepend-item>
                       <VTextField
+                        type="text"
                         v-model="searchTerm"
                         class="mx-2"
                         clearable
@@ -439,7 +460,7 @@ onMounted(() => {
                       />
                       <VDivider class="mt-2" />
                     </template>
-                  </VSelect>
+                  </VSelect> -->
                 </VCol>
                 <VCol
                   cols="12"
