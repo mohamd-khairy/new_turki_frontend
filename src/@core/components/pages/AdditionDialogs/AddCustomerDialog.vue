@@ -1,11 +1,9 @@
 <script setup>
-import countriesList from "@core/utils/countries.json"
-import { useEmployeesStore } from "@/store/Employees"
-import { useRolesStore } from "@/store/Roles"
+import { useEmployeesStore } from "@/store/Employees";
+import { useRolesStore } from "@/store/Roles";
 import {
-  emailValidator,
-  requiredValidator,
-} from '@validators'
+requiredValidator
+} from '@validators';
 
 
 const props = defineProps({
@@ -20,8 +18,8 @@ const emit = defineEmits([
   'update:isAddOpen',
 ])
 
-import { useI18n } from "vue-i18n"
-import { useSettingsStore } from "@/store/Settings"
+import { useSettingsStore } from "@/store/Settings";
+import { useI18n } from "vue-i18n";
 
 const { t } = useI18n()
 const rolesListStore = useRolesStore()
@@ -38,16 +36,17 @@ onMounted(() => {
 
 // Variables
 const employee = reactive({
-  mobile_country_code: null,
-  mobile: null,
   name: null,
-  email: null,
-  avatar: {},
-  age: null,
-  gender: null,
-  nationality: "sau",
-  is_active: false,
-  wallet: null,
+  mobile: null,
+  address: null,
+  // mobile_country_code: null,
+  // email: null,
+  // avatar: {},
+  // age: null,
+  // gender: null,
+  // nationality: "sau",
+  // is_active: false,
+  // wallet: null,
 })
 
 const genders = reactive([
@@ -63,16 +62,17 @@ const genders = reactive([
 
 // Functions
 const resetForm = () => {
-  employee.mobile_country_code = null
+  // employee.mobile_country_code = null
   employee.mobile = null
   employee.name = null
-  employee.email = null
-  employee.avatar = {}
-  employee.age = null
-  employee.gender = null
-  employee.nationality = null
-  employee.is_active = false
-  employee.wallet = null
+  employee.address = null
+  // employee.email = null
+  // employee.avatar = {}
+  // employee.age = null
+  // employee.gender = null
+  // employee.nationality = null
+  // employee.is_active = false
+  // employee.wallet = null
   emit('update:isAddOpen', false)
 }
 
@@ -172,12 +172,25 @@ const dialogModelValueUpdate = val => {
               sm="6"
             >
               <VTextField
-                v-model="employee.email"
-                :label="t('forms.email')"
-                :rules="[requiredValidator, emailValidator]"
+                v-model="employee.mobile"
+                type="number"
+                min="0"
+                label="رقم الجوال"
+                :rules="[requiredValidator]"
               />
             </VCol>
             <VCol
+              cols="12"
+              lg="12"
+              sm="6"
+            >
+              <VTextField
+                v-model="employee.address"
+                label="العنوان"
+                :rules="[requiredValidator]"
+              />
+            </VCol>
+            <!-- <VCol
               cols="12"
               lg="12"
               sm="6"
@@ -187,19 +200,9 @@ const dialogModelValueUpdate = val => {
                 :label="t('forms.country_code')"
                 :rules="[requiredValidator]"
               />
-            </VCol>
-            <VCol
-              cols="12"
-              lg="12"
-              sm="6"
-            >
-              <VTextField
-                v-model="employee.mobile"
-                :label="t('forms.phone')"
-                :rules="[requiredValidator]"
-              />
-            </VCol>
-            <VCol
+            </VCol> -->
+            
+            <!-- <VCol
               cols="12"
               lg="12"
               sm="6"
@@ -221,8 +224,8 @@ const dialogModelValueUpdate = val => {
                 item-title="ar"
                 item-value="alpha3"
               />
-            </VCol>
-            <VCol
+            </VCol> -->
+            <!-- <VCol
               cols="12"
               lg="12"
               sm="6"
@@ -247,8 +250,8 @@ const dialogModelValueUpdate = val => {
                 prepend-inner-icon="mdi-image"
                 :rules="[requiredValidator]"
               />
-            </VCol>
-            <VCol
+            </VCol> -->
+            <!-- <VCol
               cols="12"
               lg="12"
               sm="6"
@@ -268,7 +271,7 @@ const dialogModelValueUpdate = val => {
                 v-model="employee.is_active"
                 :label="t('forms.is_active')"
               />
-            </VCol>
+            </VCol> -->
             <VCol
               cols="12"
               class="text-center"

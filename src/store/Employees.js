@@ -44,16 +44,17 @@ export const useEmployeesStore = defineStore('EmployeesStore', {
     storeCustomer(data) {
       const formData = new FormData()
 
-      formData.append("mobile_country_code", data.mobile_country_code)
       formData.append("mobile", data.mobile)
       formData.append("name", data.name)
-      formData.append("email", data.email)
-      formData.append("avatar", data.avatar)
-      formData.append("age", data.age)
-      formData.append("gender", data.gender)
-      formData.append("nationality", data.nationality)
-      formData.append("is_active", data.is_active)
-      formData.append("wallet", data.wallet)
+      formData.append("address", data.address)
+      // formData.append("mobile_country_code", data.mobile_country_code)
+      // formData.append("email", data.email)
+      // formData.append("avatar", data.avatar)
+      // formData.append("age", data.age)
+      // formData.append("gender", data.gender)
+      // formData.append("nationality", data.nationality)
+      // formData.append("is_active", data.is_active)
+      // formData.append("wallet", data.wallet)
 
       return axios.post(`customers/store` , formData)
     },

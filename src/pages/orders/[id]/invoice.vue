@@ -1,6 +1,6 @@
 <script setup>
-import { useOrdersStore } from "@/store/Orders"
-import moment from "moment"
+import { useOrdersStore } from "@/store/Orders";
+import moment from "moment";
 
 const value = ref('qrcode')
 
@@ -70,6 +70,11 @@ const getTodayDate = () => {
   const day = today.getDate()
   
   return `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`
+}
+
+const formatCreatedDate = (createdDate) => {
+  const formatedDate = moment(createdDate).format("DD-MM-YYYY");
+  return ConvertToArabicNumbers(formatedDate)
 }
 
 onMounted(() => {
@@ -199,7 +204,7 @@ onMounted(() => {
             >
               <h4>تاريخ الفاتورة:</h4>
               <h4>
-                {{ ConvertToArabicNumbers(getTodayDate().split("-").reverse().join("-")) }}
+                {{ formatCreatedDate(order.order.created_at) }}
               </h4>
             </VCol>
             <VCol

@@ -5,6 +5,7 @@ import { useStoresStore } from "@/store/Stores";
 import {
 requiredValidator,
 } from '@validators';
+import { watch } from "vue";
 import { useI18n } from "vue-i18n";
 
 const props = defineProps({
@@ -25,16 +26,22 @@ const storesStore = useStoresStore()
 
 const refForm = ref(null)
 const { t } = useI18n()
+const isStoreSelected = ref(false)
 
 const itemData = reactive({
   store_id: null,
   stock_id: null,
+  to_store: null,
 })
 
 const isLoading = ref(false)
 const resetForm = () => {
   emit('update:isAddOpen', false)
 }
+
+watch(() => itemData.store_id, () => {
+  isStoreSelected.value = itemData.store_id ? true : false;
+})
 
 const onFormSubmit = async () => {
   isLoading.value = true
@@ -119,35 +126,55 @@ const dialogModelValueUpdate = val => {
           @submit.prevent="onFormSubmit"
         >
           <VRow>
-            <VCol
-              cols="12"
-              md="6"
-            >
-              <AutoCompleteDropdown 
-                v-model="itemData.store_id"
-                :apiModel="storesStore"
-                apiSearchMethod="getAll"
-                item-title="name"
-                item-value="id"
-                label="المخزن"
-                placeholder="البحث في المخزن"
-                :rules="[requiredValidator]"
-              />
+            <VCol cols="12">
+              <VRow>
+                <VCol
+                  cols="12"
+                >
+                  <AutoCompleteDropdown 
+                    v-model="itemData.store_id"
+                    :apiModel="storesStore"
+                    apiSearchMethod="getAll"
+                    item-title="name"
+                    item-value="id"
+                    label="تحويل من مخزن"
+                    placeholder="البحث في المخزن"
+                    prepend-icon="oi:data-transfer-upload"
+                    :rules="[requiredValidator]"
+                  />
+                </VCol>
+                <VCol
+                  v-if="isStoreSelected"
+                  cols="12"
+                >
+                  <AutoCompleteDropdown 
+                    v-model="itemData.stock_id"
+                    :apiModel="stocksStore"
+                    apiSearchMethod="getAll"
+                    item-title="product_name"
+                    item-value="id"
+                    :apiParams="{store_id: itemData.store_id}"
+                    label="المخزون (المنتج)"
+                    placeholder="البحث في المخزون"
+                    :rules="[requiredValidator]"
+                    prepend-icon="material-symbols:production-quantity-limits"
+                  />
+                </VCol>
+              </VRow>
             </VCol>
-            <VCol
-              cols="12"
-              md="6"
-            >
-              <AutoCompleteDropdown 
-                v-model="itemData.stock_id"
-                :apiModel="stocksStore"
-                apiSearchMethod="getAll"
-                item-title="product_name"
-                item-value="id"
-                label="المخزون"
-                placeholder="البحث في المخزون"
-                :rules="[requiredValidator]"
-              />
+            <!-- to store -->
+            <VCol cols="12">
+                <AutoCompleteDropdown 
+                  v-model="itemData.to_store"
+                  :apiModel="storesStore"
+                  apiSearchMethod="getAll"
+                  item-title="name"
+                  item-value="id"
+                  label="تحويل إلى مخزن"
+                  placeholder="البحث في المخزن"
+                  :rules="[requiredValidator]"
+                  prepend-icon="oi:data-transfer-download"
+                />
             </VCol>
             
 

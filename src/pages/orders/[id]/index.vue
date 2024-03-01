@@ -54,6 +54,9 @@ const itemData = ref({
   delivery_fee: 0,
   boxes_count: 0,
   dishes_count: 0,
+  customer_name: null,
+  customer_mobile: null,
+  // customer_address: null,
   comment: null,
 })
 
@@ -171,6 +174,9 @@ const getOrderDetails = () => {
 
       itemData.value = {
         id: orderDetails.id,
+        customer_name: orderDetails.customer?.name || null,
+        customer_mobile: orderDetails.customer?.mobile ? parseInt(orderDetails.customer.mobile) : null,
+        // customer_address: orderDetails.customer?.address || null,
         order_state_id: orderDetails.order_state_id,
         discount_code: orderDetails.discount_code,
         delivery_date: orderDetails.delivery_date,
@@ -658,6 +664,38 @@ onMounted(() => {
                     label="مصاريف التوصيل"
                   />
                 </VCol>
+                <VCol
+                  v-if="canEditAllFields"
+                  cols="12"
+                  md="6"
+                >
+                  <VTextField
+                    v-model="itemData.customer_name"
+                    label="اسم العميل"
+                  />
+                </VCol>
+                <VCol
+                  v-if="canEditAllFields"
+                  cols="12"
+                  md="6"
+                >
+                  <VTextField
+                    v-model="itemData.customer_mobile"
+                    type="number"
+                    min="0"
+                    label="رقم جوال العميل"
+                  />
+                </VCol>
+                <!-- <VCol
+                  v-if="canEditAllFields"
+                  cols="12"
+                  md="6"
+                >
+                  <VTextField
+                    v-model="itemData.customer_address"
+                    label="عنوان العميل"
+                  />
+                </VCol> -->
                 <VCol
                   v-if="hasRole(['production_manager', 'production_supervisor'])"
                   cols="12"
