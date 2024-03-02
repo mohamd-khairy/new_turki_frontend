@@ -226,18 +226,18 @@ const _timerId = ref(null)
 const isLoadingCustomers = ref(false)
 const isCustomersMenuOpen = ref(false)
 
-const updateCutomersMenu = (status) => {
+const updateCutomersMenu = status => {
   isCustomersMenuOpen.value = status
 }
 
-const searchCustomer = (e) => {
-  clearTimeout(_timerId.value);
+const searchCustomer = e => {
+  clearTimeout(_timerId.value)
 
   _timerId.value = setTimeout(() => {
-    if(!isCustomersMenuOpen.value) return;
+    if(!isCustomersMenuOpen.value) return
 
     isLoadingCustomers.value = true
-    customers.value = [];
+    customers.value = []
     employeesStore.fetchCustomers({ search: e, wallet: "all" })
       .then(response => {
         customers.value = response.data?.data?.data || []
@@ -434,7 +434,7 @@ onMounted(() => {
                     />
                   </div>
                   
-                  <v-autocomplete
+                  <VAutocomplete
                     v-model="filters.customer_id"
                     :items="customers"
                     label="البحث باسم أو رقم جوال العميل"
@@ -444,8 +444,9 @@ onMounted(() => {
                     :loading="isLoadingCustomers"
                     @update:search="searchCustomer"
                     @update:menu="updateCutomersMenu"
-                  ></v-autocomplete>
-                  <!-- <VSelect
+                  />
+                  <!--
+                    <VSelect
                     v-model="filters.customer_id"
                     :items="customers"
                     label="البحث باسم أو رقم جوال العميل"
@@ -453,19 +454,20 @@ onMounted(() => {
                     item-value="id"
                     :disabled="isLoading || isLoadingCustomers"
                     :loading="isLoadingCustomers"
-                  >
+                    >
                     <template #prepend-item>
-                      <VTextField
-                        type="text"
-                        v-model="searchTerm"
-                        class="mx-2"
-                        clearable
-                        placeholder="ابحث باسم أو رقم جوال العميل"
-                        @input="searchCustomer"
-                      />
-                      <VDivider class="mt-2" />
+                    <VTextField
+                    type="text"
+                    v-model="searchTerm"
+                    class="mx-2"
+                    clearable
+                    placeholder="ابحث باسم أو رقم جوال العميل"
+                    @input="searchCustomer"
+                    />
+                    <VDivider class="mt-2" />
                     </template>
-                  </VSelect> -->
+                    </VSelect> 
+                  -->
                 </VCol>
                 <VCol
                   cols="12"
@@ -749,7 +751,7 @@ onMounted(() => {
             <VSelect
               v-model="rowPerPage"
               variant="outlined"
-              :items="[5, 10, 20, 30, 50, 100, 200]"
+              :items="[5, 10, 20, 30, 50, 100, 200 , 300, 500]"
               :disabled="isLoading"
             />
           </div>
@@ -976,14 +978,20 @@ onMounted(() => {
             </tr>
           </thead>
           <tbody v-if="isLoading">
-            <tr v-for="tableRow in 9" :key="tableRow">
-              <td v-for="tableTD in 15" :key="tableTD">
+            <tr
+              v-for="tableRow in 9"
+              :key="tableRow"
+            >
+              <td
+                v-for="tableTD in 15"
+                :key="tableTD"
+              >
                 <div>
-                  <v-skeleton-loader
-                  type="text"
-                  :height="40"
-                  :width="100"
-                  ></v-skeleton-loader>
+                  <VSkeletonLoader
+                    type="text"
+                    :height="40"
+                    :width="100"
+                  />
                 </div>
               </td>
             </tr>
@@ -1243,8 +1251,8 @@ onMounted(() => {
 <style lang="scss">
 .product-list-table {
   .v-skeleton-loader__text {
-    max-width: 80%;
     margin: 0;
+    max-inline-size: 80%;
   }
 }
 
@@ -1260,8 +1268,8 @@ onMounted(() => {
   // max-height: 500px;
 
   &::-webkit-scrollbar {
-    width: 15px;
     block-size: 15px;
+    inline-size: 15px;
   }
 
   // &::-webkit-scrollbar-track {

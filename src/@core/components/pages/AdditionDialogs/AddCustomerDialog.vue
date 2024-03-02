@@ -1,9 +1,9 @@
 <script setup>
-import { useEmployeesStore } from "@/store/Employees";
-import { useRolesStore } from "@/store/Roles";
+import { useEmployeesStore } from "@/store/Employees"
+import { useRolesStore } from "@/store/Roles"
 import {
-requiredValidator
-} from '@validators';
+requiredValidator,
+} from '@validators'
 
 
 const props = defineProps({
@@ -18,8 +18,8 @@ const emit = defineEmits([
   'update:isAddOpen',
 ])
 
-import { useSettingsStore } from "@/store/Settings";
-import { useI18n } from "vue-i18n";
+import { useSettingsStore } from "@/store/Settings"
+import { useI18n } from "vue-i18n"
 
 const { t } = useI18n()
 const rolesListStore = useRolesStore()
@@ -39,6 +39,7 @@ const employee = reactive({
   name: null,
   mobile: null,
   address: null,
+
   // mobile_country_code: null,
   // email: null,
   // avatar: {},
@@ -66,6 +67,7 @@ const resetForm = () => {
   employee.mobile = null
   employee.name = null
   employee.address = null
+
   // employee.email = null
   // employee.avatar = {}
   // employee.age = null
@@ -98,6 +100,7 @@ const onFormSubmit = async () => {
     }).catch(error => {
       if (error.response.data.errors) {
         const errs = Object.keys(error.response.data.errors)
+
         errs.forEach(err => {
           settingsListStore.alertMessage = t(`errors.${err}`)
         })
@@ -136,7 +139,7 @@ const dialogModelValueUpdate = val => {
     @update:model-value="dialogModelValueUpdate"
   >
     <!-- Dialog close btn -->
-    <DialogCloseBtn @click="dialogModelValueUpdate(false)"/>
+    <DialogCloseBtn @click="dialogModelValueUpdate(false)" />
 
     <VCard
       class="pa-sm-9 pa-5"
@@ -144,7 +147,11 @@ const dialogModelValueUpdate = val => {
       <!-- 👉 Title -->
       <VCardItem>
         <VCardTitle class="text-h5 d-flex flex-column align-center gap-2 text-center mb-3">
-          <VIcon icon="ph:users-four" size="24" color="primary"></VIcon>
+          <VIcon
+            icon="ph:users-four"
+            size="24"
+            color="primary"
+          />
           <span class="mx-1 my-1">
             {{ t('Add_Customer') }}
           </span>
@@ -153,7 +160,10 @@ const dialogModelValueUpdate = val => {
 
       <VCardText>
         <!-- 👉 Form -->
-        <VForm ref="refForm" @submit.prevent="onFormSubmit">
+        <VForm
+          ref="refForm"
+          @submit.prevent="onFormSubmit"
+        >
           <VRow>
             <VCol
               cols="12"
@@ -179,99 +189,107 @@ const dialogModelValueUpdate = val => {
                 :rules="[requiredValidator]"
               />
             </VCol>
-            <VCol
-              cols="12"
-              lg="12"
-              sm="6"
-            >
-              <VTextField
-                v-model="employee.address"
-                label="العنوان"
-                :rules="[requiredValidator]"
-              />
-            </VCol>
-            <!-- <VCol
-              cols="12"
-              lg="12"
-              sm="6"
-            >
-              <VTextField
-                v-model="employee.mobile_country_code"
-                :label="t('forms.country_code')"
-                :rules="[requiredValidator]"
-              />
-            </VCol> -->
-            
-            <!-- <VCol
-              cols="12"
-              lg="12"
-              sm="6"
-            >
-              <VTextField
-                v-model="employee.age"
-                :label="t('forms.age')"
-              />
-            </VCol>
-            <VCol
-              cols="12"
-              lg="12"
-              sm="6"
-            >
-              <VSelect
-                v-model="employee.nationality"
-                :label="t('forms.nationality')"
-                :items="countriesList"
-                item-title="ar"
-                item-value="alpha3"
-              />
-            </VCol> -->
-            <!-- <VCol
-              cols="12"
-              lg="12"
-              sm="6"
-            >
-              <VSelect
-                v-model="employee.gender"
-                :label="t('forms.gender')"
-                :items="genders"
-                item-title="name"
-                item-value="id"
-                :rules="[requiredValidator]"
-              />
-            </VCol>
-            <VCol
-              cols="12"
-            >
-              <VFileInput
-                v-model="employee.avatar"
-                :label="t('forms.image')"
-                accept="image/*"
-                prepend-icon=""
-                prepend-inner-icon="mdi-image"
-                :rules="[requiredValidator]"
-              />
-            </VCol> -->
-            <!-- <VCol
+            <!--
+              <VCol
               cols="12"
               lg="12"
               sm="6"
               >
               <VTextField
-                v-model="employee.wallet"
-                :label="t('forms.wallet')"
-                :rules="[requiredValidator]"
+              v-model="employee.address"
+              label="العنوان"
+              :rules="[requiredValidator]"
               />
-            </VCol>
-            <VCol
+              </VCol>
+              <VCol
               cols="12"
               lg="12"
               sm="6"
-            >
-              <VSwitch
-                v-model="employee.is_active"
-                :label="t('forms.is_active')"
+              >
+              <VTextField
+              v-model="employee.mobile_country_code"
+              :label="t('forms.country_code')"
+              :rules="[requiredValidator]"
               />
-            </VCol> -->
+              </VCol> 
+            -->
+            
+            <!--
+              <VCol
+              cols="12"
+              lg="12"
+              sm="6"
+              >
+              <VTextField
+              v-model="employee.age"
+              :label="t('forms.age')"
+              />
+              </VCol>
+              <VCol
+              cols="12"
+              lg="12"
+              sm="6"
+              >
+              <VSelect
+              v-model="employee.nationality"
+              :label="t('forms.nationality')"
+              :items="countriesList"
+              item-title="ar"
+              item-value="alpha3"
+              />
+              </VCol> 
+            -->
+            <!--
+              <VCol
+              cols="12"
+              lg="12"
+              sm="6"
+              >
+              <VSelect
+              v-model="employee.gender"
+              :label="t('forms.gender')"
+              :items="genders"
+              item-title="name"
+              item-value="id"
+              :rules="[requiredValidator]"
+              />
+              </VCol>
+              <VCol
+              cols="12"
+              >
+              <VFileInput
+              v-model="employee.avatar"
+              :label="t('forms.image')"
+              accept="image/*"
+              prepend-icon=""
+              prepend-inner-icon="mdi-image"
+              :rules="[requiredValidator]"
+              />
+              </VCol> 
+            -->
+            <!--
+              <VCol
+              cols="12"
+              lg="12"
+              sm="6"
+              >
+              <VTextField
+              v-model="employee.wallet"
+              :label="t('forms.wallet')"
+              :rules="[requiredValidator]"
+              />
+              </VCol>
+              <VCol
+              cols="12"
+              lg="12"
+              sm="6"
+              >
+              <VSwitch
+              v-model="employee.is_active"
+              :label="t('forms.is_active')"
+              />
+              </VCol> 
+            -->
             <VCol
               cols="12"
               class="text-center"
@@ -288,7 +306,11 @@ const dialogModelValueUpdate = val => {
                 type="submit"
                 class="position-relative me-3"
               >
-                <VIcon icon="mingcute:loading-line" class="loading" size="32"></VIcon>
+                <VIcon
+                  icon="mingcute:loading-line"
+                  class="loading"
+                  size="32"
+                />
               </VBtn>
 
               <VBtn
