@@ -1,6 +1,6 @@
 <script setup>
-import { useOrdersStore } from "@/store/Orders";
-import moment from "moment";
+import { useOrdersStore } from "@/store/Orders"
+import moment from "moment"
 
 const value = ref('qrcode')
 
@@ -72,8 +72,9 @@ const getTodayDate = () => {
   return `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`
 }
 
-const formatCreatedDate = (createdDate) => {
-  const formatedDate = moment(createdDate).format("DD-MM-YYYY");
+const formatCreatedDate = createdDate => {
+  const formatedDate = moment(createdDate).format("DD-MM-YYYY")
+  
   return ConvertToArabicNumbers(formatedDate)
 }
 
@@ -295,11 +296,12 @@ onMounted(() => {
                 <th class="text-base">
                   التجهيز
                 </th>
+                
+                <th>الكرشة</th>
+                <th>الكوارع</th>
+                <th>اللية</th>
+                <th>الرأس</th> 
                 <!--
-                  <th>الكرشة</th>
-                  <th>الكوارع</th>
-                  <th>اللية</th>
-                  <th>الرأس</th> 
                 -->
                 <th class="text-base">
                   الشلوطة
@@ -334,15 +336,24 @@ onMounted(() => {
                   <small>
                     {{ product.preparation ? product.preparation.name_ar : "لا يوجد" }}</small>
                 </td>
+               
+                <td>
+                  <small>
+                    {{ product.is_karashah ? "بدون" : "" }}</small>
+                </td>
+                <td>
+                  <small>
+                    {{ product.is_kwar3 ? "بدون" : "" }}</small>
+                </td>
+                <td>
+                  <small>
+                    {{ product.is_lyh ? "بدون" : "" }}</small>
+                </td>
+                <td>
+                  <small>
+                    {{ product.is_Ras ? "بدون" : "" }}</small>
+                </td> 
                 <!--
-                  <td><small>
-                  {{ product.is_karashah ? "بدون" : "" }}</small></td>
-                  <td><small>
-                  {{ product.is_kwar3 ? "بدون" : "" }}</small></td>
-                  <td><small>
-                  {{ product.is_lyh ? "بدون" : "" }}</small></td>
-                  <td><small>
-                  {{ product.is_Ras ? "بدون" : "" }}</small></td> 
                 -->
                 <td>
                   <small>
