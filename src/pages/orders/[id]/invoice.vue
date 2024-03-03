@@ -296,12 +296,11 @@ onMounted(() => {
                 <th class="text-base">
                   التجهيز
                 </th>
-                
-                <th>الكرشة</th>
-                <th>الكوارع</th>
-                <th>اللية</th>
-                <th>الرأس</th> 
                 <!--
+                  <th>الكرشة</th>
+                  <th>الكوارع</th>
+                  <th>اللية</th>
+                  <th>الرأس</th> 
                 -->
                 <th class="text-base">
                   الشلوطة
@@ -336,24 +335,24 @@ onMounted(() => {
                   <small>
                     {{ product.preparation ? product.preparation.name_ar : "لا يوجد" }}</small>
                 </td>
-               
-                <td>
-                  <small>
-                    {{ product.is_karashah ? "بدون" : "" }}</small>
-                </td>
-                <td>
-                  <small>
-                    {{ product.is_kwar3 ? "بدون" : "" }}</small>
-                </td>
-                <td>
-                  <small>
-                    {{ product.is_lyh ? "بدون" : "" }}</small>
-                </td>
-                <td>
-                  <small>
-                    {{ product.is_Ras ? "بدون" : "" }}</small>
-                </td> 
                 <!--
+                  <td>
+                  <small>
+                  {{ product.is_karashah ? "بدون" : "" }}</small>
+                  </td>
+                  <td>
+                  <small>
+                  {{ product.is_kwar3 ? "بدون" : "" }}</small>
+                  </td>
+                  <td>
+                  <small>
+                  {{ product.is_lyh ? "بدون" : "" }}</small>
+                  </td>
+                  <td>
+                  <small>
+                  {{ product.is_Ras ? "بدون" : "" }}</small>
+                  </td> 
+                
                 -->
                 <td>
                   <small>
