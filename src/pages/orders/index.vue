@@ -344,16 +344,25 @@ const ConvertToArabicNumbers = num => {
 
 const handleDeliveryDate = (date, createdDate) => {
   const dateArray = date.split('-')
-  if(dateArray[0].length < 4) {
+  if(dateArray.length < 3) { //if(dateArray[0].length < 4) {
     dateArray.unshift(`${new Date(createdDate).getFullYear()}`)
     date = dateArray.join('-')
+    
+    return moment(date).format("DD-MM-YYYY")
   }
 
-  return ConvertToArabicNumbers(moment(date).format("DD-MM-YYYY"))
+  if(moment(date).format("DD-MM-YYYY")){
+    return moment(date).format("DD-MM-YYYY")
+  }
+  
+  return date
+
+
+  //ConvertToArabicNumbers
 }
 
 const formatDateTime = data => {
-  let date = moment(data).format("DD-MM-YYYY")
+  let date = moment(data).format("YYYY-MM-DD")
   let time = moment(data).format("hh:mm:ss A")
 
   return { date, time }
