@@ -382,8 +382,8 @@ onMounted(() => {
               class="d-flex align-center gap-3 text-base py-1"
             >
               <span> المبلغ المسدد :</span>
-              <span v-if="order.order.payment">
-                {{ order.order.payment ? ConvertToArabicNumbers(order.order.payment.price) : 0 }} <small>{{ orderCurrency }}</small> 
+              <span v-if="order.order.paidpayment">
+                {{ order.order.paidpayment ? ConvertToArabicNumbers(order.order.paidpayment.price) : 0 }} <small>{{ orderCurrency }}</small> 
               </span>
             </VCol>
             <VCol
