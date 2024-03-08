@@ -8,7 +8,7 @@ import { useEmployeesStore } from "@/store/Employees"
 import { useOrdersStore } from "@/store/Orders"
 import { useSettingsStore } from "@/store/Settings"
 import {
-requiredValidator,
+  requiredValidator,
 } from '@validators'
 import moment from "moment"
 
@@ -41,7 +41,7 @@ const refForm = ref(null)
 const orderStatus = ref([])
 const allOrderStatus = ref([])
 const customerAddresses = ref([])
-const addedCustomerAddress = ref(null);
+const addedCustomerAddress = ref(null)
 
 const itemData = ref({
   order_state_id: null,
@@ -56,6 +56,7 @@ const itemData = ref({
   dishes_count: 0,
   customer_name: null,
   customer_mobile: null,
+
   // customer_address: null,
   comment: null,
 })
@@ -140,12 +141,33 @@ const getCustomerAddresses = customerId => {
 }
 
 const addNewCustomerAddress = () => {
-  isAddCustomerAddressOpen.value = true;
+  isAddCustomerAddressOpen.value = true
 }
 
-const updateNewCustomerAddress = (address) => {
-  customerAddresses.value.unshift(address);
-  itemData.value.address_id = address.id;
+const updateNewCustomerAddress = address => {
+  customerAddresses.value.unshift(address)
+  itemData.value.address_id = address.id
+}
+
+const handleDeliveryDate = (date, createdDate) => {
+  const dateArray = date.split('-')
+  if(dateArray.length < 3) { //if(dateArray[0].length < 4) {
+    dateArray.unshift(`${new Date(createdDate).getFullYear()}`)
+    date = dateArray.join('-')
+    
+    return moment(date).format("YYYY-MM-DD")
+  }
+
+  if(moment(date).format("YYYY-MM-DD")){
+    return moment(date).format("YYYY-MM-DD")
+  }
+  
+  const parsedDate = moment(date, 'MM-DD-YYYY')
+
+  // Format the parsed date in the desired output format
+  return formattedDate = parsedDate.format('YYYY-MM-DD')
+
+  //ConvertToArabicNumbers
 }
 
 const getOrderDetails = () => {
@@ -170,16 +192,17 @@ const getOrderDetails = () => {
     }
 
     if(orderDetails) {
-      customerId.value = orderDetails?.customer_id || null;
+      customerId.value = orderDetails?.customer_id || null
 
       itemData.value = {
         id: orderDetails.id,
         customer_name: orderDetails.customer?.name || null,
         customer_mobile: orderDetails.customer?.mobile ? parseInt(orderDetails.customer.mobile) : null,
+
         // customer_address: orderDetails.customer?.address || null,
         order_state_id: orderDetails.order_state_id,
         discount_code: orderDetails.discount_code,
-        delivery_date: orderDetails.delivery_date,
+        delivery_date: handleDeliveryDate(orderDetails.delivery_date, orderDetails.created_at),
         delivery_period_id: orderDetails.delivery_period_id,
         payment_type_id: orderDetails.payment_type_id,
         paid: orderDetails.paid,
@@ -620,19 +643,19 @@ onMounted(() => {
                   cols="12"
                   md="6"
                 >
-                <VRow align="center">
-                  <VCol cols="11">
-                    <!-- :model-value="addedCustomerAddress" -->
-                    <VSelect
-                      v-model="itemData.address_id"
-                      label="عنوان التوصيل"
-                      :items="customerAddresses"
-                      item-title="label"
-                      item-value="id"
-                    />
-                  </VCol>
-                  <VCol cols="1">
-                    <VTooltip text="إضافة عنوان جديد">
+                  <VRow align="center">
+                    <VCol cols="11">
+                      <!-- :model-value="addedCustomerAddress" -->
+                      <VSelect
+                        v-model="itemData.address_id"
+                        label="عنوان التوصيل"
+                        :items="customerAddresses"
+                        item-title="label"
+                        item-value="id"
+                      />
+                    </VCol>
+                    <VCol cols="1">
+                      <VTooltip text="إضافة عنوان جديد">
                         <template #activator="{ props }">
                           <VBtn
                             v-bind="props"
@@ -648,9 +671,9 @@ onMounted(() => {
                             />
                           </VBtn>
                         </template>
-                    </VTooltip>
-                  </VCol>
-                </VRow>
+                      </VTooltip>
+                    </VCol>
+                  </VRow>
                 </VCol>
                 <VCol
                   v-if="canEditAllFields"
@@ -686,16 +709,18 @@ onMounted(() => {
                     label="رقم جوال العميل"
                   />
                 </VCol>
-                <!-- <VCol
+                <!--
+                  <VCol
                   v-if="canEditAllFields"
                   cols="12"
                   md="6"
-                >
+                  >
                   <VTextField
-                    v-model="itemData.customer_address"
-                    label="عنوان العميل"
+                  v-model="itemData.customer_address"
+                  label="عنوان العميل"
                   />
-                </VCol> -->
+                  </VCol> 
+                -->
                 <VCol
                   v-if="hasRole(['production_manager', 'production_supervisor'])"
                   cols="12"
@@ -927,7 +952,8 @@ onMounted(() => {
       @refreshTable="getOrderDetails"
     />
 
-    <AddCustomerAddressDialog v-if="isAddCustomerAddressOpen"
+    <AddCustomerAddressDialog
+      v-if="isAddCustomerAddressOpen"
       v-model:is-add-open="isAddCustomerAddressOpen"
       :customer-id="customerId"
       @refreshTable="updateNewCustomerAddress"

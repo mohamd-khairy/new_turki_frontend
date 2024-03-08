@@ -83,6 +83,27 @@ onMounted(() => {
 
   getOrderDetails(id)
 })
+
+const handleDeliveryDate = (date, createdDate) => {
+  const dateArray = date.split('-')
+  if(dateArray.length < 3) { //if(dateArray[0].length < 4) {
+    dateArray.unshift(`${new Date(createdDate).getFullYear()}`)
+    date = dateArray.join('-')
+    
+    return ConvertToArabicNumbers(moment(date).format("DD-MM-YYYY"))
+  }
+
+  if(moment(date).format("DD-MM-YYYY")){
+    return ConvertToArabicNumbers(moment(date).format("DD-MM-YYYY"))
+  }
+  
+  const parsedDate = moment(date, 'MM-DD-YYYY')
+
+  // Format the parsed date in the desired output format
+  const formattedDate = parsedDate.format('DD-MM-YYYY')
+
+  return ConvertToArabicNumbers(formattedDate)
+}
 </script>
 
 <template>
@@ -214,7 +235,7 @@ onMounted(() => {
             >
               <h4>تاريخ التسليم: </h4>
               <h4>
-                {{ ConvertToArabicNumbers(order.order.delivery_date.toString().split("-").reverse().join("-")) }}  
+                {{ handleDeliveryDate(order.order.delivery_date.toString().split("-").reverse().join("-"), order.order.created_at) }}  
               </h4>
             </VCol>
             <VCol
@@ -382,8 +403,8 @@ onMounted(() => {
               class="d-flex align-center gap-3 text-base py-1"
             >
               <span> المبلغ المسدد :</span>
-              <span v-if="order.order.paidpayment">
-                {{ order.order.paidpayment ? ConvertToArabicNumbers(order.order.paidpayment.price) : 0 }} <small>{{ orderCurrency }}</small> 
+              <span>
+                {{ ConvertToArabicNumbers(order.order.paidpayment ? order.order.paidpayment.price : 0 ) }} <small>{{ orderCurrency }}</small> 
               </span>
             </VCol>
             <VCol
