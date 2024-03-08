@@ -150,25 +150,7 @@ const updateNewCustomerAddress = address => {
 }
 
 const handleDeliveryDate = (date, createdDate) => {
-  const dateArray = date.split('-')
-  let newDate
-  if(dateArray.length < 3) { //03-03
-    dateArray.unshift(`${new Date(createdDate).getFullYear()}`)
-    date = dateArray.join('-')
-    
-    newDate =  moment(date).format("YYYY-MM-DD")
-  }else if(dateArray[0].length > 3){ // 2024-03-03
-    newDate =  date
-  }else if(dateArray[0].length < 3){ //03-03-2024
-    newDate =  moment(date).format("YYYY-DD-MM")
-  }else{
-    newDate =  date
-  }
-
-  return newDate
-
-
-  // return ConvertToArabicNumbers(newDate)
+  return moment(date).format("YYYY-MM-DD")
 }
 
 const getOrderDetails = () => {

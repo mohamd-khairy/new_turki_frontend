@@ -343,25 +343,9 @@ const ConvertToArabicNumbers = num => {
 }
 
 const handleDeliveryDate = (date, createdDate) => {
-  const dateArray = date.split('-')
-  let newDate
-  if(dateArray.length < 3) { //03-03
-    dateArray.unshift(`${new Date(createdDate).getFullYear()}`)
-    date = dateArray.join('-')
-    
-    newDate =  moment(date).format("YYYY-MM-DD")
-  }else if(dateArray[0].length > 3){ // 2024-03-03
-    newDate =  date
-  }else if(dateArray[0].length < 3){ //03-03-2024
-    newDate =  moment(date).format("YYYY-DD-MM")
-  }else{
-    newDate =  date
-  }
+  const newDate = moment(date).format("DD-MM-YYYY")
 
-  return newDate
-
-
-  // return ConvertToArabicNumbers(newDate)
+  return ConvertToArabicNumbers(newDate)
 }
 
 const formatDateTime = data => {
@@ -804,7 +788,9 @@ onMounted(() => {
               v-else
               class="d-flex align-center flex-wrap gap-3"
             >
-              <VCard class="py-3 px-4 w-100 w-sm-auto">
+              <VCard
+                class="py-3 px-4 w-100 w-sm-auto"
+              >
                 <p class="mb-3">
                   <VAvatar
                     color="success"
@@ -827,7 +813,7 @@ onMounted(() => {
                 </div>
               </VCard>
               <VCard
-                v-if="totalOrdersAmount"
+                v-if="hasRole([ 'admin']) && totalOrdersAmount"
                 class="py-3 px-4 w-100 w-sm-auto"
               >
                 <p class="mb-3">
