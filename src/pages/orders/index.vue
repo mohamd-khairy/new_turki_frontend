@@ -344,21 +344,24 @@ const ConvertToArabicNumbers = num => {
 
 const handleDeliveryDate = (date, createdDate) => {
   const dateArray = date.split('-')
-  if(dateArray.length < 3) { //if(dateArray[0].length < 4) {
+  let newDate
+  if(dateArray.length < 3) { //03-03
     dateArray.unshift(`${new Date(createdDate).getFullYear()}`)
     date = dateArray.join('-')
     
-    return moment(date).format("DD-MM-YYYY")
+    newDate =  moment(date).format("YYYY-MM-DD")
+  }else if(dateArray[0].length > 3){ // 2024-03-03
+    newDate =  date
+  }else if(dateArray[0].length < 3){ //03-03-2024
+    newDate =  moment(date).format("YYYY-DD-MM")
+  }else{
+    newDate =  date
   }
 
-  if(moment(date).format("DD-MM-YYYY")){
-    return moment(date).format("DD-MM-YYYY")
-  }
-  
-  return date
+  return newDate
 
 
-  //ConvertToArabicNumbers
+  // return ConvertToArabicNumbers(newDate)
 }
 
 const formatDateTime = data => {

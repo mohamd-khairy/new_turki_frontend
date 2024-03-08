@@ -73,9 +73,9 @@ const getTodayDate = () => {
 }
 
 const formatCreatedDate = createdDate => {
-  const formatedDate = moment(createdDate).format("DD-MM-YYYY")
-  
-  return ConvertToArabicNumbers(formatedDate)
+  return moment(createdDate).format("YYYY-MM-DD")
+
+  // return ConvertToArabicNumbers(formatedDate)
 }
 
 onMounted(() => {
@@ -86,23 +86,24 @@ onMounted(() => {
 
 const handleDeliveryDate = (date, createdDate) => {
   const dateArray = date.split('-')
-  if(dateArray.length < 3) { //if(dateArray[0].length < 4) {
+  let newDate
+  if(dateArray.length < 3) { //03-03
     dateArray.unshift(`${new Date(createdDate).getFullYear()}`)
     date = dateArray.join('-')
     
-    return ConvertToArabicNumbers(moment(date).format("DD-MM-YYYY"))
+    newDate =  moment(date).format("YYYY-MM-DD")
+  }else if(dateArray[0].length > 3){ // 2024-03-03
+    newDate =  date
+  }else if(dateArray[0].length < 3){ //03-03-2024
+    newDate =  moment(date).format("YYYY-DD-MM")
+  }else{
+    newDate =  date
   }
 
-  if(moment(date).format("DD-MM-YYYY")){
-    return ConvertToArabicNumbers(moment(date).format("DD-MM-YYYY"))
-  }
-  
-  const parsedDate = moment(date, 'MM-DD-YYYY')
+  return newDate
 
-  // Format the parsed date in the desired output format
-  const formattedDate = parsedDate.format('DD-MM-YYYY')
 
-  return ConvertToArabicNumbers(formattedDate)
+  // return ConvertToArabicNumbers(newDate)
 }
 </script>
 
