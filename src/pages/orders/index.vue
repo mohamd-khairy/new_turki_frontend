@@ -743,7 +743,7 @@ onMounted(() => {
           <span class="mx-1">{{ t('Orders') }}</span>
         </VCardTitle>
         <VCardText class="d-flex align-center flex-wrap gap-2 py-4">
-          <div style="width: 5rem;">
+          <div style="min-width: 5rem;">
             <VSelect
               v-model="rowPerPage"
               variant="outlined"
@@ -772,6 +772,20 @@ onMounted(() => {
               </div>
             </Transition>
           </div>
+
+          <VTooltip text="إعادة التحميل">
+            <template #activator="{ props }">
+              <VBtn
+                v-bind="props"
+                :disabled="isLoading"
+                :loading="isLoading"
+                icon
+                @click="getOrders"
+              >
+                <v-icon>uiw:reload</v-icon>
+              </VBtn>
+            </template>
+          </VTooltip>
 
           <VSpacer />
           <div class="pt-3 pt-md-0">
