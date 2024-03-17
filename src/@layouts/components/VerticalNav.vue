@@ -1,12 +1,12 @@
 <script setup>
 import {
-injectionKeyIsVerticalNavHovered,
-useLayouts,
+  injectionKeyIsVerticalNavHovered,
+  useLayouts,
 } from '@layouts'
 import {
-VerticalNavGroup,
-VerticalNavLink,
-VerticalNavSectionTitle,
+  VerticalNavGroup,
+  VerticalNavLink,
+  VerticalNavSectionTitle,
 } from '@layouts/components'
 import { config } from '@layouts/config'
 import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
@@ -102,18 +102,23 @@ const handleNavScroll = evt => {
           to="/"
           class="app-logo d-flex align-center justify-center"
         >
-        <!-- class="app-logo d-flex align-center justify-center app-title-wrapper" -->
-          <!--          <VNodeRenderer :nodes="config.app.logo" />-->
-<!--          <VIcon icon="iconoir:n-square" size="36"></VIcon>-->
-            <img class="d-inline-block mx-auto" src="@/assets/images/icon_small.png" alt="تركي للحوم" width="80">
-<!--          <Transition name="vertical-nav-app-title">-->
-<!--            <h1-->
-<!--              v-show="!hideTitleAndIcon"-->
-<!--              class="app-title font-weight-bold leading-normal text-xl"-->
-<!--            >-->
-<!--              {{ config.app.title }}-->
-<!--            </h1>-->
-<!--          </Transition>-->
+          <!-- class="app-logo d-flex align-center justify-center app-title-wrapper" -->
+          <!--          <VNodeRenderer :nodes="config.app.logo" /> -->
+          <!--          <VIcon icon="iconoir:n-square" size="36"></VIcon> -->
+          <img
+            class="d-inline-block mx-auto"
+            src="@/assets/images/icon_small.png"
+            alt="تركي للحوم"
+            width="140"
+          >
+          <!--          <Transition name="vertical-nav-app-title"> -->
+          <!--            <h1 -->
+          <!--              v-show="!hideTitleAndIcon" -->
+          <!--              class="app-title font-weight-bold leading-normal text-xl" -->
+          <!--            > -->
+          <!--              {{ config.app.title }} -->
+          <!--            </h1> -->
+          <!--          </Transition> -->
         </RouterLink>
         <!-- 👉 Vertical nav actions -->
         <!-- Show toggle collapsible in >md and close button in <md -->
@@ -182,10 +187,11 @@ const handleNavScroll = evt => {
 
 .app-logo {
   img {
-    max-width: 300px;
     filter: unset;
+    max-inline-size: 300px;
   }
 }
+
 // 👉 Vertical Nav
 .layout-vertical-nav {
   position: fixed;
@@ -202,15 +208,15 @@ const handleNavScroll = evt => {
   .nav-header {
     display: flex;
     align-items: center;
-    margin-bottom: 1rem;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    border-block-end: 1px solid rgba(0, 0, 0, 5%);
+    margin-block-end: 1rem;
 
     .header-action {
       position: absolute;
-      top: 50%;
-      left: 10px;
-      transform: translateY(-50%);
       cursor: pointer;
+      inset-block-start: 50%;
+      inset-inline-start: 10px;
+      transform: translateY(-50%);
     }
   }
 
