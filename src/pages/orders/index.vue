@@ -210,6 +210,42 @@ const getOrders = () => {
   })
 }
 
+const exportOrders =  () => {
+  isLoading.value = true
+  ordersListStore.fetchOrders({
+    ...filters,
+    q: searchQuery.value,
+    export: 1,
+  }).then(response => {
+    
+    let csvContent = '\uFEFF' // Unicode BOM
+    csvContent += response.data
+
+    // programmatically 'click'.
+    const link = document.createElement('a')
+    
+    // Tell the browser to associate the response data to
+    // the URL of the link we created above.
+    link.href = window.URL.createObjectURL(
+      new Blob([csvContent] , { type: 'text/csv;charset=utf-8' }),
+    )
+    
+    // Tell the browser to download, not render, the file.
+    link.setAttribute('download', 'report.csv')
+    
+    // Place the link in the DOM.
+    document.body.appendChild(link)
+    
+    // Make the magic happen!
+    link.click()
+
+  }).catch(error => {
+    console.log(error)
+  }).finally(() => {
+    isLoading.value = false
+  })
+}
+
 watch(rowPerPage, () => {
   getOrders()
 })
@@ -726,6 +762,18 @@ onMounted(() => {
                   >
                     {{ t('Clear_Filter') }}
                   </VBtn>
+
+                  <VTooltip text="Export">
+                    <template #activator="{ props }">
+                      <VBtn
+                        v-bind="props"
+                        :disabled="isLoading || !isFiltered"
+                        @click="exportOrders"
+                      >
+                        Export Filtered Data
+                      </VBtn>
+                    </template>
+                  </VTooltip>
                 </VCol>
               </VRow>
             </div>
@@ -782,7 +830,7 @@ onMounted(() => {
                 icon
                 @click="getOrders"
               >
-                <v-icon>uiw:reload</v-icon>
+                <VIcon>uiw:reload</VIcon>
               </VBtn>
             </template>
           </VTooltip>
