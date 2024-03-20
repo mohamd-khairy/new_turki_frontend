@@ -4,6 +4,10 @@ import { defineStore } from 'pinia'
 export const useOrdersStore = defineStore('OrdersStore', {
   actions: {
     // 👉 Fetch all Invoices
+    
+    exportOrderProducts(params) {
+      return axios.get('orders/export-order-products', { params })
+    },
     fetchOrders(params) {
       return axios.get('orders/get-order', { params })
     },
