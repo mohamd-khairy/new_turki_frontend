@@ -808,7 +808,10 @@ onMounted(() => {
                         :disabled="isLoading || !isFiltered"
                         @click="exportOrders"
                       >
-                        Export Filtered Data
+                        <VIcon left>
+                          mdi-file-export
+                        </VIcon>
+                        استخراج الطلبات
                       </VBtn>
                     </template>
                   </VTooltip>
@@ -820,7 +823,11 @@ onMounted(() => {
                         :disabled="isLoading || !isFiltered"
                         @click="exportOrderProducts"
                       >
-                        Export Order Products
+                        <VIcon left>
+                          mdi-file-export
+                        </VIcon>
+
+                        استخراج تفاصيل الطلبات
                       </VBtn>
                     </template>
                   </VTooltip>
