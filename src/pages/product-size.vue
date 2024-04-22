@@ -1,8 +1,8 @@
 <script setup>
-import { useSettingsStore } from "@/store/Settings";
-import moment from "moment";
-import { onMounted } from "vue";
-import { useI18n } from "vue-i18n";
+import { useSettingsStore } from "@/store/Settings"
+import moment from "moment"
+import { onMounted } from "vue"
+import { useI18n } from "vue-i18n"
 
 const { t } = useI18n()
 
@@ -89,9 +89,10 @@ const openDelete = item => {
 
 const openEdit = item => {
   isEditOpen.value = true
-  item.stores = item.stores.map(store => {
-    store.name = store.store.name;
-    store.product_name = store.stock.product_name;
+  item.stores = item?.stores?.map(store => {
+    store.name = store.store.name
+    store.product_name = store.stock.product_name
+    
     return store
   })
   selectedItem.value = item
@@ -122,7 +123,11 @@ onMounted(() => {
   <div>
     <VCard :loading="isLoading">
       <VCardTitle class="d-flex align-center">
-        <VIcon icon="game-icons:weight-scale" size="24" color="primary"></VIcon>
+        <VIcon
+          icon="game-icons:weight-scale"
+          size="24"
+          color="primary"
+        />
         <span class="mx-1">{{ t('Product_Size') }}</span>
       </VCardTitle>
       <VCardText class="d-flex align-center flex-wrap gap-2 py-4">
@@ -134,7 +139,7 @@ onMounted(() => {
             :items="[5, 10, 20, 30, 50]"
           />
         </div>
-        <!--         👉 Create product :to="{ name: 'apps-product-add' }"-->
+        <!--         👉 Create product :to="{ name: 'apps-product-add' }" -->
         <VBtn
           prepend-icon="tabler-plus"
           @click="isAddOpen = true"
@@ -142,120 +147,126 @@ onMounted(() => {
           {{ t('Add_Item') }}
         </VBtn>
 
-        <VSpacer/>
-
-
+        <VSpacer />
       </VCardText>
 
-      <VDivider/>
+      <VDivider />
 
       <VTable class="text-no-wrap product-list-table">
         <thead>
-        <tr>
-          <th
-            scope="col"
-            class="font-weight-semibold"
-          >
-            {{ t('forms.id') }}
-          </th>
-          <th
-            scope="col"
-            class="font-weight-semibold"
-          >
-            {{ t('forms.name') }}
-          </th>
-          <th
-            scope="col"
-            class="font-weight-semibold"
-          >
-            {{ t('forms.price') }}
-          </th>
-          <th
-            scope="col"
-            class="font-weight-semibold"
-          >
-            {{ t('forms.sale_price') }}
-          </th>
-          <th
-            scope="col"
-            class="font-weight-semibold"
-          >
-            {{ t('forms.weight') }}
-          </th>
-          <th
-            scope="col"
-            class="font-weight-semibold"
-          >
-            {{ t('forms.actions') }}
-          </th>
-        </tr>
+          <tr>
+            <th
+              scope="col"
+              class="font-weight-semibold"
+            >
+              {{ t('forms.id') }}
+            </th>
+            <th
+              scope="col"
+              class="font-weight-semibold"
+            >
+              {{ t('forms.name') }}
+            </th>
+            <th
+              scope="col"
+              class="font-weight-semibold"
+            >
+              {{ t('forms.price') }}
+            </th>
+            <th
+              scope="col"
+              class="font-weight-semibold"
+            >
+              {{ t('forms.sale_price') }}
+            </th>
+            <th
+              scope="col"
+              class="font-weight-semibold"
+            >
+              {{ t('forms.weight') }}
+            </th>
+            <th
+              scope="col"
+              class="font-weight-semibold"
+            >
+              foodics_integrate_id
+            </th>
+            <th
+              scope="col"
+              class="font-weight-semibold"
+            >
+              {{ t('forms.actions') }}
+            </th>
+          </tr>
         </thead>
 
         <tbody>
-        <tr
-          v-for="(item, i) in paginateItems"
-          :key="item.id"
-        >
-          <td>
-            #{{ ConvertToArabicNumbers(++i) }}
-          </td>
-          <td>
-            {{ item.name_ar }}
-          </td>
-          <td>
-            {{ ConvertToArabicNumbers(Intl.NumberFormat().format(item.price)) }}
-          </td>
-          <td>
-            {{ ConvertToArabicNumbers(Intl.NumberFormat().format(item.sale_price)) }}
-          </td>
-          <td>
-            {{ ConvertToArabicNumbers(item.weight) }}
-          </td>
-
-          <td>
-            <VBtn
-              icon
-              variant="plain"
-              color="default"
-              size="x-small"
-              @click="openEdit(item)"
-            >
-              <VIcon
-                :size="22"
-                icon="tabler-pencil"
-              />
-            </VBtn>
-            <VBtn
-              icon
-              variant="plain"
-              color="default"
-              size="x-small"
-              @click="openDelete(item)"
-            >
-              <VIcon
-                :size="22"
-                icon="tabler-trash"
-              />
-            </VBtn>
-          </td>
-        </tr>
+          <tr
+            v-for="(item, i) in paginateItems"
+            :key="item.id"
+          >
+            <td>
+              #{{ ConvertToArabicNumbers(++i) }}
+            </td>
+            <td>
+              {{ item.name_ar }}
+            </td>
+            <td>
+              {{ ConvertToArabicNumbers(Intl.NumberFormat().format(item.price)) }}
+            </td>
+            <td>
+              {{ ConvertToArabicNumbers(Intl.NumberFormat().format(item.sale_price)) }}
+            </td>
+            <td>
+              {{ ConvertToArabicNumbers(item.weight) }}
+            </td>
+            <td>
+              {{ item.foodics_integrate_id ? ConvertToArabicNumbers(item.foodics_integrate_id) : '-' }}
+            </td>
+            <td>
+              <VBtn
+                icon
+                variant="plain"
+                color="default"
+                size="x-small"
+                @click="openEdit(item)"
+              >
+                <VIcon
+                  :size="22"
+                  icon="tabler-pencil"
+                />
+              </VBtn>
+              <VBtn
+                icon
+                variant="plain"
+                color="default"
+                size="x-small"
+                @click="openDelete(item)"
+              >
+                <VIcon
+                  :size="22"
+                  icon="tabler-trash"
+                />
+              </VBtn>
+            </td>
+          </tr>
         </tbody>
 
         <!-- 👉 table footer  -->
         <tfoot v-show="!items.length">
-        <tr>
-          <td
-            colspan="8"
-            class="text-center text-body-1"
-          >
-            لا يوجد بيانات
-          </td>
-        </tr>
+          <tr>
+            <td
+              colspan="8"
+              class="text-center text-body-1"
+            >
+              لا يوجد بيانات
+            </td>
+          </tr>
         </tfoot>
       </VTable>
       <!-- !SECTION -->
 
-      <VDivider/>
+      <VDivider />
 
       <VCardText class="d-flex align-center flex-wrap justify-space-between gap-4 py-3">
         <span class="text-sm text-disabled">{{ paginationData }}</span>

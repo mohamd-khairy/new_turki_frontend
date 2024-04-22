@@ -1,11 +1,11 @@
 <script setup>
-import { useSettingsStore } from "@/store/Settings";
-import { useStocksStore } from "@/store/Stocks";
-import { useStoresStore } from "@/store/Stores";
+import { useSettingsStore } from "@/store/Settings"
+import { useStocksStore } from "@/store/Stocks"
+import { useStoresStore } from "@/store/Stores"
 import {
 requiredValidator,
-} from '@validators';
-import { useI18n } from "vue-i18n";
+} from '@validators'
+import { useI18n } from "vue-i18n"
 
 const props = defineProps({
   isAddOpen: {
@@ -32,6 +32,7 @@ const itemData = reactive({
   sale_price: null,
   weight: null,
   is_available_for_use: 0,
+  foodics_integrate_id : null,
 })
 
 const storesItems = ref([
@@ -39,8 +40,9 @@ const storesItems = ref([
     store_id: null,
     stock_id: null,
     quantity: 1,
-  }
+  },
 ])
+
 const form = ref()
 const isLoading = ref(false)
 
@@ -58,8 +60,8 @@ const addProductStore = () => {
   })
 }
 
-const removeProductStore = (index) => {
-  storesItems.value = storesItems.value.filter((store, i) => i != index);
+const removeProductStore = index => {
+  storesItems.value = storesItems.value.filter((store, i) => i != index)
 }
 
 const onFormSubmit = async () => {
@@ -71,6 +73,7 @@ const onFormSubmit = async () => {
       ...itemData,
       stores: storesItems.value,
     }
+
     settingsListStore.storeProductSize(formData).then(response => {
       emit('refreshTable')
       emit('update:isAddOpen', false)
@@ -84,6 +87,7 @@ const onFormSubmit = async () => {
     }).catch(error => {
       if (error.response.data.errors) {
         const errs = Object.keys(error.response.data.errors)
+
         errs.forEach(err => {
           settingsListStore.alertMessage = t(`errors.${err}`)
         })
@@ -113,7 +117,6 @@ const onFormSubmit = async () => {
 const dialogModelValueUpdate = val => {
   emit('update:isAddOpen', val)
 }
-
 </script>
 
 <template>
@@ -123,14 +126,18 @@ const dialogModelValueUpdate = val => {
     @update:model-value="dialogModelValueUpdate"
   >
     <!-- Dialog close btn -->
-    <DialogCloseBtn @click="dialogModelValueUpdate(false)"/>
+    <DialogCloseBtn @click="dialogModelValueUpdate(false)" />
 
     <VCard
       class="pa-sm-9 pa-5"
     >
       <VCardItem>
         <VCardTitle class="text-h5 d-flex flex-column align-center gap-2 text-center mb-3">
-          <VIcon icon="game-icons:weight-scale" size="24" color="primary"></VIcon>
+          <VIcon
+            icon="game-icons:weight-scale"
+            size="24"
+            color="primary"
+          />
           <span class="mx-1 my-1">
             {{ t('Add_Item') }}
           </span>
@@ -139,7 +146,10 @@ const dialogModelValueUpdate = val => {
 
       <VCardText>
         <!-- 👉 Form -->
-        <VForm @submit.prevent="onFormSubmit" ref="refForm">
+        <VForm
+          ref="refForm"
+          @submit.prevent="onFormSubmit"
+        >
           <VRow>
             <VCol
               cols="12"
@@ -197,26 +207,52 @@ const dialogModelValueUpdate = val => {
               cols="12"
               md="6"
             >
-              <VSwitch :label="t('forms.available_for_use')" v-model="itemData.is_available_for_use"></VSwitch>
+              <VTextField
+                v-model="itemData.foodics_integrate_id"
+                label="foodics_integrate_id"
+              />
+            </VCol>
+            <VCol
+              cols="12"
+              md="6"
+            >
+              <VSwitch
+                v-model="itemData.is_available_for_use"
+                :label="t('forms.available_for_use')"
+              />
             </VCol>
             <VCol cols="12">
               <div class="d-flex justify-space-between align-center mb-6">
-                <h3 class="">المنتجات</h3>
+                <h3 class="">
+                  المنتجات
+                </h3>
 
-                <VBtn @click="addProductStore" class="position-relative" icon size="small">
-                  <VIcon icon="ei:plus" size="30"></VIcon>
+                <VBtn
+                  class="position-relative"
+                  icon
+                  size="small"
+                  @click="addProductStore"
+                >
+                  <VIcon
+                    icon="ei:plus"
+                    size="30"
+                  />
                 </VBtn>
               </div>
-              <VRow v-for="(store, index) in storesItems" :key="index"
-              style="background-color: #fafafa;border-radius: 10px;" class="mb-6 py-3">
+              <VRow
+                v-for="(store, index) in storesItems"
+                :key="index"
+                style="border-radius: 10px;background-color: #fafafa;"
+                class="mb-6 py-3"
+              >
                 <VCol
                   cols="12"
                   md="6"
                 >
                   <AutoCompleteDropdown 
                     v-model="store.store_id"
-                    :apiModel="storesStore"
-                    apiSearchMethod="getAll"
+                    :api-model="storesStore"
+                    api-search-method="getAll"
                     item-title="name"
                     item-value="id"
                     label="المخزن"
@@ -231,8 +267,8 @@ const dialogModelValueUpdate = val => {
                 >
                   <AutoCompleteDropdown 
                     v-model="store.stock_id"
-                    :apiModel="stocksStore"
-                    apiSearchMethod="getAll"
+                    :api-model="stocksStore"
+                    api-search-method="getAll"
                     item-title="product_name"
                     item-value="id"
                     label="المخزون"
@@ -255,14 +291,21 @@ const dialogModelValueUpdate = val => {
                   />
                 </VCol>
                 <VCol
+                  v-if="index > 0 || storesItems.length > 1"
                   cols="2"
                   md="6"
                   class="d-flex justify-end"
-                  v-if="index > 0 || storesItems.length > 1"
                 >
-                  <VBtn @click="removeProductStore(index)" icon size="small"
-                  style="top: 5px;left: 5px;">
-                    <VIcon icon="simple-line-icons:minus" size="20"></VIcon>
+                  <VBtn
+                    icon
+                    size="small"
+                    style="top: 5px;left: 5px;"
+                    @click="removeProductStore(index)"
+                  >
+                    <VIcon
+                      icon="simple-line-icons:minus"
+                      size="20"
+                    />
                   </VBtn>
                 </VCol>
               </VRow> 
@@ -284,7 +327,11 @@ const dialogModelValueUpdate = val => {
                 type="submit"
                 class="position-relative me-3"
               >
-                <VIcon icon="mingcute:loading-line" class="loading" size="32"></VIcon>
+                <VIcon
+                  icon="mingcute:loading-line"
+                  class="loading"
+                  size="32"
+                />
               </VBtn>
 
               <VBtn
