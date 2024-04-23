@@ -35,13 +35,7 @@ const itemData = reactive({
   foodics_integrate_id : null,
 })
 
-const storesItems = ref([
-  {
-    store_id: null,
-    stock_id: null,
-    quantity: 1,
-  },
-])
+const storesItems = ref([])
 
 const form = ref()
 const isLoading = ref(false)

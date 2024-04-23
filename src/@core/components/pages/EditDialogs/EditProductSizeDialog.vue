@@ -40,13 +40,7 @@ const itemData = reactive({
   foodics_integrate_id: null,
 })
 
-const storesItems = ref([
-  {
-    store_id: null,
-    stock_id: null,
-    quantity: 1,
-  },
-])
+const storesItems = ref([])
 
 const refForm = ref(null)
 
@@ -73,7 +67,7 @@ onUpdated(() => {
   itemData.price = props.item.price
   itemData.sale_price = props.item.sale_price
   itemData.weight = props.item.weight
-  itemData.foodics_integrate_id = props.foodics_integrate_id
+  itemData.foodics_integrate_id = props.item.foodics_integrate_id
   itemData.is_available_for_use = props.item.use_again == 1 ? true : false
 
   if(props.item.stores && props.item.stores.length) {
@@ -328,7 +322,7 @@ const dialogModelValueUpdate = val => {
                     />
                   </VBtn>
                 </VCol>
-              </VRow> 
+              </VRow>
             </VCol>
 
             <VCol
