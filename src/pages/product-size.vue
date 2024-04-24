@@ -221,7 +221,7 @@ onMounted(() => {
               {{ ConvertToArabicNumbers(item.weight) }}
             </td>
             <td>
-              {{ item.foodics_integrate_id ? ConvertToArabicNumbers(item.foodics_integrate_id) : '-' }}
+              {{ item.foodics_integrate_id ? item.foodics_integrate_id : '-' }}
             </td>
             <td>
               <VBtn
