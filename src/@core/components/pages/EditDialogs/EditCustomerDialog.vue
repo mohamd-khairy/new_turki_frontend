@@ -1,6 +1,5 @@
 <script setup>
 import { useEmployeesStore } from "@/store/Employees"
-import { useRolesStore } from "@/store/Roles"
 
 const props = defineProps({
   isEditOpen: {
@@ -18,8 +17,8 @@ const emit = defineEmits([
   'update:isEditOpen',
 ])
 
-import { useI18n } from "vue-i18n"
 import { useSettingsStore } from "@/store/Settings"
+import { useI18n } from "vue-i18n"
 
 const { t } = useI18n()
 const employeesListStore = useEmployeesStore()
@@ -29,11 +28,14 @@ const isLoading = ref(false)
 
 onUpdated(() => {
   employeeData.id = props.customer.id
+
   // employeeData.username = props.customer.username
   employeeData.name = props.customer.name
   employeeData.email = props.customer.email
   employeeData.mobile = props.customer.mobile
   employeeData.wallet = props.customer.wallet
+  employeeData.foodics_integrate_id = props.customer.foodics_integrate_id
+
 })
 
 // Variables
@@ -43,6 +45,7 @@ const employeeData = reactive({
   email: null,
   mobile: null,
   wallet: null,
+  foodics_integrate_id: null,
 })
 
 // Functions
@@ -71,6 +74,7 @@ const onFormSubmit = async () => {
     }).catch(error => {
       if (error.response.data.errors) {
         const errs = Object.keys(error.response.data.errors)
+
         errs.forEach(err => {
           settingsListStore.alertMessage = t(`errors.${err}`)
         })
@@ -110,7 +114,7 @@ const dialogModelValueUpdate = val => {
     @update:model-value="dialogModelValueUpdate"
   >
     <!-- Dialog close btn -->
-    <DialogCloseBtn @click="dialogModelValueUpdate(false)"/>
+    <DialogCloseBtn @click="dialogModelValueUpdate(false)" />
 
     <VCard
       class="pa-sm-9 pa-5"
@@ -118,7 +122,11 @@ const dialogModelValueUpdate = val => {
       <!-- 👉 Title -->
       <VCardItem>
         <VCardTitle class="text-h5 d-flex flex-column align-center gap-2 text-center mb-3">
-          <VIcon icon="clarity:users-line" size="24" color="primary"></VIcon>
+          <VIcon
+            icon="clarity:users-line"
+            size="24"
+            color="primary"
+          />
           <span class="mx-1 my-1">
             {{ t('Edit_Customer') }}
           </span>
@@ -127,7 +135,10 @@ const dialogModelValueUpdate = val => {
 
       <VCardText>
         <!-- 👉 Form -->
-        <VForm ref="refForm" @submit.prevent="onFormSubmit">
+        <VForm
+          ref="refForm"
+          @submit.prevent="onFormSubmit"
+        >
           <VRow>
             <VCol
               cols="12"
@@ -171,6 +182,17 @@ const dialogModelValueUpdate = val => {
             </VCol>
             <VCol
               cols="12"
+              lg="12"
+              md="6"
+            >
+              <VTextField
+                v-model="itemData.foodics_integrate_id"
+                label="foodics_integrate_id"
+              />
+            </VCol>
+
+            <VCol
+              cols="12"
               class="text-center"
             >
               <VBtn
@@ -185,7 +207,11 @@ const dialogModelValueUpdate = val => {
                 type="submit"
                 class="position-relative me-3"
               >
-                <VIcon icon="mingcute:loading-line" class="loading" size="32"></VIcon>
+                <VIcon
+                  icon="mingcute:loading-line"
+                  class="loading"
+                  size="32"
+                />
               </VBtn>
 
               <VBtn

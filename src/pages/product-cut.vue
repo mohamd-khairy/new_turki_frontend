@@ -1,7 +1,7 @@
 <script setup>
+import { useSettingsStore } from "@/store/Settings"
 import moment from "moment"
 import { useI18n } from "vue-i18n"
-import { useSettingsStore } from "@/store/Settings"
 
 const { t } = useI18n()
 
@@ -108,7 +108,11 @@ const formatDateTime = data => {
   <div>
     <VCard>
       <VCardTitle class="d-flex align-center">
-        <VIcon icon="ph:knife-thin" size="24" color="primary"></VIcon>
+        <VIcon
+          icon="ph:knife-thin"
+          size="24"
+          color="primary"
+        />
         <span class="mx-1">{{ t('Product_Cut') }}</span>
       </VCardTitle>
       <VCardText class="d-flex align-center flex-wrap gap-2 py-4">
@@ -120,7 +124,7 @@ const formatDateTime = data => {
             :items="[5, 10, 20, 30, 50]"
           />
         </div>
-        <!--         👉 Create product :to="{ name: 'apps-product-add' }"-->
+        <!--         👉 Create product :to="{ name: 'apps-product-add' }" -->
         <VBtn
           prepend-icon="tabler-plus"
           @click="isAddOpen = true"
@@ -128,12 +132,10 @@ const formatDateTime = data => {
           {{ t('Add_Item') }}
         </VBtn>
 
-        <VSpacer/>
-
-
+        <VSpacer />
       </VCardText>
 
-      <VDivider/>
+      <VDivider />
 
       <VTable class="text-no-wrap product-list-table">
         <thead>
@@ -160,6 +162,12 @@ const formatDateTime = data => {
               scope="col"
               class="font-weight-semibold"
             >
+              foodics_integrate_id
+            </th>
+            <th
+              scope="col"
+              class="font-weight-semibold"
+            >
               {{ t('forms.actions') }}
             </th>
           </tr>
@@ -178,6 +186,9 @@ const formatDateTime = data => {
             </td>
             <td>
               {{ ConvertToArabicNumbers(Intl.NumberFormat().format(item.price)) }}
+            </td>
+            <td>
+              {{ item.foodics_integrate_id ? item.foodics_integrate_id : '-' }}
             </td>
             <td>
               <VBtn
@@ -237,7 +248,10 @@ const formatDateTime = data => {
         />
       </VCardText>
     </VCard>
-    <AddProductCutDialog v-model:isAddOpen="isAddOpen" @refreshTable="getItems"/>
+    <AddProductCutDialog
+      v-model:isAddOpen="isAddOpen"
+      @refreshTable="getItems"
+    />
     <EditProductCutDialog
       v-model:isEditOpen="isEditOpen"
       :item="selectedItem"

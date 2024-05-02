@@ -39,6 +39,7 @@ const employee = reactive({
   name: null,
   mobile: null,
   address: null,
+  foodics_integrate_id : null,
 
   // mobile_country_code: null,
   // email: null,
@@ -67,6 +68,7 @@ const resetForm = () => {
   employee.mobile = null
   employee.name = null
   employee.address = null
+  employee.foodics_integrate_id = null,
 
   // employee.email = null
   // employee.avatar = {}
@@ -189,6 +191,18 @@ const dialogModelValueUpdate = val => {
                 :rules="[requiredValidator]"
               />
             </VCol>
+
+            <VCol
+              cols="12"
+              lg="12"
+              md="6"
+            >
+              <VTextField
+                v-model="employee.foodics_integrate_id"
+                label="foodics_integrate_id"
+              />
+            </VCol>
+
             <!--
               <VCol
               cols="12"

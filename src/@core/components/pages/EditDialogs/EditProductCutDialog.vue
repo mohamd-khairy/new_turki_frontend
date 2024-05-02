@@ -29,6 +29,7 @@ const itemData = reactive({
   name_en: null,
   name_ar: null,
   price: null,
+  foodics_integrate_id: null,
 })
 
 const form = ref()
@@ -42,6 +43,7 @@ onUpdated(() => {
   itemData.name_en = props.item.name_en
   itemData.name_ar = props.item.name_ar
   itemData.price = props.item.price
+  itemData.foodics_integrate_id = props.item.foodics_integrate_id
 })
 
 const refForm = ref(null)
@@ -65,6 +67,7 @@ const onFormSubmit = async () => {
     }).catch(error => {
       if (error.response.data.errors) {
         const errs = Object.keys(error.response.data.errors)
+
         errs.forEach(err => {
           settingsListStore.alertMessage = t(`errors.${err}`)
         })
@@ -103,14 +106,18 @@ const dialogModelValueUpdate = val => {
     @update:model-value="dialogModelValueUpdate"
   >
     <!-- Dialog close btn -->
-    <DialogCloseBtn @click="dialogModelValueUpdate(false)"/>
+    <DialogCloseBtn @click="dialogModelValueUpdate(false)" />
 
     <VCard
       class="pa-sm-9 pa-5"
     >
       <VCardItem>
         <VCardTitle class="text-h5 d-flex flex-column align-center gap-2 text-center mb-3">
-          <VIcon icon="ph:knife-thin" size="24" color="primary"></VIcon>
+          <VIcon
+            icon="ph:knife-thin"
+            size="24"
+            color="primary"
+          />
           <span class="mx-1 my-1">
             {{ t('Edit_Item') }}
           </span>
@@ -119,7 +126,10 @@ const dialogModelValueUpdate = val => {
 
       <VCardText>
         <!-- 👉 Form -->
-        <VForm @submit.prevent="onFormSubmit" ref="refForm">
+        <VForm
+          ref="refForm"
+          @submit.prevent="onFormSubmit"
+        >
           <VRow>
             <VCol
               cols="12"
@@ -152,7 +162,15 @@ const dialogModelValueUpdate = val => {
               />
             </VCol>
 
-
+            <VCol
+              cols="12"
+              md="6"
+            >
+              <VTextField
+                v-model="itemData.foodics_integrate_id"
+                label="foodics_integrate_id"
+              />
+            </VCol>
             <VCol
               cols="12"
               class="text-center"
@@ -169,7 +187,11 @@ const dialogModelValueUpdate = val => {
                 type="submit"
                 class="position-relative me-3"
               >
-                <VIcon icon="mingcute:loading-line" class="loading" size="32"></VIcon>
+                <VIcon
+                  icon="mingcute:loading-line"
+                  class="loading"
+                  size="32"
+                />
               </VBtn>
 
               <VBtn

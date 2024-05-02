@@ -141,7 +141,7 @@ export default [
       // { title: 'Delivery_Periods', to: 'delivery-periods' },
       // { title: 'Not_Delivery_Periods', to: 'not-delivery-periods' },
     ],
-    permission: "read-permission",
+    permission: "read-product",
   },
   {
     title: 'Activities',
