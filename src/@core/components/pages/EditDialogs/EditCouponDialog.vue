@@ -88,7 +88,8 @@ onUpdated(() => {
   couponData.client_ids = props.coupon.client_ids == "" ? [] : props.coupon.client_ids
   couponData.category_child_ids = props.coupon.category_child_ids == "" ? [] : props.coupon.category_child_ids
   couponData.expire_at = props.coupon.expire_at
-  couponData.use_times_per_user = props.coupon.use_times_per_user
+  couponData.use_times_per_user = props.coupon.use_times_per_user,
+  couponData.foodics_integrate_id = props.coupon.foodics_integrate_id
 })
 
 // Variables
@@ -116,6 +117,7 @@ const couponData = reactive({
   category_child_ids: [],
   expire_at: "",
   use_times_per_user: 1,
+  foodics_integrate_id: null,
 })
 
 // Functions
@@ -439,6 +441,16 @@ const dialogModelValueUpdate = val => {
               <VSwitch
                 v-model="couponData.is_for_all"
                 :label="t('forms.is_for_all')"
+              />
+            </VCol>
+            <VCol
+              cols="12"
+              lg="12"
+              md="6"
+            >
+              <VTextField
+                v-model="couponData.foodics_integrate_id"
+                label="foodics_integrate_id"
               />
             </VCol>
             <VCol

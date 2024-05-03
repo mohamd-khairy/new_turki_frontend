@@ -46,6 +46,8 @@ onUpdated(() => {
   employeeData.country_code = props.employee.country_code
   employeeData.roles = props.employee.roles
   employeeData.is_active = props.employee.is_active == 1 ? true : false
+  employeeData.foodics_integrate_id = props.employee.foodics_integrate_id
+
 })
 
 // Variables
@@ -61,6 +63,7 @@ const employeeData = reactive({
   country_code: null,
   roles: [],
   is_active: null,
+  foodics_integrate_id: null,
 })
 
 const genders = reactive([
@@ -286,6 +289,16 @@ const dialogModelValueUpdate = val => {
               <VSwitch
                 v-model="employeeData.is_active"
                 :label="t('forms.is_active')"
+              />
+            </VCol>
+            <VCol
+              cols="12"
+              lg="12"
+              md="6"
+            >
+              <VTextField
+                v-model="employeeData.foodics_integrate_id"
+                label="foodics_integrate_id"
               />
             </VCol>
             <VCol

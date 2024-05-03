@@ -186,7 +186,7 @@ const dialogModelValueUpdate = val => {
               md="6"
             >
               <VTextField
-                v-model="itemData.foodics_integrate_id"
+                v-model="employeeData.foodics_integrate_id"
                 label="foodics_integrate_id"
               />
             </VCol>

@@ -29,6 +29,7 @@ export const useEmployeesStore = defineStore('EmployeesStore', {
       formData.append("age", data.age)
       formData.append("is_active", data.is_active)
       formData.append("country_code", data.country_code)
+      formData.append("foodics_integrate_id", data.foodics_integrate_id)
 
       for (let i = 0; i < data.roles.length; i++) {
         formData.append(`roles[${i}]`, data.roles[i])
@@ -47,6 +48,7 @@ export const useEmployeesStore = defineStore('EmployeesStore', {
       formData.append("mobile", data.mobile)
       formData.append("name", data.name)
       formData.append("address", data.address)
+
       // formData.append("mobile_country_code", data.mobile_country_code)
       // formData.append("email", data.email)
       // formData.append("avatar", data.avatar)
@@ -77,9 +79,10 @@ export const useEmployeesStore = defineStore('EmployeesStore', {
       formData.append("age", data.age)
       formData.append("country_code", data.country_code)
       formData.append("is_active", data.is_active)
+      formData.append("foodics_integrate_id", data.foodics_integrate_id)
 
       Object.values(data.roles).map((role, index) => {
-        formData.append(`roles[${index}]`, role)
+        formData.append(`roles[${index}]`, Number.isInteger(role) ? role : role.id)
       })
 
       // for (let i = 0; i < data.roles.length; i++) {
@@ -97,6 +100,7 @@ export const useEmployeesStore = defineStore('EmployeesStore', {
       formData.append("email", data.email)
       formData.append("mobile", data.mobile)
       formData.append("wallet", data.wallet)
+      formData.append("foodics_integrate_id", data.foodics_integrate_id)
 
       return axios.post(`customers/${data.id}`, formData)
     },

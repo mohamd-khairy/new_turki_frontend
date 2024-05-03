@@ -198,6 +198,12 @@ onMounted(() => {
               scope="col"
               class="font-weight-semibold"
             >
+              foodics_integrate_id
+            </th>
+            <th
+              scope="col"
+              class="font-weight-semibold"
+            >
               {{ t('forms.created_at') }}
             </th>
             <th
@@ -248,6 +254,9 @@ onMounted(() => {
               <span>
                 {{ employee.is_active == true ? t('forms.statuses.active') : t('forms.statuses.inactive') }}
               </span>
+            </td>
+            <td>
+              {{ employee.foodics_integrate_id ? employee.foodics_integrate_id : '-' }}
             </td>
             <td>
               {{ (formatDateTime(employee.created_at).date) }}

@@ -89,6 +89,7 @@ const coupon = reactive({
   category_child_ids: [],
   expire_at: "",
   use_times_per_user: 1,
+  foodics_integrate_id : null,
 })
 
 // Functions
@@ -410,6 +411,15 @@ const dialogModelValueUpdate = val => {
               <VSwitch
                 v-model="coupon.is_for_all"
                 :label="t('forms.is_for_all')"
+              />
+            </VCol>
+            <VCol
+              cols="12"
+              lg="12"
+            >
+              <VTextField
+                v-model="coupon.foodics_integrate_id"
+                label="foodics_integrate_id"
               />
             </VCol>
             <VCol

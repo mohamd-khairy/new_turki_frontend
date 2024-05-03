@@ -29,7 +29,7 @@ const getCoupons = () => {
     per_page: rowPerPage.value,
     page: currentPage.value,
   }).then(response => {
-    coupons.value = response.data?.data?.data || [];
+    coupons.value = response.data?.data?.data || []
     totalPage.value = response.data.data.last_page
     dataFrom.value = response.data.data.from
     dataTo.value = response.data.data.to
@@ -37,9 +37,9 @@ const getCoupons = () => {
   }).catch(error => {
     console.log(error)
   })
-  .finally(() => {
-    isLoading.value = false
-  })
+    .finally(() => {
+      isLoading.value = false
+    })
 }
 
 watch(rowPerPage, () => {
@@ -89,7 +89,11 @@ onMounted(() => {
   <div>
     <VCard :loading="isLoading">
       <VCardTitle class="d-flex align-center mb-6 pt-4">
-        <VIcon icon="bxs:coupon" size="24" color="primary"></VIcon>
+        <VIcon
+          icon="bxs:coupon"
+          size="24"
+          color="primary"
+        />
         <span class="mx-1">{{ t('Coupons') }}</span>
       </VCardTitle>
       <VCardText class="d-flex align-center flex-wrap gap-2 py-4">
@@ -101,18 +105,16 @@ onMounted(() => {
             :items="[5, 10, 20, 30, 50]"
           />
         </div>
-        <!--         👉 Create product :to="{ name: 'apps-product-add' }"-->
+        <!--         👉 Create product :to="{ name: 'apps-product-add' }" -->
         <VBtn
           prepend-icon="tabler-plus"
-          @click="isAddOpen = true"
           :disabled="isLoading"
+          @click="isAddOpen = true"
         >
           {{ t('Add_Coupon') }}
         </VBtn>
 
         <VSpacer />
-
-
       </VCardText>
 
       <VDivider />
@@ -160,6 +162,12 @@ onMounted(() => {
               scope="col"
               class="font-weight-semibold"
             >
+              foodics_integrate_id
+            </th>
+            <th
+              scope="col"
+              class="font-weight-semibold"
+            >
               {{ t('forms.created_at') }}
             </th>
             <th
@@ -194,10 +202,17 @@ onMounted(() => {
               {{ ConvertToArabicNumbers(formatDateTime(coupon.expire_at).time).toString().toLowerCase().split(' ')[1] == "am" ? ConvertToArabicNumbers(formatDateTime(coupon.expire_at).time).toString().split(' ')[0] + " " + "صباحاً" : ConvertToArabicNumbers(formatDateTime(coupon.expire_at).time).toString().split(' ')[0] + " " + "مساءاً" }}
             </td>
             <td>
-              <VIcon icon="ph:dot-bold" :color="coupon.is_active == true ? '#008000' : '#f00000'" size="32"></VIcon>
+              <VIcon
+                icon="ph:dot-bold"
+                :color="coupon.is_active == true ? '#008000' : '#f00000'"
+                size="32"
+              />
               <span>
                 {{ coupon.is_active == true ? t('forms.statuses.active') : t('forms.statuses.inactive') }}
               </span>
+            </td>
+            <td>
+              {{ coupon.foodics_integrate_id ? coupon.foodics_integrate_id : '-' }}
             </td>
             <td>
               {{ ConvertToArabicNumbers(formatDateTime(coupon.created_at).date) }}
@@ -264,8 +279,19 @@ onMounted(() => {
       </VCardText>
     </VCard>
 
-    <AddCouponDialog v-model:isAddOpen="isAddOpen" @refreshTable="getCoupons"></AddCouponDialog>
-    <EditCouponDialog v-model:isEditOpen="isEditOpen" :coupon="selectedCoupon" @refreshTable="getCoupons"></EditCouponDialog>
-    <DeleteCouponsDialog v-model:isDeleteOpen="isDeleteOpen" :coupon="selectedCoupon" @refreshTable="getCoupons"></DeleteCouponsDialog>
+    <AddCouponDialog
+      v-model:isAddOpen="isAddOpen"
+      @refreshTable="getCoupons"
+    />
+    <EditCouponDialog
+      v-model:isEditOpen="isEditOpen"
+      :coupon="selectedCoupon"
+      @refreshTable="getCoupons"
+    />
+    <DeleteCouponsDialog
+      v-model:isDeleteOpen="isDeleteOpen"
+      :coupon="selectedCoupon"
+      @refreshTable="getCoupons"
+    />
   </div>
 </template>
