@@ -38,7 +38,7 @@ export default [
   {
     title: 'المخزن',
     icon: { icon: 'carbon:store' },
-    permission: "read-dashboard",
+    permission: "read-store",
     children: [
       {
         title: 'الفواتير',
@@ -83,7 +83,6 @@ export default [
         // permission: "read-bank",
       },
     ],
-    permission: "read-permission",
   },
   {
     title: 'Coupons',

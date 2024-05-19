@@ -3,7 +3,7 @@ export default [
     title: 'Home',
     to: { name: 'index' },
     icon: { icon: 'tabler-smart-home' },
-    permission: "show",
+    permission: "read-dashboard",
   },
   {
     title: 'Banners',
@@ -34,6 +34,55 @@ export default [
     to: { name: 'products' },
     icon: { icon: 'streamline:shopping-bag-hand-bag-1-shopping-bag-purse-goods-item-products' },
     permission: "read-product",
+  },
+  {
+    title: 'المخزن',
+    icon: { icon: 'carbon:store' },
+    permission: "read-store",
+    children: [
+      {
+        title: 'الفواتير',
+        to: { name: 'invoices' },
+
+        // icon: { icon: 'uil:invoice' },
+        // permission: "read-product",
+      },
+      {
+        title: 'المخزون',
+        to: { name: 'stocks' },
+
+        // icon: { icon: 'material-symbols:production-quantity-limits-sharp' },
+        // permission: "read-stock",
+      },
+      {
+        title: 'المخزن',
+        to: { name: 'stores' },
+
+        // icon: { icon: 'carbon:store' },
+        // permission: "read-store",
+      },
+      {
+        title: 'الموردون',
+        to: { name: 'suppliers' },
+
+        // icon: { icon: 'heroicons:truck' },
+        // permission: "read-supplier",
+      },
+      {
+        title: 'الخزن',
+        to: { name: 'safes' },
+
+        // icon: { icon: 'teenyicons-safe-outline' },
+        // permission: "read-money-safe",
+      },
+      {
+        title: 'البنوك',
+        to: { name: 'banks' },
+
+        // icon: { icon: 'mdi-bank-outline' },
+        // permission: "read-bank",
+      },
+    ],
   },
   {
     title: 'Coupons',
@@ -81,15 +130,17 @@ export default [
     title: 'Settings',
     icon: { icon: 'uil:setting' },
     children: [
-      { title: 'Product_Tags', to: 'product-tags' },
+      // { title: 'Product_Tags', to: 'product-tags' },
       { title: 'Product_Cut', to: 'product-cut' },
       { title: 'Product_Preparation', to: 'product-preparation' },
       { title: 'Product_Size', to: 'product-size' },
       { title: 'Product_Shalwata', to: 'product-shalwata' },
-      { title: 'Delivery_Periods', to: 'delivery-periods' },
-      { title: 'Not_Delivery_Periods', to: 'not-delivery-periods' },
+
+      // { title: 'Payment_Types', to: 'payment-types' },
+      // { title: 'Delivery_Periods', to: 'delivery-periods' },
+      // { title: 'Not_Delivery_Periods', to: 'not-delivery-periods' },
     ],
-    permission: "read-dashboard",
+    permission: "read-product",
   },
   {
     title: 'Activities',
