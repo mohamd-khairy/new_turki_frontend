@@ -1,13 +1,16 @@
 <script setup>
-import { useSettingsStore } from "@/store/Settings"
-import DeleteDeliveryTime from "@core/components/pages/DeleteDialogs/DeleteDeliveryTime.vue"
-import EditDeliveryTimeDialog from "@core/components/pages/EditDialogs/EditDeliveryTimeDialog.vue"
-import moment from "moment"
-import { useI18n } from "vue-i18n"
+import { useCitiesStore } from "@/store/Cities";
+import { useCityDeliveryPeriodsStore } from "@/store/CityDeliveryPeriods";
+import { useSettingsStore } from "@/store/Settings";
+
+import moment from "moment";
+import { useI18n } from "vue-i18n";
 
 const { t } = useI18n()
 
+const citiesListStore = useCitiesStore()
 const settingsListStore = useSettingsStore()
+const CityDeliveryPeriodsStore = useCityDeliveryPeriodsStore()
 const searchQuery = ref('')
 const selectedStatus = ref()
 const rowPerPage = ref(5)
@@ -20,12 +23,24 @@ const isAddOpen = ref(false)
 const isDeleteOpen = ref(false)
 const selectedItem = ref({})
 const isEditOpen = ref(false)
+const cities = ref([])
+const deliveryPeriods = ref([])
 
 const getItems = () => {
-  settingsListStore.fetchDelivery_Periods({
+
+  citiesListStore.fetchCities({ pageSize: -1 }).then(response => {
+    cities.value = response.data.data
+  })
+
+  settingsListStore.fetchDelivery_Periods({is_active:1}).then(response => {
+    deliveryPeriods.value = response.data.data
+  })
+
+
+  CityDeliveryPeriodsStore.getAll({
     q: searchQuery.value,
   }).then(response => {
-    items.value = response.data.data
+    items.value = response.data.data.data
     totalPage.value = items.value / rowPerPage
     totalItems.value = items.value.length
     currentPage.value = 1
@@ -116,106 +131,54 @@ const formatDateTime = data => {
       <VCardText class="d-flex align-center flex-wrap gap-2 py-4">
         <!-- 👉 Rows per page -->
         <div style="width: 5rem;">
-          <VSelect
-            v-model="rowPerPage"
-            variant="outlined"
-            :items="[5, 10, 20, 30, 50]"
-          />
+          <VSelect v-model="rowPerPage" variant="outlined" :items="[5, 10, 20, 30, 50]" />
         </div>
-        <!--         👉 Create product :to="{ name: 'apps-product-add' }"-->
-        <VBtn
-          prepend-icon="tabler-plus"
-          @click="isAddOpen = true"
-        >
+        <VBtn prepend-icon="tabler-plus" @click="isAddOpen = true">
           {{ t('Add_Item') }}
         </VBtn>
 
-        <VSpacer/>
+        <VSpacer />
 
 
       </VCardText>
 
-      <VDivider/>
+      <VDivider />
 
       <VTable class="text-no-wrap product-list-table">
         <thead>
           <tr>
-            <th
-              scope="col"
-              class="font-weight-semibold"
-            >
+            <th scope="col" class="font-weight-semibold">
               {{ t('forms.id') }}
             </th>
-            <th
-              scope="col"
-              class="font-weight-semibold"
-            >
-              {{ t('forms.name') }}
+            <th scope="col" class="font-weight-semibold">
+              {{ t('forms.delivery_period') }}
             </th>
-            <th
-              scope="col"
-              class="font-weight-semibold"
-            >
-              {{ t('forms.delivery_time') }}
+            <th scope="col" class="font-weight-semibold">
+              {{ t('forms.city') }}
             </th>
-            <th
-              scope="col"
-              class="font-weight-semibold"
-            >
-              {{ t('forms.is_active') }}
-            </th>
-            
-            <th
-              scope="col"
-              class="font-weight-semibold"
-            >
+            <th scope="col" class="font-weight-semibold">
               {{ t('forms.actions') }}
             </th>
           </tr>
         </thead>
 
         <tbody>
-          <tr
-            v-for="(item, i) in paginateItems"
-            :key="item.id"
-          >
+          <tr v-for="(item, i) in paginateItems" :key="item.id">
             <td>
               #{{ ConvertToArabicNumbers(++i) }}
+            </td>
+            <td>
+              {{ item.periods }}
             </td>
             <td>
               {{ item.name_ar }}
             </td>
             <td>
-              {{ item.time_hhmm == 'null' || item.time_hhmm === null ? "-" : ConvertToArabicNumbers(item.time_hhmm) }}
-            </td>
-            <td>
-              {{ item.is_active ? 'نشط' : 'غير نشط' }}
-            </td>
-            
-            <td>
-              <VBtn
-                icon
-                variant="plain"
-                color="default"
-                size="x-small"
-                @click="openEdit(item)"
-              >
-                <VIcon
-                  :size="22"
-                  icon="tabler-pencil"
-                />
+              <VBtn icon variant="plain" color="default" size="x-small" @click="openEdit(item)">
+                <VIcon :size="22" icon="tabler-pencil" />
               </VBtn>
-              <VBtn
-                icon
-                variant="plain"
-                color="default"
-                size="x-small"
-                @click="openDelete(item)"
-              >
-                <VIcon
-                  :size="22"
-                  icon="tabler-trash"
-                />
+              <VBtn icon variant="plain" color="default" size="x-small" @click="openDelete(item)">
+                <VIcon :size="22" icon="tabler-trash" />
               </VBtn>
             </td>
           </tr>
@@ -224,10 +187,7 @@ const formatDateTime = data => {
         <!-- 👉 table footer  -->
         <tfoot v-show="!items.length">
           <tr>
-            <td
-              colspan="8"
-              class="text-center text-body-1"
-            >
+            <td colspan="8" class="text-center text-body-1">
               لا يوجد بيانات
             </td>
           </tr>
@@ -240,26 +200,14 @@ const formatDateTime = data => {
       <VCardText class="d-flex align-center flex-wrap justify-space-between gap-4 py-3">
         <span class="text-sm text-disabled">{{ paginationData }}</span>
 
-        <VPagination
-          v-model="currentPage"
-          size="small"
-          :total-visible="rowPerPage"
-          :length="totalPage"
-          @next="nextPage"
-          @prev="prevPage"
-        />
+        <VPagination v-model="currentPage" size="small" :total-visible="rowPerPage" :length="totalPage" @next="nextPage"
+          @prev="prevPage" />
       </VCardText>
     </VCard>
-    <AddDeliveryTimeDialog v-model:isAddOpen="isAddOpen" @refreshTable="getItems"/>
-    <EditDeliveryTimeDialog
-      v-model:isEditOpen="isEditOpen"
-      :item="selectedItem"
-      @refreshTable="getItems"
-    />
-    <DeleteDeliveryTime
-      v-model:isDeleteOpen="isDeleteOpen"
-      :item="selectedItem"
-      @refreshTable="getItems"
-    />
+    <AddCityDeliveryPeriodDialog v-model:isAddOpen="isAddOpen" :deliveryPeriods="deliveryPeriods" :cities="cities"
+      @refreshTable="getItems" />
+    <EditCityDeliveryPeriodDialog v-model:isEditOpen="isEditOpen" :item="selectedItem" :cities="cities"
+      :deliveryPeriods="deliveryPeriods" @refreshTable="getItems" />
+    <DeleteCityDeliveryPeriod v-model:isDeleteOpen="isDeleteOpen" :item="selectedItem" @refreshTable="getItems" />
   </div>
 </template>

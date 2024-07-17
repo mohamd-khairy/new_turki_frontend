@@ -1,12 +1,10 @@
 <script setup>
+import { useCitiesStore } from "@/store/Cities"
+import { useSettingsStore } from "@/store/Settings"
+import DeleteNotDeliveryDate from "@core/components/pages/DeleteDialogs/DeleteNotDeliveryDate.vue"
+import EditNotDeliveryDate from "@core/components/pages/EditDialogs/EditNotDeliveryDate.vue"
 import moment from "moment"
 import { useI18n } from "vue-i18n"
-import { useSettingsStore } from "@/store/Settings"
-import EditDeliveryTimeDialog from "@core/components/pages/EditDialogs/EditDeliveryTimeDialog.vue"
-import DeleteDeliveryTime from "@core/components/pages/DeleteDialogs/DeleteDeliveryTime.vue"
-import { useCitiesStore } from "@/store/Cities"
-import EditNotDeliveryDate from "@core/components/pages/EditDialogs/EditNotDeliveryDate.vue"
-import DeleteNotDeliveryDate from "@core/components/pages/DeleteDialogs/DeleteNotDeliveryDate.vue"
 
 const { t } = useI18n()
 

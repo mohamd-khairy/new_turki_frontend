@@ -6,7 +6,7 @@ import {
   makeVFieldProps,
 } from 'vuetify/lib/components/VField/VField'
 import {
-  filterInputProps,
+  // filterInputProps,
   makeVInputProps,
 } from 'vuetify/lib/components/VInput/VInput'
 
@@ -34,10 +34,10 @@ defineOptions({ inheritAttrs: false })
 const attrs = useAttrs()
 const [rootAttrs, compAttrs] = filterInputAttrs(attrs)
 
-const [{
-  modelValue: _,
-  ...inputProps
-}] = filterInputProps(props)
+// const [{
+//   modelValue: _,
+//   ...inputProps
+// }] = filterInputProps(props)
 
 const [fieldProps] = filterFieldProps(props)
 const refFlatPicker = ref()

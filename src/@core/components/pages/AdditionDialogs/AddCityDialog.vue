@@ -1,9 +1,9 @@
 <script setup>
-import { useCitiesStore } from "@/store/Cities"
-import { useCountriesStore } from "@/store/Countries"
+import { useCitiesStore } from "@/store/Cities";
+import { useCountriesStore } from "@/store/Countries";
 import {
   requiredValidator,
-} from '@validators'
+} from '@validators';
 
 const props = defineProps({
   isAddOpen: {
@@ -17,9 +17,9 @@ const emit = defineEmits([
   'update:isAddOpen',
 ])
 
-import { useI18n } from "vue-i18n"
-import { useSettingsStore } from "@/store/Settings"
-import { GoogleMap, Marker, Polygon } from "vue3-google-map"
+import { useSettingsStore } from "@/store/Settings";
+import { useI18n } from "vue-i18n";
+import { GoogleMap, Marker, Polygon } from "vue3-google-map";
 
 const { t } = useI18n()
 const citiesListStore = useCitiesStore()
@@ -61,6 +61,8 @@ const city = reactive({
   country_id: null,
   is_available_for_delivery: 0,
   polygon: [],
+  allow_cash: false,
+  min_price: null,
 })
 
 // Functions
@@ -69,6 +71,8 @@ const resetForm = () => {
     city.name_en = null,
     city.country_id = null,
     city.is_available_for_delivery = false,
+    city.allow_cash = false,
+    city.min_price = false,
     city.polygon = []
   emit('update:isAddOpen', false)
 }
@@ -85,13 +89,14 @@ const onFormSubmit = async () => {
       country_id: city.country_id,
       is_available_for_delivery: city.is_available_for_delivery,
       polygon: [],
+      allow_cash: city.allow_cash,
+      min_price: city.min_price,
     }
     places.map((path, index) => {
       cityDt.polygon.push([path.lat, path.lng])
     })
 
     // cityDt.polygon = `[${cityDt.polygon}]`
-    console.log(cityDt.polygon)
     citiesListStore.storeCity(cityDt).then(response => {
       emit('update:isAddOpen', false)
       emit('refreshTable')
@@ -173,17 +178,12 @@ const deleteMark = marker => {
 </script>
 
 <template>
-  <VDialog
-    :width="$vuetify.display.smAndDown ? 'auto' : 650 "
-    :model-value="props.isAddOpen"
-    @update:model-value="dialogModelValueUpdate"
-  >
+  <VDialog :width="$vuetify.display.smAndDown ? 'auto' : 650" :model-value="props.isAddOpen"
+    @update:model-value="dialogModelValueUpdate">
     <!-- Dialog close btn -->
-    <DialogCloseBtn @click="dialogModelValueUpdate(false)"/>
+    <DialogCloseBtn @click="dialogModelValueUpdate(false)" />
 
-    <VCard
-      class="pa-sm-9 pa-5"
-    >
+    <VCard class="pa-sm-9 pa-5">
       <!-- 👉 Title -->
       <VCardItem>
         <VCardTitle class="text-h5 d-flex flex-column align-center gap-2 text-center mb-3">
@@ -198,94 +198,45 @@ const deleteMark = marker => {
         <!-- 👉 Form -->
         <VForm ref="refForm" @submit.prevent="onFormSubmit">
           <VRow>
-            <VCol
-              cols="12"
-              lg="12"
-              sm="6"
-            >
-              <VTextField
-                v-model="city.name_en"
-                :label="t('forms.name_en')"
-                :rules="[requiredValidator]"
-              />
+            <VCol cols="12" lg="12" sm="6">
+              <VTextField v-model="city.name_en" :label="t('forms.name_en')" :rules="[requiredValidator]" />
             </VCol>
-            <VCol
-              cols="12"
-              lg="12"
-              sm="6"
-            >
-              <VTextField
-                v-model="city.name_ar"
-                :label="t('forms.name_ar')"
-                :rules="[requiredValidator]"
-              />
+            <VCol cols="12" lg="12" sm="6">
+              <VTextField v-model="city.name_ar" :label="t('forms.name_ar')" :rules="[requiredValidator]" />
             </VCol>
-            <VCol
-              cols="12"
-              lg="12"
-              sm="6"
-            >
-              <VSelect
-                v-model="city.country_id"
-                :items="countries.value"
-                :label="t('forms.countries')"
-                item-title="name_ar"
-                item-value="id"
-                :rules="[requiredValidator]"
-              />
+            <VCol cols="12" lg="12" sm="6">
+              <VSelect v-model="city.country_id" :items="countries.value" :label="t('forms.countries')"
+                item-title="name_ar" item-value="id" :rules="[requiredValidator]" />
             </VCol>
-            <VCol
-              cols="12"
-              lg="12"
-              sm="6"
-            >
+            <VCol cols="12" lg="12" sm="6">
+              <VTextField v-model="city.min_price" :label="t('forms.min_price')" :rules="[requiredValidator]" />
+            </VCol>
+            <VCol cols="12" lg="12" sm="6">
+              <VSwitch :label="t('forms.allow_cash')" v-model="city.allow_cash"></VSwitch>
+            </VCol>
+            <VCol cols="12" lg="12" sm="6">
               <VSwitch :label="t('available_for_delivery')" v-model="city.is_available_for_delivery"></VSwitch>
             </VCol>
+            
             <VCol cols="12">
               <MapAutoComplete @select-location="getSelectedLocation"></MapAutoComplete>
               <!--              <AddCityMap :location="location" @getPaths="getPathsData"></AddCityMap>-->
-              <GoogleMap
-                api-key="AIzaSyCM2TngqydZtVlZ5hkKjY7x56ut59TTI88"
-                style="width: 100%; height: 500px"
-                :center="{lat: location.lat, lng: location.lng }"
-                :zoom="12"
-                @click="addMarker"
-              >
-                <Marker
-                  v-for="(marker, index) in markers"
-                  :key="index"
-                  :options="marker"
-                  @click="deleteMark(marker)"
-                />
+              <GoogleMap api-key="AIzaSyCM2TngqydZtVlZ5hkKjY7x56ut59TTI88" style="width: 100%; height: 500px"
+                :center="{ lat: location.lat, lng: location.lng }" :zoom="12" @click="addMarker">
+                <Marker v-for="(marker, index) in markers" :key="index" :options="marker" @click="deleteMark(marker)" />
                 <Polygon
-                  :options="{path: places, geodesic: true, strokeColor: '#FF0000', strokeOpacity: 1.0, strokeWeight: 2}"
-                />
+                  :options="{ path: places, geodesic: true, strokeColor: '#FF0000', strokeOpacity: 1.0, strokeWeight: 2 }" />
               </GoogleMap>
             </VCol>
-            <VCol
-              cols="12"
-              class="text-center"
-            >
-              <VBtn
-                v-if="!isLoading"
-                type="submit"
-                class="me-3"
-              >
+            <VCol cols="12" class="text-center">
+              <VBtn v-if="!isLoading" type="submit" class="me-3">
                 {{ t("buttons.save") }}
               </VBtn>
-              <VBtn
-                v-else
-                type="submit"
-                class="position-relative me-3"
-              >
+              <VBtn v-else type="submit" class="position-relative me-3">
                 <VIcon icon="mingcute:loading-line" class="loading" size="32"></VIcon>
               </VBtn>
 
-              <VBtn
-                variant="tonal"
-                color="secondary"
-                @click="resetForm"
-              >
+              <VBtn variant="tonal" color="secondary" @click="resetForm">
                 {{ t("buttons.cancel") }}
               </VBtn>
             </VCol>

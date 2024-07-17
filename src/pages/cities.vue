@@ -1,8 +1,7 @@
 <script setup>
-import moment from "moment"
-import AddCountryDialog from "@core/components/pages/AdditionDialogs/AddCountryDialog.vue"
-import { useI18n } from "vue-i18n"
-import { useCitiesStore } from "@/store/Cities"
+import { useCitiesStore } from "@/store/Cities";
+import moment from "moment";
+import { useI18n } from "vue-i18n";
 
 const { t } = useI18n()
 
@@ -172,6 +171,18 @@ const formatDateTime = data => {
             scope="col"
             class="font-weight-semibold"
           >
+            {{ t('forms.min_price') }}
+          </th>
+          <th
+            scope="col"
+            class="font-weight-semibold"
+          >
+            {{ t('forms.allow_cash') }}
+          </th>
+          <th
+            scope="col"
+            class="font-weight-semibold"
+          >
             {{ t('forms.actions') }}
           </th>
         </tr>
@@ -196,6 +207,12 @@ const formatDateTime = data => {
             <span>
               {{ city.is_active == true ? t('forms.statuses.active') : t('forms.statuses.inactive') }}
             </span>
+          </td>
+          <td>
+            {{ city.min_price }}
+          </td>
+          <td>
+            {{ city.allow_cash == 1 ? 'نعم' : 'لا' }}
           </td>
           <td v-can="'create-city' || 'update-city' || 'delete-city'">
             <!--            <VBtn-->

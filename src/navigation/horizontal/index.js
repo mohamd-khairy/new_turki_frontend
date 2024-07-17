@@ -137,8 +137,10 @@ export default [
       { title: 'Product_Shalwata', to: 'product-shalwata' },
 
       // { title: 'Payment_Types', to: 'payment-types' },
-      // { title: 'Delivery_Periods', to: 'delivery-periods' },
-      // { title: 'Not_Delivery_Periods', to: 'not-delivery-periods' },
+      { title: 'Delivery_Periods', to: 'delivery-periods' },
+      { title: 'Not_Delivery_Periods', to: 'not-delivery-periods' },
+      { title: 'City_days', to: 'city-days' },
+      { title: 'City_delivery_periods', to: 'city-delivery-periods' },
     ],
     permission: "read-product",
   },
