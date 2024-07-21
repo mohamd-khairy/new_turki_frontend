@@ -1,6 +1,6 @@
 <script setup>
-import { useOrdersStore } from "@/store/Orders"
-import moment from "moment"
+import { useOrdersStore } from "@/store/Orders";
+import moment from "moment";
 
 const value = ref('qrcode')
 
@@ -263,6 +263,15 @@ const handleDeliveryDate = (date, createdDate) => {
             </VCol>
             <VCol
               cols="6"
+              class="d-flex align-center gap-3 text-base py-1"
+            >
+              <h4> المدينة :</h4>
+              <h4>
+                {{ ConvertToArabicNumbers(order.order?.selected_address?.city?.name_ar) }}  
+              </h4>
+            </VCol>
+            <VCol
+              cols="12"
               class="d-flex align-center gap-3 text-base py-1"
             >
               <h4> العنوان :</h4>
