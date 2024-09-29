@@ -47,6 +47,9 @@ const cityData = reactive({
   polygon: "",
   allow_cash: false,
   min_price: null,
+  cash_back_amount: null,
+  cash_back_start_date: null,
+  cash_back_end_date: null,
 })
 
 const getPathes = computed(() => {
@@ -71,14 +74,18 @@ onUpdated(() => {
   places.length = 0
   markers.length = 0
 
-  cityData.id = props.city.id,
-    cityData.name_ar = props.city.name_ar,
-    cityData.name_en = props.city.name_en,
-    cityData.country_id = props.city.country,
-    cityData.is_available_for_delivery = props.city.is_available_for_delivery,
-    cityData.polygon = props.city.polygon,
-    cityData.allow_cash = props.city.allow_cash,
-    cityData.min_price = props.city.min_price
+  cityData.id = props.city.id
+  cityData.name_ar = props.city.name_ar
+  cityData.name_en = props.city.name_en
+  cityData.country_id = props.city.country
+  cityData.is_available_for_delivery = props.city.is_available_for_delivery
+  cityData.polygon = props.city.polygon
+  cityData.allow_cash = props.city.allow_cash
+  cityData.min_price = props.city.min_price
+  cityData.cash_back_amount = props.city.cash_back_amount
+  cityData.cash_back_start_date = props.city.cash_back_start_date
+  cityData.Data.cash_back_end_date = props.city.cash_back_end_date
+
   if (props.city.polygon) {
     props.city.polygon.map((poly, i) => {
       let lat = poly.toString().split(" ")[0]
@@ -119,7 +126,10 @@ const onFormSubmit = async () => {
     is_available_for_delivery: cityData.is_available_for_delivery,
     polygon: [],
     allow_cash: cityData.allow_cash,
-    min_price: cityData.min_price
+    min_price: cityData.min_price,
+    cash_back_amount: cityData.cash_back_amount,
+    cash_back_start_date: cityData.cash_back_start_date,
+    cash_back_end_date: cityData.cash_back_end_date,
   }
 
   places.map((path, index) => {
@@ -143,6 +153,7 @@ const onFormSubmit = async () => {
     }).catch(error => {
       if (error.response.data.errors) {
         const errs = Object.keys(error.response.data.errors)
+
         errs.forEach(err => {
           settingsListStore.alertMessage = t(`errors.${err}`)
         })
@@ -210,8 +221,11 @@ const deleteMark = marker => {
 </script>
 
 <template>
-  <VDialog :width="$vuetify.display.smAndDown ? 'auto' : 650" :model-value="props.isEditOpen"
-    @update:model-value="dialogModelValueUpdate">
+  <VDialog
+    :width="$vuetify.display.smAndDown ? 'auto' : 650"
+    :model-value="props.isEditOpen"
+    @update:model-value="dialogModelValueUpdate"
+  >
     <!-- Dialog close btn -->
     <DialogCloseBtn @click="dialogModelValueUpdate(false)" />
 
@@ -219,7 +233,11 @@ const deleteMark = marker => {
       <!-- 👉 Title -->
       <VCardItem>
         <VCardTitle class="text-h5 d-flex flex-column align-center gap-2 text-center mb-3">
-          <VIcon icon="solar:city-broken" size="24" color="primary"></VIcon>
+          <VIcon
+            icon="solar:city-broken"
+            size="24"
+            color="primary"
+          />
           <span class="mx-1 my-1">
             {{ t('Edit_City') }}
           </span>
@@ -228,45 +246,156 @@ const deleteMark = marker => {
 
       <VCardText>
         <!-- 👉 Form -->
-        <VForm ref="refForm" @submit.prevent="onFormSubmit">
+        <VForm
+          ref="refForm"
+          @submit.prevent="onFormSubmit"
+        >
           <VRow>
-            <VCol cols="12" lg="12" sm="6">
-              <VTextField v-model="cityData.name_en" :label="t('forms.name_en')" />
+            <VCol
+              cols="12"
+              lg="12"
+              sm="6"
+            >
+              <VTextField
+                v-model="cityData.name_en"
+                :label="t('forms.name_en')"
+              />
             </VCol>
-            <VCol cols="12" lg="12" sm="6">
-              <VTextField v-model="cityData.name_ar" :label="t('forms.name_ar')" />
+            <VCol
+              cols="12"
+              lg="12"
+              sm="6"
+            >
+              <VTextField
+                v-model="cityData.name_ar"
+                :label="t('forms.name_ar')"
+              />
             </VCol>
-            <VCol cols="12" lg="12" sm="6">
-              <VSelect v-model="cityData.country_id" :items="countries.value" :label="t('forms.countries')"
-                item-title="name_ar" item-value="id" />
+            <VCol
+              cols="12"
+              lg="12"
+              sm="6"
+            >
+              <VSelect
+                v-model="cityData.country_id"
+                :items="countries.value"
+                :label="t('forms.countries')"
+                item-title="name_ar"
+                item-value="id"
+              />
             </VCol>
-            <VCol cols="12" lg="12" sm="6">
-              <VTextField v-model="cityData.min_price" :label="t('forms.min_price')" :rules="[requiredValidator]" />
+            <VCol
+              cols="12"
+              lg="12"
+              sm="6"
+            >
+              <VTextField
+                v-model="cityData.min_price"
+                :label="t('forms.min_price')"
+                :rules="[requiredValidator]"
+              />
             </VCol>
-            <VCol cols="12" lg="12" sm="6">
-              <VSwitch :label="t('forms.allow_cash')" v-model="cityData.allow_cash"></VSwitch>
+            <VCol
+              cols="12"
+              lg="12"
+              sm="6"
+            >
+              <VSwitch
+                v-model="cityData.allow_cash"
+                :label="t('forms.allow_cash')"
+              />
             </VCol>
-            <VCol cols="12" lg="12" sm="6">
-              <VSwitch :label="t('available_for_delivery')" v-model="cityData.is_available_for_delivery"></VSwitch>
+            <VCol
+              cols="12"
+              lg="12"
+              sm="6"
+            >
+              <VTextField
+                v-model="cityData.cash_back_amount"
+                :label="t('forms.cash_back_amount')"
+              />
+            </VCol>
+
+            <VCol
+              cols="12"
+              lg="12"
+              sm="6"
+            >
+              <VTextField
+                v-model="cityData.cash_back_start_date"
+                type="date"
+                :label="t('forms.cash_back_start_date')"
+              />
+            </VCol>
+            <VCol
+              cols="12"
+              lg="12"
+              sm="6"
+            >
+              <VTextField
+                v-model="cityData.cash_back_end_date"
+                type="date"
+                :label="t('forms.cash_back_end_date')"
+              />
+            </VCol>
+
+            <VCol
+              cols="12"
+              lg="12"
+              sm="6"
+            >
+              <VSwitch
+                v-model="cityData.is_available_for_delivery"
+                :label="t('available_for_delivery')"
+              />
             </VCol>
             <VCol cols="12">
-              <MapAutoComplete @select-location="getSelectedLocation"></MapAutoComplete>
-              <!--              <AddCityMap :location="location" @getPaths="getPathsData"></AddCityMap>-->
-              <GoogleMap api-key="AIzaSyCM2TngqydZtVlZ5hkKjY7x56ut59TTI88" style="width: 100%; height: 500px"
-                :center="{ lat: Number(center.lat), lng: Number(center.lng) }" :zoom="10" @click="addMarker">
-                <Marker v-for="(marker, index) in markers" :key="index" :options="marker" @click="deleteMark(marker)" />
+              <MapAutoComplete @select-location="getSelectedLocation" />
+              <!--              <AddCityMap :location="location" @getPaths="getPathsData"></AddCityMap> -->
+              <GoogleMap
+                api-key="AIzaSyCM2TngqydZtVlZ5hkKjY7x56ut59TTI88"
+                style="width: 100%; height: 500px;"
+                :center="{ lat: Number(center.lat), lng: Number(center.lng) }"
+                :zoom="10"
+                @click="addMarker"
+              >
+                <Marker
+                  v-for="(marker, index) in markers"
+                  :key="index"
+                  :options="marker"
+                  @click="deleteMark(marker)"
+                />
                 <Polygon :options="flightPath" />
               </GoogleMap>
             </VCol>
-            <VCol cols="12" class="text-center">
-              <VBtn v-if="!isLoading" type="submit" class="me-3">
+            <VCol
+              cols="12"
+              class="text-center"
+            >
+              <VBtn
+                v-if="!isLoading"
+                type="submit"
+                class="me-3"
+              >
                 {{ t("buttons.save") }}
               </VBtn>
-              <VBtn v-else type="submit" class="position-relative me-3">
-                <VIcon icon="mingcute:loading-line" class="loading" size="32"></VIcon>
+              <VBtn
+                v-else
+                type="submit"
+                class="position-relative me-3"
+              >
+                <VIcon
+                  icon="mingcute:loading-line"
+                  class="loading"
+                  size="32"
+                />
               </VBtn>
 
-              <VBtn variant="tonal" color="secondary" @click="resetForm">
+              <VBtn
+                variant="tonal"
+                color="secondary"
+                @click="resetForm"
+              >
                 {{ t("buttons.cancel") }}
               </VBtn>
             </VCol>

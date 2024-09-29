@@ -6,6 +6,29 @@ export default [
     permission: "read-dashboard",
   },
   {
+    title: 'report',
+    icon: { icon: 'carbon:store' },
+    permission: "read-dashboard",
+    children: [
+      {
+        title: 'carts-chart',
+        to: { name: 'carts-chart' },
+      },
+      {
+        title: 'profit-chart',
+        to: { name: 'profit-chart' },
+      },
+      {
+        title: 'product-chart',
+        to: { name: 'product-chart' },
+      },
+      {
+        title: 'customer-chart',
+        to: { name: 'customer-chart' },
+      },
+    ],
+  },
+  {
     title: 'Banners',
     to: { name: 'banners' },
     icon: { icon: 'game-icons:vertical-banner' },

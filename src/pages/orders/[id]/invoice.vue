@@ -220,7 +220,7 @@ const handleDeliveryDate = (date, createdDate) => {
             >
               <h4>تاريخ التسليم: </h4>
               <h4>
-                {{ handleDeliveryDate(order.order.delivery_date.toString().split("-").reverse().join("-"), order.order.created_at) }}  
+                {{ formatCreatedDate(order.order.delivery_date) }}
               </h4>
             </VCol>
             <VCol
@@ -276,7 +276,8 @@ const handleDeliveryDate = (date, createdDate) => {
             >
               <h4>طريقة الدفع :</h4>
               <h4>
-                {{ order.order.payment_type ? order.order.payment_type.name_ar : "لا يوجد" }}
+                {{ order.order.payment_type ? order.order.payment_type.name_ar : "لا يوجد" }}  
+                {{ order.order.using_wallet ? " - المحفظة" : " " }}
               </h4>
             </VCol>
           </VRow>
@@ -387,11 +388,22 @@ const handleDeliveryDate = (date, createdDate) => {
               cols="6"
               class="d-flex align-center gap-3 text-base py-1"
             >
-              <span> المبلغ المسدد :</span>
+              <span>  المبلغ المسدد :</span>
               <span>
                 {{ ConvertToArabicNumbers(order.order.paidpayment ? order.order.paidpayment.price : 0 ) }} <small>{{ orderCurrency }}</small> 
               </span>
             </VCol>
+            <VCol
+              v-if="order.order.wallet_amount_used > 0"
+              cols="6"
+              class="d-flex align-center gap-3 text-base py-1"
+            >
+              <span>  المبلغ المسدد بالمحفظة :</span>
+              <span>
+                {{ ConvertToArabicNumbers(order.order.wallet_amount_used ? order.order.wallet_amount_used : 0 ) }} <small>{{ orderCurrency }}</small> 
+              </span>
+            </VCol>
+
             <VCol
               cols="6"
               class="d-flex align-center gap-3 text-base py-1"
@@ -413,7 +425,7 @@ const handleDeliveryDate = (date, createdDate) => {
               </span>
             </VCol>
             <VCol
-              cols="6"
+              cols="12"
               class="d-flex align-center gap-3 text-base py-1"
             >
               <span> الإجمالي غير شامل الضريبة بعد الخصم : </span>

@@ -112,7 +112,11 @@ const formatDateTime = data => {
   <div>
     <VCard :loading="isLoading">
       <VCardTitle class="d-flex align-center">
-        <VIcon icon="solar:city-broken" size="24" color="primary"></VIcon>
+        <VIcon
+          icon="solar:city-broken"
+          size="24"
+          color="primary"
+        />
         <span class="mx-1">{{ t('Cities') }}</span>
       </VCardTitle>
       <VCardText class="d-flex align-center flex-wrap gap-2 py-4">
@@ -124,153 +128,183 @@ const formatDateTime = data => {
             :items="[5, 10, 20, 30, 50]"
           />
         </div>
-        <!--         👉 Create product :to="{ name: 'apps-product-add' }"-->
+        <!--         👉 Create product :to="{ name: 'apps-product-add' }" -->
         <VBtn
+          v-can="'create-city'"
           prepend-icon="tabler-plus"
           @click="isAddOpen = true"
-          v-can="'create-city'"
         >
           {{ t('Add_City') }}
         </VBtn>
 
-        <VSpacer/>
-
-
+        <VSpacer />
       </VCardText>
 
-      <VDivider/>
+      <VDivider />
 
       <VTable class="text-no-wrap product-list-table">
         <thead>
-        <tr>
-          <th
-            scope="col"
-            class="font-weight-semibold"
-          >
-            {{ t('forms.id') }}
-          </th>
-          <th
-            scope="col"
-            class="font-weight-semibold"
-          >
-            {{ t('forms.name') }}
-          </th>
-          <th
-            scope="col"
-            class="font-weight-semibold"
-          >
-            {{ t('forms.country') }}
-          </th>
-          <th
-            scope="col"
-            class="font-weight-semibold"
-          >
-            {{ t('forms.is_active') }}
-          </th>
-          <th
-            scope="col"
-            class="font-weight-semibold"
-          >
-            {{ t('forms.min_price') }}
-          </th>
-          <th
-            scope="col"
-            class="font-weight-semibold"
-          >
-            {{ t('forms.allow_cash') }}
-          </th>
-          <th
-            scope="col"
-            class="font-weight-semibold"
-          >
-            {{ t('forms.actions') }}
-          </th>
-        </tr>
+          <tr>
+            <th
+              scope="col"
+              class="font-weight-semibold"
+            >
+              {{ t('forms.id') }}
+            </th>
+            <th
+              scope="col"
+              class="font-weight-semibold"
+            >
+              {{ t('forms.name') }}
+            </th>
+            <th
+              scope="col"
+              class="font-weight-semibold"
+            >
+              {{ t('forms.country') }}
+            </th>
+            <th
+              scope="col"
+              class="font-weight-semibold"
+            >
+              {{ t('forms.is_active') }}
+            </th>
+            <th
+              scope="col"
+              class="font-weight-semibold"
+            >
+              {{ t('forms.min_price') }}
+            </th>
+            <th
+              scope="col"
+              class="font-weight-semibold"
+            >
+              {{ t('forms.allow_cash') }}
+            </th>
+            <th
+              scope="col"
+              class="font-weight-semibold"
+            >
+              {{ t('forms.cash_back_amount') }}
+            </th>
+            <th
+              scope="col"
+              class="font-weight-semibold"
+            >
+              {{ t('forms.cash_back_start_date') }}
+            </th>
+            <th
+              scope="col"
+              class="font-weight-semibold"
+            >
+              {{ t('forms.cash_back_end_date') }}
+            </th>
+
+            <th
+              scope="col"
+              class="font-weight-semibold"
+            >
+              {{ t('forms.actions') }}
+            </th>
+          </tr>
         </thead>
 
         <tbody>
-        <tr
-          v-for="(city, i) in paginateCities"
-          :key="city.id"
-        >
-          <td>
-            #{{ (++i) }}
-          </td>
-          <td>
-            {{ city.name_ar }}
-          </td>
-          <td>
-            {{ city.country ? city.country.name_ar : "لا يوجد" }}
-          </td>
-          <td @click="changeStatus(city)">
-            <VIcon icon="ph:dot-bold" :color="city.is_active == true ? '#008000' : '#f00000'" size="32"></VIcon>
-            <span>
-              {{ city.is_active == true ? t('forms.statuses.active') : t('forms.statuses.inactive') }}
-            </span>
-          </td>
-          <td>
-            {{ city.min_price }}
-          </td>
-          <td>
-            {{ city.allow_cash == 1 ? 'نعم' : 'لا' }}
-          </td>
-          <td v-can="'create-city' || 'update-city' || 'delete-city'">
-            <!--            <VBtn-->
-            <!--              icon-->
-            <!--              variant="plain"-->
-            <!--              color="default"-->
-            <!--              size="x-small"-->
-            <!--            >-->
-            <!--              <VIcon-->
-            <!--                :size="22"-->
-            <!--                icon="tabler-eye"-->
-            <!--              />-->
-            <!--            </VBtn>-->
-            <VBtn
-              v-can="'update-city'"
-              icon
-              variant="plain"
-              color="default"
-              size="x-small"
-              @click="openEdit(city)"
-            >
+          <tr
+            v-for="(city, i) in paginateCities"
+            :key="city.id"
+          >
+            <td>
+              #{{ (++i) }}
+            </td>
+            <td>
+              {{ city.name_ar }}
+            </td>
+            <td>
+              {{ city.country ? city.country.name_ar : "لا يوجد" }}
+            </td>
+            <td @click="changeStatus(city)">
               <VIcon
-                :size="22"
-                icon="tabler-pencil"
+                icon="ph:dot-bold"
+                :color="city.is_active == true ? '#008000' : '#f00000'"
+                size="32"
               />
-            </VBtn>
-            <VBtn
-              v-can="'delete-city'"
-              icon
-              variant="plain"
-              color="default"
-              size="x-small"
-              @click="openDelete(city)"
-            >
-              <VIcon
-                :size="22"
-                icon="tabler-trash"
-              />
-            </VBtn>
-          </td>
-        </tr>
+              <span>
+                {{ city.is_active == true ? t('forms.statuses.active') : t('forms.statuses.inactive') }}
+              </span>
+            </td>
+            <td>
+              {{ city.min_price }}
+            </td>
+            <td>
+              {{ city.allow_cash == 1 ? 'نعم' : 'لا' }}
+            </td>
+            <td>
+              {{ city.cash_back_amount }}
+            </td>
+            <td>
+              {{ city.cash_back_start_date }}
+            </td>
+            <td>
+              {{ city.cash_back_end_date }}
+            </td>
+            <td v-can="'create-city' || 'update-city' || 'delete-city'">
+              <!--            <VBtn -->
+              <!--              icon -->
+              <!--              variant="plain" -->
+              <!--              color="default" -->
+              <!--              size="x-small" -->
+              <!--            > -->
+              <!--              <VIcon -->
+              <!--                :size="22" -->
+              <!--                icon="tabler-eye" -->
+              <!--              /> -->
+              <!--            </VBtn> -->
+              <VBtn
+                v-can="'update-city'"
+                icon
+                variant="plain"
+                color="default"
+                size="x-small"
+                @click="openEdit(city)"
+              >
+                <VIcon
+                  :size="22"
+                  icon="tabler-pencil"
+                />
+              </VBtn>
+              <VBtn
+                v-can="'delete-city'"
+                icon
+                variant="plain"
+                color="default"
+                size="x-small"
+                @click="openDelete(city)"
+              >
+                <VIcon
+                  :size="22"
+                  icon="tabler-trash"
+                />
+              </VBtn>
+            </td>
+          </tr>
         </tbody>
 
         <!-- 👉 table footer  -->
         <tfoot v-show="!cities.length">
-        <tr>
-          <td
-            colspan="8"
-            class="text-center text-body-1"
-          >
-            لا يوجد بيانات
-          </td>
-        </tr>
+          <tr>
+            <td
+              colspan="8"
+              class="text-center text-body-1"
+            >
+              لا يوجد بيانات
+            </td>
+          </tr>
         </tfoot>
       </VTable>
       <!-- !SECTION -->
 
-      <VDivider/>
+      <VDivider />
 
       <VCardText class="d-flex align-center flex-wrap justify-space-between gap-4 py-3">
         <span class="text-sm text-disabled">{{ paginationData }}</span>
@@ -285,7 +319,10 @@ const formatDateTime = data => {
         />
       </VCardText>
     </VCard>
-    <AddCityDialog v-model:isAddOpen="isAddOpen" @refreshTable="getCities"/>
+    <AddCityDialog
+      v-model:isAddOpen="isAddOpen"
+      @refreshTable="getCities"
+    />
     <EditCityDialog
       v-model:isEditOpen="isEditOpen"
       :city="selectedCity"

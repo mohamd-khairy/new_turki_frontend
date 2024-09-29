@@ -45,7 +45,7 @@ const isEditOpen = ref(false)
 const isPrinting = ref(false)
 
 const isLoading = ref(false)
-const isFiltered = ref(false)
+const isFiltered = ref(true)
 const paymentTypes = ref([])
 const salesAgents = ref([])
 const salesRepresentatives = ref([])
@@ -54,13 +54,29 @@ const allOrdersSelected = ref(false)
 const currentPrintedInvoice = ref(null)
 const totalOrdersAmount = ref(0)
 
+// Get today's date
+const today = new Date()
+
+// Get the date 3 weeks (21 days) from today
+const threeWeeksFromToday = new Date(today)
+
+threeWeeksFromToday.setDate(today.getDate() + 21)
+
+// Get the last day of the current month
+const lastDayOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0)
+
+// Format the dates to YYYY-MM-DD
+const formattedToday = today.toISOString().split('T')[0]
+const formattedThreeWeeksFromToday = threeWeeksFromToday.toISOString().split('T')[0]
+const formattedLastDay = lastDayOfMonth.toISOString().split('T')[0]
+
 const filters = reactive({
   ref_no: null,
   city_ids: [],
   country_ids: [],
   order_state_ids: [],
-  date_from: null,
-  date_to: null,
+  date_from: formattedToday,
+  date_to: formattedThreeWeeksFromToday,
   delivery_date: null,
   customer_id: null,
   delivery_period_ids: [],
@@ -79,19 +95,19 @@ const selectAllOrders = selectedAll => {
   })
 }
 
-const notificationSound = ref(null);
+const notificationSound = ref(null)
 
 const playNotificationSound = () => {
   if (notificationSound.value) {
-    notificationSound.value.play();
+    notificationSound.value.play()
   }
-};
+}
 
 
-const showNotification = (order) => {
+const showNotification = order => {
 
   settingsListStore.alertColor = "success"
-  settingsListStore.alertMessage = ` تم اضافة طلب جديد برقم` + order.ref_no
+  settingsListStore.alertMessage = ` تم اضافة طلب جديد برقم ` + order.ref_no
   settingsListStore.isAlertShow = true
   setTimeout(() => {
     settingsListStore.isAlertShow = false
@@ -99,44 +115,66 @@ const showNotification = (order) => {
     isLoading.value = false
   }, 5000)
 
-};
+}
 
 
-const events = ref([]);
-let eventSource = null;
+const events = ref([])
+let eventSource = null
 
 const startEventSource = () => {
-  eventSource = new EventSource('http://localhost:8000/api/stream');
-  eventSource.onmessage = (event) => {
-    const data = JSON.parse(event.data);
+  // eventSource = new EventSource('http://localhost:8000/sse/sse_stream')
+
+  eventSource = new EventSource('https://almaraacompany.com/dashboard/sse/sse_stream')
+  eventSource.onmessage = event => {
+    const data = JSON.parse(event.data)
     if (data) {
-      orders.value.unshift(JSON.parse(event.data));
-      playNotificationSound();
-      showNotification(data);
+      const message = JSON.parse(data.message)
+
+      refreshOrders()
+
+      if (filters.country_ids.length < 1) {
+        showNotification(message)
+        playNotificationSound()
+      }else{
+        if (filters.country_ids == message.address_country_id) {
+          showNotification(message)
+          playNotificationSound()
+        }
+      } 
+     
+      // orders.value.unshift(message)      
+    }
+  }
+
+  eventSource.addEventListener('update-order', function (event) {
+    const data = JSON.parse(event.data)
+    if (data) {
+      const message = JSON.parse(data.message)
+
+      refreshOrders()
 
     }
-    console.log(JSON.parse(event.data));
-  };
+  })
 
-  eventSource.onerror = (error) => {
-    console.error('EventSource failed:', error);
+  eventSource.onerror = error => {
+    // console.error('EventSource failed:', error);
     //   eventSource.close();
-  };
-};
+  }
+}
 
 const closeEventSource = () => {
   if (eventSource) {
-    eventSource.close();
+    eventSource.close()
   }
-};
+}
 
 onMounted(() => {
-  startEventSource();
-});
+  startEventSource()
+})
 
 onBeforeUnmount(() => {
-  closeEventSource();
-});
+  closeEventSource()
+})
 
 
 
@@ -246,6 +284,29 @@ watch(() => filters.country_ids, (newVal, oldVal) => {
     cities.value = response.data.data
   })
 })
+
+const refreshOrders = () => {
+  ordersListStore.fetchOrders({
+    ...filters,
+    q: searchQuery.value,
+    per_page: rowPerPage.value,
+    page: currentPage.value,
+  }).then(response => {
+    const ordersItems = response.data.data.data
+
+    orders.value = ordersItems
+    totalPage.value = response.data.data.last_page
+    dataFrom.value = response.data.data.from
+    dataTo.value = response.data.data.to
+    totalOrders.value = response.data.data.total
+    totalOrdersAmount.value = response.data.total
+
+  }).catch(error => {
+    console.log(error)
+  }).finally(() => {
+    isLoading.value = false
+  })
+}
 
 const getOrders = () => {
   isLoading.value = true
@@ -449,6 +510,7 @@ const clearFilter = () => {
   filters.payment_type_ids = []
   filters.sales_agent_id = null
   filters.sales_representative_id = null
+  isFiltered.value = false
   filterOrders()
 }
 
@@ -522,7 +584,11 @@ onMounted(() => {
 
 <template>
   <div>
-    <audio ref="notificationSound" src="notification.mp3" preload="auto"></audio>
+    <audio
+      ref="notificationSound"
+      src="/dashboard-v3/notification.mp3"
+      preload="auto"
+    />
 
     <div>
       <VExpansionPanels class="mb-6">
@@ -530,7 +596,11 @@ onMounted(() => {
           <VExpansionPanelTitle expand-icon="mdi-menu-down">
             <div class="py-2 d-flex align-center gap-1">
               <span>
-                <VIcon icon="tabler:search" :size="24" color="primary" />
+                <VIcon
+                  icon="tabler:search"
+                  :size="24"
+                  color="primary"
+                />
               </span>
               <span style="font-weight: 400;">البحث في الطلبات</span>
             </div>
@@ -538,20 +608,44 @@ onMounted(() => {
           <VExpansionPanelText>
             <div class="py-4 px-2">
               <VRow>
-                <VCol cols="6" class="d-flex align-center gap-3">
+                <VCol
+                  cols="6"
+                  class="d-flex align-center gap-3"
+                >
                   <div class="icon">
-                    <VIcon icon="solar:delivery-broken" color="primary" />
+                    <VIcon
+                      icon="solar:delivery-broken"
+                      color="primary"
+                    />
                   </div>
-                  <VTextField v-model="filters.ref_no" label="البحث برقم الطلب" :disabled="isLoading" />
+                  <VTextField
+                    v-model="filters.ref_no"
+                    label="البحث برقم الطلب"
+                    :disabled="isLoading"
+                  />
                 </VCol>
-                <VCol cols="6" class="d-flex align-center gap-3">
+                <VCol
+                  cols="6"
+                  class="d-flex align-center gap-3"
+                >
                   <div class="icon">
-                    <VIcon icon="clarity:users-line" color="primary" />
+                    <VIcon
+                      icon="clarity:users-line"
+                      color="primary"
+                    />
                   </div>
 
-                  <VAutocomplete v-model="filters.customer_id" :items="customers" label="البحث باسم أو رقم جوال العميل"
-                    item-title="name_mobile" item-value="id" clearable :loading="isLoadingCustomers"
-                    @update:search="searchCustomer" @update:menu="updateCutomersMenu" />
+                  <VAutocomplete
+                    v-model="filters.customer_id"
+                    :items="customers"
+                    label="البحث باسم أو رقم جوال العميل"
+                    item-title="name_mobile"
+                    item-value="id"
+                    clearable
+                    :loading="isLoadingCustomers"
+                    @update:search="searchCustomer"
+                    @update:menu="updateCutomersMenu"
+                  />
                   <!--
                     <VSelect
                     v-model="filters.customer_id"
@@ -573,110 +667,278 @@ onMounted(() => {
                     />
                     <VDivider class="mt-2" />
                     </template>
-</VSelect>
--->
+                    </VSelect>
+                  -->
                 </VCol>
-                <VCol cols="12" lg="3" md="4" sm="6">
+                <VCol
+                  cols="12"
+                  lg="3"
+                  md="4"
+                  sm="6"
+                >
                   <VRow>
-                    <VCol cols="12" class="d-flex align-center gap-3">
+                    <VCol
+                      cols="12"
+                      class="d-flex align-center gap-3"
+                    >
                       <div class="icon">
-                        <VIcon icon="material-symbols:globe" color="primary" />
+                        <VIcon
+                          icon="material-symbols:globe"
+                          color="primary"
+                        />
                       </div>
-                      <VSelect v-model="filters.country_ids" :items="countries" :label="t('forms.countries')"
-                        item-title="name_ar" item-value="id" :disabled="isLoading" />
+                      <VSelect
+                        v-model="filters.country_ids"
+                        :items="countries"
+                        :label="t('forms.countries')"
+                        item-title="name_ar"
+                        item-value="id"
+                        :disabled="isLoading"
+                      />
                     </VCol>
-                    <VCol cols="12" class="d-flex align-center gap-3">
+                    <VCol
+                      cols="12"
+                      class="d-flex align-center gap-3"
+                    >
                       <div class="icon">
-                        <VIcon icon="solar:city-broken" color="primary" />
+                        <VIcon
+                          icon="solar:city-broken"
+                          color="primary"
+                        />
                       </div>
-                      <VSelect v-model="filters.city_ids" :items="cities" :label="t('forms.cities')"
-                        item-title="name_ar" item-value="id" multiple :disabled="isLoading" />
+                      <VSelect
+                        v-model="filters.city_ids"
+                        :items="cities"
+                        :label="t('forms.cities')"
+                        item-title="name_ar"
+                        item-value="id"
+                        multiple
+                        :disabled="isLoading"
+                      />
                     </VCol>
                   </VRow>
                 </VCol>
-                <VCol cols="12" lg="3" md="4" sm="6">
+                <VCol
+                  cols="12"
+                  lg="3"
+                  md="4"
+                  sm="6"
+                >
                   <VRow>
-                    <VCol cols="12" class="d-flex align-center gap-3">
+                    <VCol
+                      cols="12"
+                      class="d-flex align-center gap-3"
+                    >
                       <div class="icon">
-                        <VIcon icon="solar:delivery-broken" color="primary" />
+                        <VIcon
+                          icon="solar:delivery-broken"
+                          color="primary"
+                        />
                       </div>
-                      <VSelect v-model="filters.order_state_ids" :items="allOrderStatuses" label="حالة الطلب"
-                        item-title="state_ar" item-value="code" multiple :disabled="isLoading" />
+                      <VSelect
+                        v-model="filters.order_state_ids"
+                        :items="allOrderStatuses"
+                        label="حالة الطلب"
+                        item-title="state_ar"
+                        item-value="code"
+                        multiple
+                        :disabled="isLoading"
+                      />
                     </VCol>
-                    <VCol cols="12" class="d-flex align-center gap-3">
+                    <VCol
+                      cols="12"
+                      class="d-flex align-center gap-3"
+                    >
                       <div class="icon">
-                        <VIcon icon="fluent-mdl2:date-time" color="primary" />
+                        <VIcon
+                          icon="fluent-mdl2:date-time"
+                          color="primary"
+                        />
                       </div>
-                      <VTextField v-model="filters.delivery_date" type="date" :label="t('forms.delivery_date')"
-                        :disabled="isLoading" />
+                      <VTextField
+                        v-model="filters.delivery_date"
+                        type="date"
+                        :label="t('forms.delivery_date')"
+                        :disabled="isLoading"
+                      />
                     </VCol>
                   </VRow>
                 </VCol>
-                <VCol cols="12" lg="3" md="4" sm="6">
+                <VCol
+                  cols="12"
+                  lg="3"
+                  md="4"
+                  sm="6"
+                >
                   <VRow>
-                    <VCol cols="12" class="d-flex align-center gap-3">
+                    <VCol
+                      cols="12"
+                      class="d-flex align-center gap-3"
+                    >
                       <div class="icon">
-                        <VIcon icon="fluent-mdl2:date-time" color="primary" />
+                        <VIcon
+                          icon="fluent-mdl2:date-time"
+                          color="primary"
+                        />
                       </div>
-                      <VSelect v-model="filters.delivery_period_ids" :items="deliveryPeriods"
-                        :label="t('Delivery_Periods')" item-title="name_ar" item-value="id" multiple
-                        :disabled="isLoading" />
+                      <VSelect
+                        v-model="filters.delivery_period_ids"
+                        :items="deliveryPeriods"
+                        :label="t('Delivery_Periods')"
+                        item-title="name_ar"
+                        item-value="id"
+                        multiple
+                        :disabled="isLoading"
+                      />
                     </VCol>
-                    <VCol cols="12" class="d-flex align-center gap-3">
+                    <VCol
+                      cols="12"
+                      class="d-flex align-center gap-3"
+                    >
                       <div class="icon">
-                        <VIcon icon="solar:delivery-broken" color="primary" />
+                        <VIcon
+                          icon="solar:delivery-broken"
+                          color="primary"
+                        />
                       </div>
-                      <VSelect v-model="filters.payment_type_ids" :items="paymentTypes" label="طريقة الدفع"
-                        item-title="name_ar" item-value="id" multiple :disabled="isLoading" />
+                      <VSelect
+                        v-model="filters.payment_type_ids"
+                        :items="paymentTypes"
+                        label="طريقة الدفع"
+                        item-title="name_ar"
+                        item-value="id"
+                        multiple
+                        :disabled="isLoading"
+                      />
                     </VCol>
                   </VRow>
                 </VCol>
-                <VCol cols="12" lg="3" md="4" sm="6">
+                <VCol
+                  cols="12"
+                  lg="3"
+                  md="4"
+                  sm="6"
+                >
                   <VRow>
-                    <VCol cols="12" class="d-flex align-center gap-3">
+                    <VCol
+                      cols="12"
+                      class="d-flex align-center gap-3"
+                    >
                       <div class="icon">
-                        <VIcon icon="fluent-mdl2:date-time" color="primary" />
+                        <VIcon
+                          icon="fluent-mdl2:date-time"
+                          color="primary"
+                        />
                       </div>
-                      <VTextField v-model="filters.date_from" type="date" :label="t('forms.from')"
-                        :disabled="isLoading" />
+                      <VTextField
+                        v-model="filters.date_from"
+                        type="date"
+                        :label="t('forms.from')"
+                        :disabled="isLoading"
+                      />
                     </VCol>
-                    <VCol cols="12" class="d-flex align-center gap-3">
+                    <VCol
+                      cols="12"
+                      class="d-flex align-center gap-3"
+                    >
                       <div class="icon">
-                        <VIcon icon="fluent-mdl2:date-time" color="primary" />
+                        <VIcon
+                          icon="fluent-mdl2:date-time"
+                          color="primary"
+                        />
                       </div>
-                      <VTextField v-model="filters.date_to" type="date" :label="t('forms.to')" :disabled="isLoading" />
+                      <VTextField
+                        v-model="filters.date_to"
+                        type="date"
+                        :label="t('forms.to')"
+                        :disabled="isLoading"
+                      />
                     </VCol>
                   </VRow>
                 </VCol>
-                <VCol cols="12" lg="3" md="4" sm="6" class="d-flex align-center gap-3">
+                <VCol
+                  cols="12"
+                  lg="3"
+                  md="4"
+                  sm="6"
+                  class="d-flex align-center gap-3"
+                >
                   <div class="icon">
-                    <VIcon icon="clarity:users-line" color="primary" />
+                    <VIcon
+                      icon="clarity:users-line"
+                      color="primary"
+                    />
                   </div>
-                  <VSelect v-model="filters.sales_agent_id" :items="salesAgents" label="مندوب المبيعات"
-                    item-title="username" item-value="id" :disabled="isLoading" />
+                  <VSelect
+                    v-model="filters.sales_agent_id"
+                    :items="salesAgents"
+                    label="مندوب المبيعات"
+                    item-title="username"
+                    item-value="id"
+                    :disabled="isLoading"
+                  />
                 </VCol>
-                <VCol cols="12" lg="3" md="4" sm="6" class="d-flex align-center gap-3">
+                <VCol
+                  cols="12"
+                  lg="3"
+                  md="4"
+                  sm="6"
+                  class="d-flex align-center gap-3"
+                >
                   <div class="icon">
-                    <VIcon icon="clarity:users-line" color="primary" />
+                    <VIcon
+                      icon="clarity:users-line"
+                      color="primary"
+                    />
                   </div>
-                  <VSelect v-model="filters.sales_representative_id" :items="salesRepresentatives"
-                    label="مسئول المبيعات" item-title="username" item-value="id" :disabled="isLoading" />
+                  <VSelect
+                    v-model="filters.sales_representative_id"
+                    :items="salesRepresentatives"
+                    label="مسئول المبيعات"
+                    item-title="username"
+                    item-value="id"
+                    :disabled="isLoading"
+                  />
                 </VCol>
-                <VCol cols="12" class="d-flex align-center gap-3">
-                  <VBtn v-if="!isLoading" prepend-icon="solar:filter-bold-duotone" :disabled="isLoading"
-                    @click.stop="filterOrders">
+                <VCol
+                  cols="12"
+                  class="d-flex align-center gap-3"
+                >
+                  <VBtn
+                    v-if="!isLoading"
+                    prepend-icon="solar:filter-bold-duotone"
+                    :disabled="isLoading"
+                    @click.stop="filterOrders"
+                  >
                     {{ t('Filter') }}
                   </VBtn>
-                  <VBtn v-else type="submit" class="position-relative" style="width: 152px;max-width: 100%;">
-                    <VIcon icon="mingcute:loading-line" class="loading" size="32" />
+                  <VBtn
+                    v-else
+                    type="submit"
+                    class="position-relative"
+                    style="width: 152px;max-width: 100%;"
+                  >
+                    <VIcon
+                      icon="mingcute:loading-line"
+                      class="loading"
+                      size="32"
+                    />
                   </VBtn>
-                  <VBtn prepend-icon="healthicons:x" :disabled="isLoading || !isFiltered" @click.stop="clearFilter">
+                  <VBtn
+                    prepend-icon="healthicons:x"
+                    :disabled="isLoading || !isFiltered"
+                    @click.stop="clearFilter"
+                  >
                     {{ t('Clear_Filter') }}
                   </VBtn>
 
                   <VTooltip text="Export">
                     <template #activator="{ props }">
-                      <VBtn v-bind="props" :disabled="isLoading || !isFiltered" @click="exportOrders">
+                      <VBtn
+                        v-bind="props"
+                        :disabled="isLoading || !isFiltered"
+                        @click="exportOrders"
+                      >
                         <VIcon left>
                           mdi-file-export
                         </VIcon>
@@ -687,7 +949,11 @@ onMounted(() => {
 
                   <VTooltip text="Export">
                     <template #activator="{ props }">
-                      <VBtn v-bind="props" :disabled="isLoading || !isFiltered" @click="exportOrderProducts">
+                      <VBtn
+                        v-bind="props"
+                        :disabled="isLoading || !isFiltered"
+                        @click="exportOrderProducts"
+                      >
                         <VIcon left>
                           mdi-file-export
                         </VIcon>
@@ -705,22 +971,37 @@ onMounted(() => {
 
       <VCard :loading="isLoading">
         <VCardTitle class="d-flex align-center">
-          <VIcon icon="solar:delivery-broken" size="24" color="primary" />
+          <VIcon
+            icon="solar:delivery-broken"
+            size="24"
+            color="primary"
+          />
           <span class="mx-1">{{ t('Orders') }}</span>
         </VCardTitle>
         <VCardText class="d-flex align-center flex-wrap gap-2 py-4">
           <div style="min-width: 5rem;">
-            <VSelect v-model="rowPerPage" variant="outlined" :items="[5, 10, 20, 30, 50, 100, 200, 300, 500, 700, 1000]"
-              :disabled="isLoading" />
+            <VSelect
+              v-model="rowPerPage"
+              variant="outlined"
+              :items="[5, 10, 20, 30, 50, 100, 200, 300, 500, 700, 1000]"
+              :disabled="isLoading"
+            />
           </div>
-          <VBtn v-if="hasRole(['general_manager', 'store_manager', 'admin'])" prepend-icon="tabler-plus"
-            :disabled="isLoading" @click="isAddOpen = true">
+          <VBtn
+            v-if="hasRole(['general_manager', 'store_manager', 'admin'])"
+            prepend-icon="tabler-plus"
+            :disabled="isLoading"
+            @click="isAddOpen = true"
+          >
             إضافة طلب
           </VBtn>
 
           <div v-if="hasRole(['logistic_manager', 'admin'])">
             <Transition>
-              <div v-if="selectedOrders.length" class="d-flex">
+              <div
+                v-if="selectedOrders.length"
+                class="d-flex"
+              >
                 <VBtn @click="openAssignDeligateDialog">
                   تعيين مندوب
                 </VBtn>
@@ -730,7 +1011,13 @@ onMounted(() => {
 
           <VTooltip text="إعادة التحميل">
             <template #activator="{ props }">
-              <VBtn v-bind="props" :disabled="isLoading" :loading="isLoading" icon @click="getOrders">
+              <VBtn
+                v-bind="props"
+                :disabled="isLoading"
+                :loading="isLoading"
+                icon
+                @click="getOrders"
+              >
                 <VIcon>uiw:reload</VIcon>
               </VBtn>
             </template>
@@ -740,14 +1027,29 @@ onMounted(() => {
           <div class="pt-3 pt-md-0">
             <div v-if="isLoading">
               <VCard class="py-7 px-16">
-                <VIcon icon="mingcute:loading-line" class="loading" size="32" />
+                <VIcon
+                  icon="mingcute:loading-line"
+                  class="loading"
+                  size="32"
+                />
               </VCard>
             </div>
-            <div v-else class="d-flex align-center flex-wrap gap-3">
+            <div
+              v-else
+              class="d-flex align-center flex-wrap gap-3"
+            >
               <VCard class="py-3 px-4 w-100 w-sm-auto">
                 <p class="mb-3">
-                  <VAvatar color="success" variant="tonal" size="42" class="me-3">
-                    <VIcon size="24" icon="solar:delivery-broken" />
+                  <VAvatar
+                    color="success"
+                    variant="tonal"
+                    size="42"
+                    class="me-3"
+                  >
+                    <VIcon
+                      size="24"
+                      icon="solar:delivery-broken"
+                    />
                   </VAvatar>
                   <span class="whitespace-nowrap">عدد الطلبات</span>
                 </p>
@@ -758,10 +1060,21 @@ onMounted(() => {
                   <small>طلب</small>
                 </div>
               </VCard>
-              <VCard v-if="hasRole(['admin']) && totalOrdersAmount" class="py-3 px-4 w-100 w-sm-auto">
+              <VCard
+                v-if="hasRole(['admin']) && totalOrdersAmount"
+                class="py-3 px-4 w-100 w-sm-auto"
+              >
                 <p class="mb-3">
-                  <VAvatar color="success" variant="tonal" size="42" class="me-3">
-                    <VIcon size="24" icon="tabler-currency-dollar" />
+                  <VAvatar
+                    color="success"
+                    variant="tonal"
+                    size="42"
+                    class="me-3"
+                  >
+                    <VIcon
+                      size="24"
+                      icon="tabler-currency-dollar"
+                    />
                   </VAvatar>
                   <span>الإجمالي</span>
                 </p>
@@ -785,45 +1098,91 @@ onMounted(() => {
           show-select
           ></v-data-table> 
         -->
-        <VTable height="600px" fixed-header class="text-no-wrap product-list-table text-center">
+        <VTable
+          height="600px"
+          fixed-header
+          class="text-no-wrap product-list-table text-center"
+        >
           <thead>
             <tr>
-              <th v-if="hasRole(['logistic_manager', 'admin'])" scope="col" class="font-weight-semibold">
-                <VCheckbox v-model="allOrdersSelected" @update:modelValue="selectAllOrders" />
+              <th
+                v-if="hasRole(['logistic_manager', 'admin'])"
+                scope="col"
+                class="font-weight-semibold"
+              >
+                <VCheckbox
+                  v-model="allOrdersSelected"
+                  @update:modelValue="selectAllOrders"
+                />
               </th>
-              <th scope="col" class="font-weight-semibold">
+              <th
+                scope="col"
+                class="font-weight-semibold"
+              >
                 {{ t('forms.actions') }}
               </th>
-              <th scope="col" class="font-weight-semibold">
+              <th
+                scope="col"
+                class="font-weight-semibold"
+              >
                 {{ t('forms.id') }}
               </th>
-              <th scope="col" class="font-weight-semibold">
+              <th
+                scope="col"
+                class="font-weight-semibold"
+              >
                 {{ t('forms.customer_name') }}
               </th>
-              <th scope="col" class="font-weight-semibold">
+              <th
+                scope="col"
+                class="font-weight-semibold"
+              >
                 {{ t('forms.order_state_ar') }} <br>
-                <span v-if="!isLoading && (canChangeOrderStatus || hasRole(['delegate', 'store_manager']))"
-                  class="text-primary">( {{ t('forms.click_change_status') }} )</span>
+                <span
+                  v-if="!isLoading && (canChangeOrderStatus || hasRole(['delegate', 'store_manager']))"
+                  class="text-primary"
+                >( {{ t('forms.click_change_status') }} )</span>
               </th>
-              <th scope="col" class="font-weight-semibold">
+              <th
+                scope="col"
+                class="font-weight-semibold"
+              >
                 {{ t('forms.order_payment_status') }}
               </th>
-              <th scope="col" class="font-weight-semibold">
+              <th
+                scope="col"
+                class="font-weight-semibold"
+              >
                 {{ t('forms.payment_type_name') }}
               </th>
-              <th scope="col" class="font-weight-semibold">
+              <th
+                scope="col"
+                class="font-weight-semibold"
+              >
                 {{ t('forms.address_address') }}
               </th>
-              <th scope="col" class="font-weight-semibold">
+              <th
+                scope="col"
+                class="font-weight-semibold"
+              >
                 المدينة
               </th>
-              <th scope="col" class="font-weight-semibold">
+              <th
+                scope="col"
+                class="font-weight-semibold"
+              >
                 مسئول المبيعات
               </th>
-              <th scope="col" class="font-weight-semibold">
+              <th
+                scope="col"
+                class="font-weight-semibold"
+              >
                 المندوب
               </th>
-              <th scope="col" class="font-weight-semibold">
+              <th
+                scope="col"
+                class="font-weight-semibold"
+              >
                 {{ t('forms.delivery_date') }}
               </th>
               <!--
@@ -834,14 +1193,23 @@ onMounted(() => {
                 {{ t('forms.paid_amount_wallet') }}
                 </th>
               -->
-              <th scope="col" class="font-weight-semibold">
+              <th
+                scope="col"
+                class="font-weight-semibold"
+              >
                 {{ t('forms.paid_amount') }}
               </th>
 
-              <th scope="col" class="font-weight-semibold">
+              <th
+                scope="col"
+                class="font-weight-semibold"
+              >
                 {{ t('forms.remain_amount') }}
               </th>
-              <th scope="col" class="font-weight-semibold">
+              <th
+                scope="col"
+                class="font-weight-semibold"
+              >
                 {{ t('forms.total_amount_after_discount') }}
               </th>
 
@@ -856,56 +1224,117 @@ onMounted(() => {
             </tr>
           </thead>
           <tbody v-if="isLoading">
-            <tr v-for="tableRow in 9" :key="tableRow">
-              <td v-for="tableTD in 15" :key="tableTD">
+            <tr
+              v-for="tableRow in 9"
+              :key="tableRow"
+            >
+              <td
+                v-for="tableTD in 15"
+                :key="tableTD"
+              >
                 <div>
-                  <VSkeletonLoader type="text" :height="40" :width="100" />
+                  <VSkeletonLoader
+                    type="text"
+                    :height="40"
+                    :width="100"
+                  />
                 </div>
               </td>
             </tr>
           </tbody>
           <tbody v-else>
-            <tr v-for="(order, i) in orders" :key="order.id">
+            <tr
+              v-for="(order, i) in orders"
+              :key="order.id"
+            >
               <td v-if="hasRole(['logistic_manager', 'admin'])">
                 <VCheckbox v-model="order.selected" />
               </td>
               <td>
                 <div class="d-flex align-center justify-end gap-2">
                   <div
-                    v-if="!hasRole(['production_manager']) || (hasRole(['production_manager']) && !order.is_printed)">
+                    v-if="!hasRole(['production_manager']) || (hasRole(['production_manager']) && !order.is_printed)"
+                  >
                     <VTooltip text="طباعة الفاتورة">
                       <template #activator="{ props }">
-                        <VBtn v-bind="props" icon variant="plain" color="default" size="x-small"
-                          :loading="currentPrintedInvoice == order.ref_no" @click="printOrderInvoice(order)">
-                          <VIcon :size="22" icon="iconamoon:invoice-thin" />
+                        <VBtn
+                          v-bind="props"
+                          icon
+                          variant="plain"
+                          color="default"
+                          size="x-small"
+                          :loading="currentPrintedInvoice == order.ref_no"
+                          @click="printOrderInvoice(order)"
+                        >
+                          <VIcon
+                            :size="22"
+                            icon="iconamoon:invoice-thin"
+                          />
                         </VBtn>
                       </template>
                     </VTooltip>
                   </div>
-                  <VTooltip v-if="canEditOrder(order)" text="تفاصيل الطلب">
+                  <VTooltip
+                    v-if="canEditOrder(order)"
+                    text="تفاصيل الطلب"
+                  >
                     <template #activator="{ props }">
-                      <VBtn v-bind="props" icon variant="plain" color="default" size="x-small"
-                        @click="openDetails(order)">
-                        <VIcon :size="22" icon="tabler-eye" />
+                      <VBtn
+                        v-bind="props"
+                        icon
+                        variant="plain"
+                        color="default"
+                        size="x-small"
+                        @click="openDetails(order)"
+                      >
+                        <VIcon
+                          :size="22"
+                          icon="tabler-eye"
+                        />
                       </VBtn>
                     </template>
                   </VTooltip>
 
-                  <VTooltip v-if="canEditOrder(order)" text="فتح الطلب في نافذة جديدة">
+                  <VTooltip
+                    v-if="canEditOrder(order)"
+                    text="فتح الطلب في نافذة جديدة"
+                  >
                     <template #activator="{ props }">
-                      <VBtn v-bind="props" icon variant="plain" color="default" size="x-small"
-                        @click="openDetailsInNewTab(order)">
-                        <VIcon :size="22" icon="mdi-light:tab" />
+                      <VBtn
+                        v-bind="props"
+                        icon
+                        variant="plain"
+                        color="default"
+                        size="x-small"
+                        @click="openDetailsInNewTab(order)"
+                      >
+                        <VIcon
+                          :size="22"
+                          icon="mdi-light:tab"
+                        />
                       </VBtn>
                     </template>
                   </VTooltip>
 
-                  <VTooltip v-if="canTakeOrder(order)" text="اخذ الطلب">
+                  <VTooltip
+                    v-if="canTakeOrder(order)"
+                    text="اخذ الطلب"
+                  >
                     <template #activator="{ props }">
-                      <VBtn v-bind="props" icon variant="plain" color="default" size="x-small"
+                      <VBtn
+                        v-bind="props"
+                        icon
+                        variant="plain"
+                        color="default"
+                        size="x-small"
                         :loading="activeActionOrderId == order.id"
-                        :disabled="activeActionOrderId == order.id || activeActionOrderId" @click="takeOrder(order)">
-                        <VIcon :size="22" icon="material-symbols:swipe-down-outline" />
+                        :disabled="activeActionOrderId == order.id || activeActionOrderId"
+                        @click="takeOrder(order)"
+                      >
+                        <VIcon
+                          :size="22"
+                          icon="material-symbols:swipe-down-outline"
+                        />
                       </VBtn>
                     </template>
                   </VTooltip>
@@ -920,8 +1349,12 @@ onMounted(() => {
               <td>
                 <span
                   v-if="canChangeOrderStatus || storeMangerCanUpdateOrderStatus(order) || delegateCanUpdateOrderStatus(order)"
-                  @click="openEdit(order)">
-                  <VChip style="cursor: pointer;" :class="getOrderStatusColorClass(order.order_state_id)">
+                  @click="openEdit(order)"
+                >
+                  <VChip
+                    style="cursor: pointer;"
+                    :class="getOrderStatusColorClass(order.order_state_id)"
+                  >
                     {{ order.order_state_ar }}
                   </VChip>
                 </span>
@@ -932,8 +1365,10 @@ onMounted(() => {
                 </span>
               </td>
               <td>
-                <VChip style="cursor: pointer;"
-                  :class="{ 'text-error': order.paid == 0, 'text-success': order.paid == 1 }">
+                <VChip
+                  style="cursor: pointer;"
+                  :class="{ 'text-error': order.paid == 0, 'text-success': order.paid == 1 }"
+                >
                   {{ order.paid == 1 ? "مدفوع" : "غير مدفوع" }}
                 </VChip>
               </td>
@@ -1004,7 +1439,10 @@ onMounted(() => {
           <!-- 👉 table footer  -->
           <tfoot v-show="!isLoading && orders.length == 0">
             <tr>
-              <td colspan="8" class="text-center text-body-1">
+              <td
+                colspan="8"
+                class="text-center text-body-1"
+              >
                 لا يوجد بيانات
               </td>
             </tr>
@@ -1017,21 +1455,47 @@ onMounted(() => {
         <VCardText class="d-flex align-center flex-wrap justify-space-between gap-4 py-3">
           <span class="text-sm text-disabled">{{ paginationData }}</span>
 
-          <VPagination v-model="currentPage" size="small" :total-visible="5" :length="totalPage"
-            @next="selectedRows = []" @prev="selectedRows = []" />
+          <VPagination
+            v-model="currentPage"
+            size="small"
+            :total-visible="5"
+            :length="totalPage"
+            @next="selectedRows = []"
+            @prev="selectedRows = []"
+          />
         </VCardText>
       </VCard>
     </div>
 
-    <OrderInvoice v-if="isPrinting" :order-details="selectedOrder" @close="closePriniting" />
+    <OrderInvoice
+      v-if="isPrinting"
+      :order-details="selectedOrder"
+      @close="closePriniting"
+    />
 
-    <AddOrdersDialog v-if="isAddOpen" v-model:is-add-open="isAddOpen" :countries="countries" :cities="cities"
-      :customers="customers" :delivery-periods="deliveryPeriods" @refreshTable="getOrders" />
-    <EditOrderStatusDialog v-if="isEditOpen" v-model:is-edit-open="isEditOpen" :item="selectedOrder"
-      :order-statuses="orderStatuses" @refreshTable="getOrders" />
+    <AddOrdersDialog
+      v-if="isAddOpen"
+      v-model:is-add-open="isAddOpen"
+      :countries="countries"
+      :cities="cities"
+      :customers="customers"
+      :delivery-periods="deliveryPeriods"
+      @refreshTable="getOrders"
+    />
+    <EditOrderStatusDialog
+      v-if="isEditOpen"
+      v-model:is-edit-open="isEditOpen"
+      :item="selectedOrder"
+      :order-statuses="orderStatuses"
+      @refreshTable="getOrders"
+    />
 
-    <AssignOrderDeligationDialog v-if="isAssignDeligateDialog" v-model:is-open="isAssignDeligateDialog"
-      :order-ids="selectedOrders" @refreshTable="getOrders" />
+    <AssignOrderDeligationDialog
+      v-if="isAssignDeligateDialog"
+      v-model:is-open="isAssignDeligateDialog"
+      :order-ids="selectedOrders"
+      @refreshTable="getOrders"
+    />
   </div>
 </template>
 
