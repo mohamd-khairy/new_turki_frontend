@@ -6,7 +6,7 @@ import { useCouponsStore } from "@/store/Coupons"
 import { useEmployeesStore } from "@/store/Employees"
 import { useProductsStore } from "@/store/Products"
 import {
-requiredValidator,
+  requiredValidator,
 } from '@validators'
 
 import AppDateTimePicker from '@core/components/AppDateTimePicker.vue'

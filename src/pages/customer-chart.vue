@@ -1,5 +1,6 @@
 <script setup>
 import { useCountriesStore } from "@/store/Countries"
+import { useCustomersStore } from "@/store/Customers"
 import { useDashboardStore } from "@/store/Dashboard"
 import { useEmployeesStore } from "@/store/Employees"
 import { useOrdersStore } from "@/store/Orders"
@@ -9,6 +10,7 @@ import { useI18n } from "vue-i18n"
 const dashboardList = useDashboardStore()
 const countriesListStore = useCountriesStore()
 const employeesStore = useEmployeesStore()
+const customersStore = useCustomersStore()
 const ordersListStore = useOrdersStore()
 
 const orders = ref([])
@@ -16,6 +18,7 @@ const _timerId = ref(null)
 const isLoadingCustomers = ref(false)
 const isCustomersMenuOpen = ref(false)
 const customers = ref([])
+const customer = ref(null)
 const countries = ref([])
 const carts = reactive([])
 const searchQuery = ref('')
@@ -53,6 +56,9 @@ const paginationData = computed(() => {
 const getOrders = () => {
   if (filters.customer_id) {
     isLoading.value = true
+    customersStore.getOne(filters.customer_id).then(response => {
+      customer.value = response.data.data
+    })
     ordersListStore.fetchOrders({
       ...filters,
       q: searchQuery.value,
@@ -178,7 +184,7 @@ const searchCustomer = e => {
         lg="12"
         class="d-flex align-center gap-3 mt-3"
       >
-        <div style="width: 5rem;">
+        <div style="width: 10rem;">
           <VSelect
             v-model="rowPerPage"
             variant="outlined"
@@ -231,7 +237,164 @@ const searchCustomer = e => {
 
       <VDivider />
 
+      <VCard
+        v-if="customer"
+        class="mb-8"
+      >
+        <VCardText>
+          <h2 class="py-2 mb-3">
+            <VIcon
+              color="primary"
+              icon="arcticons:destiny-item-manager"
+            />
+            <span class="ms-2">
+              بيانات العميل
+            </span>
+          </h2>
+          <div v-if="customer">
+            <VRow class="mb-2">
+              <VCol
+                v-if="customer.name"
+                cols="12"
+                md="3"
+              >
+                <div
+                  class=""
+                >
+                  <VIcon
+                    icon="ph:dot-duotone"
+                    color="primary"
+                    class="ml-2"
+                  />
+                  <span>
+                    الاسم:
+                  </span>
+                  <VChip
+                    size="small"
+                    class="font-weight-bold"
+                  >
+                    {{ customer.name }}
+                  </VChip>
+                </div>
+              </VCol>
+              <VCol
+                v-if="customer.mobile"
+                cols="12"
+                md="3"
+              >
+                <div class="">
+                  <VIcon
+                    icon="ph:dot-duotone"
+                    color="primary"
+                    class="ml-2"
+                  />
+                  <span>
+                    رقم التليفون :
+                  </span>
+                  <VChip
+                    size="small"
+                    class="font-weight-bold"
+                  >
+                    {{ customer.mobile }}
+                  </VChip>
+                </div>
+              </VCol>
+              <VCol
+                v-if="customer.email"
+                cols="12"
+                md="4"
+              >
+                <div
+                  class=""
+                >
+                  <VIcon
+                    icon="ph:dot-duotone"
+                    color="primary"
+                    class="ml-2"
+                  />
+                  <span>
+                    البريد الالكتروني :
+                  </span>
+                  <VChip
+                    size="small"
+                    class="font-weight-bold"
+                  >
+                    {{ customer.email }}
+                  </VChip>
+                </div>
+              </VCol>
+
+              <VCol
+                v-if="customer.gender != null"
+                cols="12"
+                md="2"
+              >
+                <VIcon
+                  icon="ph:dot-duotone"
+                  color="primary"
+                  class="ml-2"
+                />
+                <span>
+                  النوع:
+                </span>
+                <VChip
+                  size="small"
+                  class="mx-1 font-weight-bold"
+                >
+                  {{ customer.gender ? 'ذكر' : 'انثي' }}
+                </VChip>
+              </VCol>
+            </VRow>
+            <VRow class="mb-2">
+              <VCol
+                v-if="customer.age != null"
+                cols="12"
+                md="2"
+              >
+                <VIcon
+                  icon="ph:dot-duotone"
+                  color="primary"
+                  class="ml-2"
+                />
+                <span>
+                  السن:
+                </span>
+                <VChip
+                  size="small"
+                  class="font-weight-bold"
+                >
+                  {{ customer.age }}
+                </VChip>
+              </VCol>
+              <VCol
+                v-if="customer.country_code"
+                cols="12"
+                md="3"
+              >
+                <VIcon
+                  icon="ph:dot-duotone"
+                  color="primary"
+                  class="ml-2"
+                />
+                <span>
+                  البلد:
+                </span>
+                <VChip
+                  size="small"
+                  class="font-weight-bold"
+                >
+                  {{ customer.country_code == 'SA' ? 'السعودية' : 'الامارات' }}
+                </VChip>
+              </VCol>
+            </VRow>
+          </div>
+        </VCardText>
+      </VCard>
+
+
+      <VDivider />
       <VTable
+        v-if="orders"
         height="600px"
         fixed-header
         class="text-no-wrap product-list-table text-center"
@@ -294,8 +457,9 @@ const searchCustomer = e => {
                   <VBtn
                     v-bind="props"
                     variant="plain"
-                    color="primary"
+                    color="default"
                     size="x-medium"
+                    class="font-weight-bold"
                     @click="openDetailsInNewTab(order)"
                   >
                     {{ order.ref_no }}
@@ -366,7 +530,6 @@ const searchCustomer = e => {
           @prev="selectedRows = []"
         />
       </VCardText>
-      <VDivider />
     </VCard>
   </div>
 </template>

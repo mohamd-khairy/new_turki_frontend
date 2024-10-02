@@ -10,8 +10,8 @@ import {
   makeVInputProps,
 } from 'vuetify/lib/components/VInput/VInput'
 
-import { filterInputAttrs } from 'vuetify/lib/util/helpers'
 import { useThemeConfig } from '@core/composable/useThemeConfig'
+import { filterInputAttrs } from 'vuetify/lib/util/helpers'
 
 const props = defineProps({
   ...makeVInputProps({
@@ -396,9 +396,9 @@ input[altinputclass="inlinePicker"] {
 
   .flatpickr-prev-month,
   .flatpickr-next-month {
+    border-radius: 5rem;
     background: rgba(var(--v-theme-surface-variant), var(--v-selected-opacity));
     block-size: 1.75rem;
-    border-radius: 5rem;
     inline-size: 1.75rem;
     inset-block-start: 0.75rem !important;
     padding-block: 0.25rem;

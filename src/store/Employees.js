@@ -10,6 +10,9 @@ export const useEmployeesStore = defineStore('EmployeesStore', {
     fetchCustomers(params) {
       return axios.get('customers', { params })
     },
+    fetchAllCustomers(params) {
+      return axios.get('customers/all', { params })
+    },
 
     // 👉 Fetch Single Country
     fetchEmployee(id) {

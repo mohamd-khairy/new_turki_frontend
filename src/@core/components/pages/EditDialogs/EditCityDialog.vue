@@ -47,9 +47,6 @@ const cityData = reactive({
   polygon: "",
   allow_cash: false,
   min_price: null,
-  cash_back_amount: null,
-  cash_back_start_date: null,
-  cash_back_end_date: null,
 })
 
 const getPathes = computed(() => {
@@ -82,9 +79,6 @@ onUpdated(() => {
   cityData.polygon = props.city.polygon
   cityData.allow_cash = props.city.allow_cash
   cityData.min_price = props.city.min_price
-  cityData.cash_back_amount = props.city.cash_back_amount
-  cityData.cash_back_start_date = props.city.cash_back_start_date
-  cityData.Data.cash_back_end_date = props.city.cash_back_end_date
 
   if (props.city.polygon) {
     props.city.polygon.map((poly, i) => {
@@ -127,9 +121,6 @@ const onFormSubmit = async () => {
     polygon: [],
     allow_cash: cityData.allow_cash,
     min_price: cityData.min_price,
-    cash_back_amount: cityData.cash_back_amount,
-    cash_back_start_date: cityData.cash_back_start_date,
-    cash_back_end_date: cityData.cash_back_end_date,
   }
 
   places.map((path, index) => {
@@ -303,39 +294,6 @@ const deleteMark = marker => {
               <VSwitch
                 v-model="cityData.allow_cash"
                 :label="t('forms.allow_cash')"
-              />
-            </VCol>
-            <VCol
-              cols="12"
-              lg="12"
-              sm="6"
-            >
-              <VTextField
-                v-model="cityData.cash_back_amount"
-                :label="t('forms.cash_back_amount')"
-              />
-            </VCol>
-
-            <VCol
-              cols="12"
-              lg="12"
-              sm="6"
-            >
-              <VTextField
-                v-model="cityData.cash_back_start_date"
-                type="date"
-                :label="t('forms.cash_back_start_date')"
-              />
-            </VCol>
-            <VCol
-              cols="12"
-              lg="12"
-              sm="6"
-            >
-              <VTextField
-                v-model="cityData.cash_back_end_date"
-                type="date"
-                :label="t('forms.cash_back_end_date')"
               />
             </VCol>
 

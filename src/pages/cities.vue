@@ -181,24 +181,6 @@ const formatDateTime = data => {
             >
               {{ t('forms.allow_cash') }}
             </th>
-            <th
-              scope="col"
-              class="font-weight-semibold"
-            >
-              {{ t('forms.cash_back_amount') }}
-            </th>
-            <th
-              scope="col"
-              class="font-weight-semibold"
-            >
-              {{ t('forms.cash_back_start_date') }}
-            </th>
-            <th
-              scope="col"
-              class="font-weight-semibold"
-            >
-              {{ t('forms.cash_back_end_date') }}
-            </th>
 
             <th
               scope="col"
@@ -239,15 +221,7 @@ const formatDateTime = data => {
             <td>
               {{ city.allow_cash == 1 ? 'نعم' : 'لا' }}
             </td>
-            <td>
-              {{ city.cash_back_amount }}
-            </td>
-            <td>
-              {{ city.cash_back_start_date }}
-            </td>
-            <td>
-              {{ city.cash_back_end_date }}
-            </td>
+            
             <td v-can="'create-city' || 'update-city' || 'delete-city'">
               <!--            <VBtn -->
               <!--              icon -->

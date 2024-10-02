@@ -1,4 +1,6 @@
 {
+  "Cashback": "الكاش باك",
+  "Cashbacks": "الكاش باك",
   "report": "التقارير",
   "carts-chart" : "تقرير السلات المتروكة",
   "profit-chart" : "تقرير الربح والخسارة",
@@ -180,6 +182,8 @@
   "Clear_Filter": "إزالة التصفية",
   "Add_Quantity": "إضافة كمية",
   "Add_Address": "إضافة عنوان",
+  "Add_cashback": "إضافة كاش باك",
+  "Edit_cashback": "تعديل كاش باك",
   "forms": {
     "mobile": "الموبايل",
     "product_name": "اسم المنتج",
@@ -291,6 +295,7 @@
     "max_discount": "الحد الأقصى للخصم",
     "is_for_all": "للجميع",
     "is_by_city": "حسب المدينة",
+    "is_by_customer": "حسب العملاء",
     "is_by_product": "حسب المنتج",
     "is_by_country": "حسب الدولة",
     "is_by_category": "حسب الفئة",

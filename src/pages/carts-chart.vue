@@ -113,7 +113,7 @@ watchEffect(() => {
         lg="12"
         class="d-flex align-center gap-3 mt-3"
       >
-        <div style="width: 5rem;">
+        <div style="width: 10rem;">
           <VSelect
             v-model="rowPerPage"
             variant="outlined"

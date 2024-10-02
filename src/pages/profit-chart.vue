@@ -1,8 +1,8 @@
 <script setup>
-import { useCountriesStore } from "@/store/Countries"
-import { useDashboardStore } from "@/store/Dashboard"
-import { useProductsStore } from "@/store/Products"
-import { useI18n } from "vue-i18n"
+import { useCountriesStore } from "@/store/Countries";
+import { useDashboardStore } from "@/store/Dashboard";
+import { useProductsStore } from "@/store/Products";
+import { useI18n } from "vue-i18n";
 
 const props = defineProps({})
 
@@ -149,7 +149,7 @@ const searchProduct = e => {
         lg="12"
         class="d-flex align-center gap-3 mt-3"
       >
-        <div style="width: 5rem;">
+        <div style="width: 10rem;">
           <VSelect
             v-model="rowPerPage"
             variant="outlined"
@@ -197,6 +197,12 @@ const searchProduct = e => {
             <VDivider class="mt-2" />
           </template>
         </VSelect>
+      </VCol>
+      <VCol
+        cols="12"
+        lg="12"
+        class="d-flex align-center gap-3"
+      >
         <div class="icon">
           <VIcon
             icon="fluent-mdl2:date-time"
@@ -221,12 +227,6 @@ const searchProduct = e => {
           :label="t('forms.from')"
           :disabled="isLoading"
         />
-      </VCol>
-      <VCol
-        cols="12"
-        lg="12"
-        class="d-flex align-center gap-3"
-      >
         <VBtn
           prepend-icon="solar:filter-bold-duotone"
           :disabled="isLoading"
