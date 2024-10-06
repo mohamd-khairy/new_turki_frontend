@@ -1,37 +1,37 @@
 <script setup>
-import AddCashbackDialog from "@/@core/components/pages/AdditionDialogs/AddCashbackDialog.vue"
-import DeleteCashbackDialog from "@/@core/components/pages/DeleteDialogs/DeleteCashbackDialog.vue"
-import EditCashbackDialog from "@/@core/components/pages/EditDialogs/EditCashbackDialog.vue"
-import { useCashbackStore } from "@/store/Cashback"
+import AddWelcomeDialog from "@/@core/components/pages/AdditionDialogs/AddWelcomeDialog.vue"
+import DeleteWelcomeDialog from "@/@core/components/pages/DeleteDialogs/DeleteWelcomeDialog.vue"
+import EditWelcomeDialog from "@/@core/components/pages/EditDialogs/EditWelcomeDialog.vue"
+import { useWelcomeStore } from "@/store/Welcome"
+
 import moment from "moment"
 import { useI18n } from "vue-i18n"
 
 const { t } = useI18n()
 
-const cashbackStore = useCashbackStore()
+const welcomeStore = useWelcomeStore()
 const searchQuery = ref('')
 const selectedStatus = ref()
 const rowPerPage = ref(5)
 const currentPage = ref(1)
 const totalPage = ref(1)
-const totalCashbacks = ref(0)
-const Cashbacks = ref([])
+const totalWelcomes = ref(0)
+const Welcomes = ref([])
 const selectedRows = ref([])
 const isAddOpen = ref(false)
 const isDeleteOpen = ref(false)
-const selectedCashback = ref({})
-const Cashback = ref({})
+const selectedWelcome = ref({})
 const isEditOpen = ref(false)
 const isLoading = ref(false)
 
-const getCashbacks = () => {
+const getWelcomes = () => {
   isLoading.value = true
-  cashbackStore.fetchCashbacks({
+  welcomeStore.fetchWelcomes({
     q: searchQuery.value,
   }).then(response => {
-    Cashbacks.value = response.data.data
-    totalPage.value = Cashbacks.value / rowPerPage
-    totalCashbacks.value = Cashbacks.value.length
+    Welcomes.value = response.data.data
+    totalPage.value = Welcomes.value / rowPerPage
+    totalWelcomes.value = Welcomes.value.length
     currentPage.value = 1
     isLoading.value = false
   }).catch(error => {
@@ -42,7 +42,7 @@ const getCashbacks = () => {
 
 // 👉 Fetch Categories
 watchEffect(() => {
-  getCashbacks()
+  getWelcomes()
 })
 
 
@@ -53,10 +53,10 @@ watchEffect(() => {
   }
 })
 
-const paginateCashbacks = computed(() => {
-  totalPage.value = Math.ceil(Cashbacks.value.length / rowPerPage.value)
+const paginateWelcomes = computed(() => {
+  totalPage.value = Math.ceil(Welcomes.value.length / rowPerPage.value)
 
-  return Cashbacks.value.filter((row, index) => {
+  return Welcomes.value.filter((row, index) => {
     let start = (currentPage.value - 1) * rowPerPage.value
     let end = currentPage.value * rowPerPage.value
     if (index >= start && index < end) return true
@@ -64,7 +64,7 @@ const paginateCashbacks = computed(() => {
 })
 
 const nextPage = () => {
-  if ((currentPage.value * rowPerPage.value) < Cashbacks.value.length) currentPage.value
+  if ((currentPage.value * rowPerPage.value) < Welcomes.value.length) currentPage.value
 }
 
 const prevPage = () => {
@@ -73,30 +73,30 @@ const prevPage = () => {
 
 // 👉 Computing pagination data
 const paginationData = computed(() => {
-  const firstIndex = Cashbacks.value.length ? (currentPage.value - 1) * rowPerPage.value + 1 : 0
-  const lastIndex = firstIndex + (rowPerPage.value - 1) <= Cashbacks.value.length ? firstIndex + (rowPerPage.value - 1) : totalCashbacks.value
+  const firstIndex = Welcomes.value.length ? (currentPage.value - 1) * rowPerPage.value + 1 : 0
+  const lastIndex = firstIndex + (rowPerPage.value - 1) <= Welcomes.value.length ? firstIndex + (rowPerPage.value - 1) : totalWelcomes.value
 
-  return ` عرض من ${ConvertToArabicNumbers(firstIndex)} إلي ${ConvertToArabicNumbers(lastIndex)} من ${ConvertToArabicNumbers(totalCashbacks.value)} الإجمالي `
+  return ` عرض من ${ConvertToArabicNumbers(firstIndex)} إلي ${ConvertToArabicNumbers(lastIndex)} من ${ConvertToArabicNumbers(totalWelcomes.value)} الإجمالي `
 })
 
 const changeStatus = (id, data) => {
-  cashbackStore.updateCashbackStatus(id, data).then(response => {
-    getCashbacks()
+  welcomeStore.updateWelcomeStatus(id, data).then(response => {
+    getWelcomes()
   })
 }
 
 const openDelete =
-  cashback => {
+  Welcome => {
     isDeleteOpen.value = true
-    selectedCashback.value =
-      cashback
+    selectedWelcome.value =
+      Welcome
   }
 
 const openEdit =
-  cashback => {
+  Welcome => {
     isEditOpen.value = true
-    selectedCashback.value =
-      cashback
+    selectedWelcome.value =
+      Welcome
   }
 
 // Functions
@@ -122,11 +122,11 @@ const formatDateTime = data => {
       <VCardTitle class="d-flex align-center">
         <VIcon
           icon="solar:
-          cashback-broken"
+          Welcome-broken"
           size="24"
           color="primary"
         />
-        <span class="mx-1">{{ t('Cashbacks') }}</span>
+        <span class="mx-1">{{ t('Welcomes') }}</span>
       </VCardTitle>
       <VCardText class="d-flex align-center flex-wrap gap-2 py-4">
         <!-- 👉 Rows per page -->
@@ -141,7 +141,7 @@ const formatDateTime = data => {
           prepend-icon="tabler-plus"
           @click="isAddOpen = true"
         >
-          {{ t('Add_cashback') }}
+          {{ t('Add_Welcome') }}
         </VBtn>
 
         <VSpacer />
@@ -162,19 +162,19 @@ const formatDateTime = data => {
               scope="col"
               class="font-weight-semibold"
             >
-              {{ t('forms.cash_back_amount') }}
+              {{ t('forms.welcome_amount') }}
             </th>
             <th
               scope="col"
               class="font-weight-semibold"
             >
-              {{ t('forms.cash_back_start_date') }}
+              {{ t('forms.welcome_start_date') }}
             </th>
             <th
               scope="col"
               class="font-weight-semibold"
             >
-              {{ t('forms.cash_back_end_date') }}
+              {{ t('forms.welcome_end_date') }}
             </th>
             <th
               scope="col"
@@ -195,37 +195,6 @@ const formatDateTime = data => {
             >
               {{ t('forms.country') }}
             </th>
-            <th
-              scope="col"
-              class="font-weight-semibold"
-            >
-              {{ t('forms.cities') }}
-            </th>
-            <th
-              scope="col"
-              class="font-weight-semibold"
-            >
-              {{ t('forms.categories') }}
-            </th>
-            <th
-              scope="col"
-              class="font-weight-semibold"
-            >
-              {{ t('forms.sub_categories') }}
-            </th>
-            <th
-              scope="col"
-              class="font-weight-semibold"
-            >
-              {{ t('forms.customers') }}
-            </th>
-            <th
-              scope="col"
-              class="font-weight-semibold"
-            >
-              {{ t('forms.products') }}
-            </th>
-
 
             <th
               scope="col"
@@ -238,108 +207,47 @@ const formatDateTime = data => {
 
         <tbody>
           <tr
-            v-for="(
-              cashback, i) in paginateCashbacks"
-            :key="cashback.id"
+            v-for="(Welcome, i) in paginateWelcomes"
+            :key="Welcome.id"
           >
             <td>
               #{{ (++i) }}
             </td>
             <td>
-              {{ '%' + cashback.cash_back_amount }}
+              {{ Welcome.welcome_amount }}
             </td>
             <td>
               {{
-                cashback.cash_back_start_date }}
+                Welcome.welcome_start_date }}
             </td>
             <td>
               {{
-                cashback.cash_back_end_date }}
+                Welcome.welcome_end_date }}
             </td>
             <td>
               {{
-                cashback.expired_days }}
+                Welcome.expired_days }}
             </td>
             <td
               style="cursor: pointer;"
               @click="changeStatus(
-                cashback.id,
-                cashback
+                Welcome.id,
+                Welcome
               )"
             >
               <VIcon
                 icon="ph:dot-bold"
-                :color="cashback.is_active == true ? '#008000' : '#f00000'"
+                :color="Welcome.is_active == true ? '#008000' : '#f00000'"
                 size="32"
               />
               <span>
                 {{
-                  cashback.is_active == true ? t('forms.statuses.active') : t('forms.statuses.inactive') }}
+                  Welcome.is_active == true ? t('forms.statuses.active') : t('forms.statuses.inactive') }}
               </span>
             </td>
-            <td>
-              {{ cashback.country.name_ar ?? '---' }}
-            </td>
-            <td>
-              <tr
-                v-for="item in cashback.cities"
-                v-if="cashback.cities.length > 0"
-                :key="item.name_ar"
-              >
-                <td>{{ item.name_ar }}</td>
-              </tr>
-              <tr v-else>
-                <td>لا يوجد</td>  
-              </tr>
-            </td>
-            <td>
-              <tr
-                v-for="item in cashback.categories"
-                v-if="cashback.categories.length > 0"
-                :key="item.type_ar"
-              >
-                <td>{{ item.type_ar }}</td>
-              </tr>
-              <tr v-else>
-                <td>لا يوجد</td>  
-              </tr>
-            </td>
-            <td>
-              <tr
-                v-for="item in cashback.sub_categories"
-                v-if="cashback.sub_categories.length > 0"
-                :key="item.type_ar"
-              >
-                <td>{{ item.type_ar }}</td>
-              </tr>
-              <tr v-else>
-                <td>لا يوجد</td>  
-              </tr>
-            </td>
-            <td>
-              <tr
-                v-for="item in cashback.customers"
-                v-if="cashback.customers.length > 0"
-                :key="item.type_ar"
-              >
-                <td>{{ item.name +"|"+ item.mobile }}</td>
-              </tr>
-              <tr v-else>
-                <td>لا يوجد</td>  
-              </tr>
-            </td>
-            <td>
-              <tr
-                v-for="item in cashback.products"
-                v-if="cashback.products.length > 0"
-                :key="item.type_ar"
-              >
-                <td>{{ item.name_ar }}</td>
-              </tr>
-              <tr v-else>
-                <td>لا يوجد</td>  
-              </tr>
-            </td>
+            <td>{{ Welcome.country.name_ar }}</td>
+
+
             <td>
               <VBtn
                 icon
@@ -347,7 +255,7 @@ const formatDateTime = data => {
                 color="default"
                 size="x-small"
                 @click="openEdit(
-                  cashback
+                  Welcome
                 )"
               >
                 <VIcon
@@ -361,7 +269,7 @@ const formatDateTime = data => {
                 color="default"
                 size="x-small"
                 @click="openDelete(
-                  cashback
+                  Welcome
                 )"
               >
                 <VIcon
@@ -374,7 +282,7 @@ const formatDateTime = data => {
         </tbody>
 
         <!-- 👉 table footer  -->
-        <tfoot v-show="!Cashbacks.length">
+        <tfoot v-show="!Welcomes.length">
           <tr>
             <td
               colspan="8"
@@ -402,22 +310,22 @@ const formatDateTime = data => {
         />
       </VCardText>
     </VCard>
-    <AddCashbackDialog
+    <AddWelcomeDialog
       v-model:isAddOpen="isAddOpen"
-      cashback-dialog
-      @refreshTable="getCashbacks"
+      welcome-dialog
+      @refreshTable="getWelcomes"
     />
-    <EditCashbackDialog
+    <EditWelcomeDialog
       v-model:isEditOpen="isEditOpen"
-      cashback-dialog
-      :cashback="selectedCashback"
-      @refreshTable="getCashbacks"
+      welcome-dialog
+      :welcome="selectedWelcome"
+      @refreshTable="getWelcomes"
     />
-    <DeleteCashbackDialog
+    <DeleteWelcomeDialog
       v-model:isDeleteOpen="isDeleteOpen"
-      cashback-dialog
-      :cashback="selectedCashback"
-      @refreshTable="getCashbacks"
+      welcome-dialog
+      :welcome="selectedWelcome"
+      @refreshTable="getWelcomes"
     />
   </div>
 </template>

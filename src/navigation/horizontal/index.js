@@ -29,6 +29,21 @@ export default [
     ],
   },
   {
+    title: 'العروض الترويجية',
+    icon: { icon: 'carbon:store' },
+    permission: "read-dashboard",
+    children: [
+      {
+        title: 'Cashback',
+        to: { name: 'cashback' },
+      },
+      {
+        title: 'welcome',
+        to: { name: 'welcome' },
+      },
+    ],
+  },
+  {
     title: 'Banners',
     to: { name: 'banners' },
     icon: { icon: 'game-icons:vertical-banner' },
@@ -160,7 +175,6 @@ export default [
       { title: 'Product_Shalwata', to: 'product-shalwata' },
 
       // { title: 'Payment_Types', to: 'payment-types' },
-      { title: 'Cashback', to: 'cashback' },
       { title: 'Delivery_Periods', to: 'delivery-periods' },
       { title: 'Not_Delivery_Periods', to: 'not-delivery-periods' },
       { title: 'City_days', to: 'city-days' },

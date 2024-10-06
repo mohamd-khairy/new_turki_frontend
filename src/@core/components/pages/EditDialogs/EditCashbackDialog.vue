@@ -62,22 +62,21 @@ onMounted(() => {
   countriesListStore.fetchCountries({ pageSize: -1 }).then(response => {
     countries.value = response.data.data
   })
-  citiesListStore.fetchCities({ pageSize: -1 }).then(response => {
+  citiesListStore.fetchCities({ pageSize: -1, country_id: cashbackData.country_id }).then(response => {
     cities.value = response.data.data
   })
-  categoriesListStore.fetchCategories({ pageSize: -1 }).then(response => {
+  categoriesListStore.fetchCategories({ pageSize: -1, country_id: cashbackData.country_id }).then(response => {
     categories.value = response.data.data
   })
-  categoriesListStore.fetchSubCategories({ pageSize: -1 }).then(response => {
+  categoriesListStore.fetchSubCategories({ pageSize: -1, country_id: cashbackData.country_id }).then(response => {
     subCategories.value = response.data.data
   })
-  productsListStore.fetchProductsAll().then(response => {
+  productsListStore.fetchProductsAll({ country_id: cashbackData.country_id }).then(response => {
     products.value = response.data.data
   })
 })
 
 onUpdated(() => {
-  is_by_country.value = props.cashback.country_ids ? props.cashback.country_ids.length > 0 : false
   is_by_customer.value = props.cashback.customer_ids ? props.cashback.customer_ids.length > 0 : false
   is_by_product.value = props.cashback.product_ids ? props.cashback.product_ids.length > 0 : false
   is_by_city.value = props.cashback.city_ids ? props.cashback.city_ids.length > 0 : false
@@ -89,7 +88,7 @@ onUpdated(() => {
   cashbackData.cash_back_start_date = props.cashback.cash_back_start_date
   cashbackData.cash_back_end_date = props.cashback.cash_back_end_date
   cashbackData.is_active = props.cashback.is_active ? true : false
-  cashbackData.country_ids = props.cashback.country_ids
+  cashbackData.country_id = props.cashback.country_id
   cashbackData.city_ids = props.cashback.city_ids
   cashbackData.category_ids = props.cashback.category_ids
   cashbackData.sub_category_ids = props.cashback.sub_category_ids
@@ -105,7 +104,7 @@ const cashbackData = reactive({
   cash_back_start_date: null,
   cash_back_end_date: null,
   is_active: true,
-  country_ids: [],
+  country_id: null,
   city_ids: [],
   category_ids: [],
   sub_category_ids: [],
@@ -125,7 +124,6 @@ const onFormSubmit = async () => {
 
   const res = await refForm.value.validate()
   if (res.valid) {
-    cashbackData.country_ids = is_by_country.value ? cashbackData.country_ids : []
     cashbackData.city_ids = is_by_city.value ? cashbackData.city_ids : []
     cashbackData.category_ids = is_by_category.value ? cashbackData.category_ids : []
     cashbackData.sub_category_ids = is_by_subcategory.value ? cashbackData.sub_category_ids : []
@@ -177,6 +175,21 @@ const onFormSubmit = async () => {
 const dialogModelValueUpdate = val => {
   emit('update:isEditOpen', val)
 }
+
+watch(() => cashbackData.country_id, () => {
+  citiesListStore.fetchCities({ country_id: cashbackData.country_id }).then(response => {
+    cities.value = response.data.data
+  })
+  categoriesListStore.fetchCategories({ country_id: cashbackData.country_id }).then(response => {
+    categories.value = response.data.data
+  })
+  categoriesListStore.fetchSubCategories({ country_id: cashbackData.country_id }).then(response => {
+    subCategories.value = response.data.data
+  })
+  productsListStore.fetchProductsAll({ country_id: cashbackData.country_id }).then(response => {
+    products.value = response.data.data
+  })
+})
 
 watch(() => searchCity.value, () => {
   clearTimeout(_timerId.value)
@@ -306,22 +319,14 @@ watch(() => searchCustomer.value, () => {
               cols="12"
               lg="12"
             >
-              <VSwitch
-                v-model="is_by_country"
-                :label="t('forms.is_by_country')"
+              <VSelect
+                v-model="cashbackData.country_id"
+                :items="countries.value"
+                :label="t('forms.countries')"
+                item-title="name_ar"
+                item-value="id"
+                :disabled="isLoading"
               />
-              <div v-if="is_by_country">
-                <VSelect
-                  v-model="cashbackData.country_ids"
-                  :items="countries.value"
-                  :label="t('forms.countries')"
-                  item-title="name_ar"
-                  item-value="id"
-                  :disabled="isLoading"
-                  multiple
-                  clearable
-                />
-              </div>
             </VCol>
             <VCol cols="12">
               <VSwitch

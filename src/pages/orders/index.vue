@@ -135,13 +135,13 @@ const startEventSource = () => {
       if (filters.country_ids.length < 1) {
         showNotification(message)
         playNotificationSound()
-      }else{
+      } else {
         if (filters.country_ids == message.address_country_id) {
           showNotification(message)
           playNotificationSound()
         }
-      } 
-     
+      }
+
       // orders.value.unshift(message)      
     }
   }
@@ -1367,13 +1367,19 @@ onMounted(() => {
               <td>
                 <VChip
                   style="cursor: pointer;"
-                  :class="{ 'text-error': order.paid == 0, 'text-success': order.paid == 1 }"
+                  :class="{'text-warning': (order.using_wallet > 0 && order.remain_amount > 0 ), 'text-error': order.paid == 0, 'text-success': order.paid == 1 }"
                 >
-                  {{ order.paid == 1 ? "مدفوع" : "غير مدفوع" }}
+                  <div v-if="order.using_wallet > 0 && order.remain_amount > 0">
+                    مدفوع جزئياً
+                  </div>
+                  <div v-else>
+                    {{ (order.paid == 1 ? "مدفوع" : "غير مدفوع") }}
+                  </div>
                 </VChip>
               </td>
               <td>
                 {{ order.payment_type_name }}
+                {{ order.wallet_amount_used > 0 ? " + المحفظة" : "" }}
               </td>
               <td>
                 {{ order.address_address.toString().length > 20 ? order.address_address.toString().slice(0, 20) + "..."
