@@ -8,7 +8,7 @@ const { t } = useI18n()
 const activitesListStore = useActivitiesStore()
 const searchQuery = ref('')
 const selectedStatus = ref()
-const rowPerPage = ref(5)
+const rowPerPage = ref(10)
 const currentPage = ref(1)
 const totalPage = ref(1)
 const totalActivites = ref(0)
@@ -16,10 +16,13 @@ const dataFrom = ref(0)
 const dataTo = ref(0)
 const activites = ref([])
 const selectedRows = ref([])
+const opened = ref([])
 const isAddOpen = ref(false)
 const isDeleteOpen = ref(false)
 const selectedOrder = ref({})
 const isEditOpen = ref(false)
+const isFiltered = ref(false)
+const expandedRow = ref(null)
 
 const getActivites = () => {
   activitesListStore.fetchActivities({
@@ -37,11 +40,18 @@ const getActivites = () => {
   })
 }
 
-// 👉 Fetch Categories
-watchEffect(() => {
-  getActivites()
+watch(() => searchQuery.value, () => {
+  isFiltered.value = true
 })
 
+// 👉 Fetch Categories
+// watchEffect(() => {
+//   getActivites()
+// })
+
+onMounted(() => {
+  getActivites()
+})
 
 // 👉 Fetch Countrys
 watchEffect(() => {
@@ -85,11 +95,35 @@ const ConvertToArabicNumbers = num => {
   })
 }
 
+const filterActivitys = () => {
+  isFiltered.value = true
+
+  getActivites()
+}
+
+const clearFilter = () => {
+  searchQuery.value = ''
+
+  isFiltered.value = false
+  getActivites()
+}
+
 const formatDateTime = data => {
   let date = moment(data).format("DD-MM-YYYY")
   let time = moment(data).format("hh:mm:ss A")
 
   return { date, time }
+}
+
+const toggleRow = id => {
+
+  const index = opened.value.indexOf(id)
+  if (index > -1) {
+    opened.value.splice(index, 1)
+  } else {
+    opened.value.push(id)
+  }
+
 }
 </script>
 
@@ -97,134 +131,179 @@ const formatDateTime = data => {
   <div>
     <VCard>
       <VCardTitle class="d-flex align-center">
-        <VIcon icon="octicon:log-24" size="24" color="primary"></VIcon>
+        <VIcon
+          icon="octicon:log-24"
+          size="24"
+          color="primary"
+        />
         <span class="mx-1">{{ t('Activites') }}</span>
       </VCardTitle>
+
       <VCardText class="d-flex align-center flex-wrap gap-2 py-4">
         <!-- 👉 Rows per page -->
-        <div style="width: 5rem;">
-          <VSelect
-            v-model="rowPerPage"
-            variant="outlined"
-            :items="[5, 10, 20, 30, 50]"
-          />
-        </div>
 
-        <VSpacer/>
+        <VRow>
+          <VCol
+            cols="12"
+            class="d-flex align-center gap-3"
+          >
+            <div style="width: 10rem;">
+              <VSelect
+                v-model="rowPerPage"
+                variant="outlined"
+                :items="[5, 10, 20, 30, 50 , 100 , 200]"
+              />
+            </div>
+            <div class="icon">
+              <VIcon
+                icon="solar:delivery-broken"
+                color="primary"
+              />
+            </div>
+            <VTextField
+              v-model="searchQuery"
+              label="البحث برقم الموضوع "
+            />
+            <VBtn
+              prepend-icon="solar:filter-bold-duotone"
+              :disabled="!isFiltered"
+              @click.stop="filterActivitys"
+            >
+              {{ t('Filter') }}
+            </VBtn>
+            <VBtn
+              prepend-icon="healthicons:x"
+              :disabled="!isFiltered"
+              @click.stop="clearFilter"
+            >
+              {{ t('Clear_Filter') }}
+            </VBtn>
+          </VCol>
+        </VRow>
 
-
+        <VSpacer />
       </VCardText>
 
-      <VDivider/>
+      <VDivider />
 
       <VTable class="text-no-wrap product-list-table">
         <thead>
-        <tr>
-          <th
-            scope="col"
-            class="font-weight-semibold"
-          >
-          </th>
-          <th
-            scope="col"
-            class="font-weight-semibold"
-          >
-            {{ t('forms.log_name') }}
-          </th>
-          <th
-            scope="col"
-            class="font-weight-semibold"
-          >
-            {{ t('forms.causer') }}
-          </th>
-          <th
-            scope="col"
-            class="font-weight-semibold"
-          >
-            {{ t('forms.causer_type') }}
-          </th>
-          <th
-            scope="col"
-            class="font-weight-semibold"
-          >
-            {{ t('forms.description') }}
-          </th>
-          <th
-            scope="col"
-            class="font-weight-semibold"
-          >
-            {{ t('forms.subject') }}
-          </th>
-          <th
-            scope="col"
-            class="font-weight-semibold"
-          >
-            {{ t('forms.subject_type') }}
-          </th>
-          <th
-            scope="col"
-            class="font-weight-semibold"
-          >
-            {{ t('forms.created_at') }}
-          </th>
-        </tr>
+          <tr>
+            <th
+              scope="col"
+              class="font-weight-semibold"
+            >
+              اضغط لتري التغييرات
+            </th>
+            <th
+              scope="col"
+              class="font-weight-semibold"
+            >
+              #
+            </th>
+            <th
+              scope="col"
+              class="font-weight-semibold"
+            >
+              حالة الموضوع
+            </th>
+            <th
+              scope="col"
+              class="font-weight-semibold"
+            >
+              رقم الموضوع
+            </th>
+            <th
+              scope="col"
+              class="font-weight-semibold"
+            >
+              نوع الموضوع
+            </th>
+            <th
+              scope="col"
+              class="font-weight-semibold"
+            >
+              الذي قام بالتغيير
+            </th>
+            <th
+              scope="col"
+              class="font-weight-semibold"
+            >
+              نوع الذي قم بالتغير
+            </th>
+            <th
+              scope="col"
+              class="font-weight-semibold"
+            >
+              {{ t('forms.created_at') }}
+            </th>
+          </tr>
         </thead>
 
         <tbody>
-        <tr
-          v-for="(order, i) in activites"
-          :key="order.id"
-        >
-          <td>
-            #{{ ConvertToArabicNumbers(Intl.NumberFormat().format(++i)) }}
-          </td>
-          <td>
-            {{ order.log_name }}
-          </td>
-          <td>
-            {{ order.causer ? order.causer.email ? order.causer.email : '-' : '-' }}
-          </td>
-          <td>
-            {{ order.causer_type }}
-          </td>
-          <td>
-            {{ order.description ? order.description : '-' }}
-          </td>
-<!--          <td>-->
-<!--            {{ order.subject ? order.subject.name_ar ? order.subject.name_ar : '-' : '-' }}-->
-<!--          </td>-->
-          <td>
-            <div v-for="(attr, ind) in order.properties.attributes" :key="ind" class="mb-1">
-              <VChip>{{ attr }}</VChip>
-              :
-              <VChip> {{ ind }} </VChip>
-            </div>
-          </td>
-          <td>
-            {{ order.subject_type }}
-          </td>
-
-          <td>
-            {{ ConvertToArabicNumbers(formatDateTime(order.created_at).date) }}
-          </td>
-        </tr>
+          <template
+            v-for="(order, i) in activites"
+            :key="order.id"
+          >
+            <tr>
+              <td
+                style="cursor: pointer;"
+                @click="toggleRow(order.id)"
+              >
+                (<VIcon>{{ opened.includes(order.id) ? 'mdi-chevron-up' : 'mdi-chevron-down' }}</VIcon>
+                Click to {{ opened.includes(order.id) ? 'Close' : 'Open' }})
+              </td>
+              <td>
+                # {{ order.id }}
+              </td>
+              <td>
+                {{ order.description ? order.description : '-' }}
+              </td>
+              <td>
+                {{ order.subject_id }}
+              </td>
+              <td>
+                {{ order.subject_type }}
+              </td>
+              <td>
+                {{ order.causer ? order.causer.email ? order.causer.email + (order.causer.name ? ' (' +
+                  order.causer.name + ')' : '') : '-' : '-' }}
+              </td>
+              <td>
+                {{ order.causer_type ? order.causer_type + ' (' + order.causer_id + ')' : '-' }}
+              </td>
+              <td>
+                {{ order.created_at }}
+              </td>
+            </tr>
+            <tr v-if="opened.includes(order.id)">
+              <td colspan="8">
+                <tr
+                  v-for="(prop, k) in Object.fromEntries(Object.entries(order.properties).reverse())"
+                  :key="prop"
+                >
+                  {{ k == 'attributes' ? 'new' : k }}: {{ prop }}
+                </tr>
+              </td>
+            </tr>
+          </template>
         </tbody>
 
         <!-- 👉 table footer  -->
         <tfoot v-show="!activites.length">
-        <tr>
-          <td
-            colspan="8"
-            class="text-center text-body-1"
-          >
-            لا يوجد بيانات
-          </td>
-        </tr>
+          <tr>
+            <td
+              colspan="8"
+              class="text-center text-body-1"
+            >
+              لا يوجد بيانات
+            </td>
+          </tr>
         </tfoot>
       </VTable>
       <!-- !SECTION -->
 
-      <VDivider/>
+      <VDivider />
 
       <VCardText class="d-flex align-center flex-wrap justify-space-between gap-4 py-3">
         <span class="text-sm text-disabled">{{ paginationData }}</span>
@@ -239,6 +318,5 @@ const formatDateTime = data => {
         />
       </VCardText>
     </VCard>
-
   </div>
 </template>

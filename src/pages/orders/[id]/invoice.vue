@@ -1,6 +1,6 @@
 <script setup>
-import { useOrdersStore } from "@/store/Orders"
-import moment from "moment"
+import { useOrdersStore } from "@/store/Orders";
+import moment from "moment";
 
 const value = ref('qrcode')
 
@@ -466,7 +466,7 @@ const handleDeliveryDate = (date, createdDate) => {
             >
               <span> الإجمالي شامل الضريبة بعد الخصم : </span>
               <h3>
-                {{ ConvertToArabicNumbers(parseFloat(order.order.total_amount_after_discount) + parseFloat(order.order.wallet_amount_used ?? 0)) ?? 0 }} 
+                {{ ConvertToArabicNumbers(parseFloat(order.order.final_amount)) ?? 0 }} 
                 <small>{{ orderCurrency }}</small>
               </h3>
             </VCol>

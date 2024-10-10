@@ -43,6 +43,7 @@ const isOpen = ref(false)
 const selectedOrder = ref({})
 const isEditOpen = ref(false)
 const isPrinting = ref(false)
+const newOrder = ref(false)
 
 const isLoading = ref(false)
 const isFiltered = ref(true)
@@ -130,18 +131,8 @@ const startEventSource = () => {
     if (data) {
       const message = JSON.parse(data.message)
 
-      refreshOrders()
-
-      if (filters.country_ids.length < 1) {
-        showNotification(message)
-        playNotificationSound()
-      } else {
-        if (filters.country_ids == message.address_country_id) {
-          showNotification(message)
-          playNotificationSound()
-        }
-      }
-
+      refreshOrders('new', message)
+      
       // orders.value.unshift(message)      
     }
   }
@@ -151,7 +142,7 @@ const startEventSource = () => {
     if (data) {
       const message = JSON.parse(data.message)
 
-      refreshOrders()
+      refreshOrders('update', message)
 
     }
   })
@@ -166,6 +157,43 @@ const closeEventSource = () => {
   if (eventSource) {
     eventSource.close()
   }
+}
+
+
+const refreshOrders = (type, message) => {
+  ordersListStore.fetchOrders({
+    ...filters,
+    q: searchQuery.value,
+    per_page: rowPerPage.value,
+    page: currentPage.value,
+  }).then(response => {
+    const ordersItems = response.data.data.data
+
+    orders.value = ordersItems
+    totalPage.value = response.data.data.last_page
+    dataFrom.value = response.data.data.from
+    dataTo.value = response.data.data.to
+    totalOrders.value = response.data.data.total
+    totalOrdersAmount.value = response.data.total
+
+    if (type === 'new') {
+      if (filters.country_ids.length < 1) {
+        showNotification(message)
+        playNotificationSound()
+      } else {
+        if (filters.country_ids == message.address_country_id) {
+          showNotification(message)
+          playNotificationSound()
+        }
+      }
+    }
+
+
+  }).catch(error => {
+    console.log(error)
+  }).finally(() => {
+    isLoading.value = false
+  })
 }
 
 onMounted(() => {
@@ -285,28 +313,6 @@ watch(() => filters.country_ids, (newVal, oldVal) => {
   })
 })
 
-const refreshOrders = () => {
-  ordersListStore.fetchOrders({
-    ...filters,
-    q: searchQuery.value,
-    per_page: rowPerPage.value,
-    page: currentPage.value,
-  }).then(response => {
-    const ordersItems = response.data.data.data
-
-    orders.value = ordersItems
-    totalPage.value = response.data.data.last_page
-    dataFrom.value = response.data.data.from
-    dataTo.value = response.data.data.to
-    totalOrders.value = response.data.data.total
-    totalOrdersAmount.value = response.data.total
-
-  }).catch(error => {
-    console.log(error)
-  }).finally(() => {
-    isLoading.value = false
-  })
-}
 
 const getOrders = () => {
   isLoading.value = true
@@ -1366,20 +1372,33 @@ onMounted(() => {
               </td>
               <td>
                 <VChip
+                  v-if="order.paid == 1"
                   style="cursor: pointer;"
-                  :class="{'text-warning': (order.using_wallet > 0 && order.remain_amount > 0 ), 'text-error': order.paid == 0, 'text-success': order.paid == 1 }"
+                  class="text-success"
                 >
-                  <div v-if="order.using_wallet > 0 && order.remain_amount > 0">
-                    مدفوع جزئياً
-                  </div>
-                  <div v-else>
-                    {{ (order.paid == 1 ? "مدفوع" : "غير مدفوع") }}
-                  </div>
+                  مدفوع
+                </VChip>
+
+                <VChip
+                  v-else-if="(order.wallet_amount_used > 0 && order.remain_amount > 0)"
+                  style="cursor: pointer;"
+                  class="text-warning"
+                >
+                  مدفوع جزئياً
+                </VChip>
+                <VChip
+                  v-else-if="order.paid == 0"
+                  style="cursor: pointer;"
+                  class="text-error"
+                >
+                  غير مدفوع
                 </VChip>
               </td>
               <td>
                 {{ order.payment_type_name }}
-                {{ order.wallet_amount_used > 0 ? " + المحفظة" : "" }}
+                {{ order.payment_type_id != 8 && order.wallet_amount_used > 0 ? "+ المحفظة (" + order.wallet_amount_used
+                  + ")" :
+                  "" }}
               </td>
               <td>
                 {{ order.address_address.toString().length > 20 ? order.address_address.toString().slice(0, 20) + "..."
@@ -1431,8 +1450,7 @@ onMounted(() => {
               </td>
 
               <td>
-                {{ ConvertToArabicNumbers(Intl.NumberFormat().format(parseFloat(order.total_amount_after_discount) +
-                  parseFloat(order.wallet_amount_used ?? 0))) }}
+                {{ ConvertToArabicNumbers(Intl.NumberFormat().format(parseFloat(order.final_amount))) }}
               </td>
               <!--
                 <td>

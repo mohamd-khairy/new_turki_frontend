@@ -8,7 +8,7 @@ export default [
   {
     title: 'report',
     icon: { icon: 'carbon:store' },
-    permission: "read-dashboard",
+    permission: "read-reports",
     children: [
       {
         title: 'carts-chart',
@@ -31,7 +31,7 @@ export default [
   {
     title: 'العروض الترويجية',
     icon: { icon: 'carbon:store' },
-    permission: "read-dashboard",
+    permission: "read-promotions",
     children: [
       {
         title: 'Cashback',
