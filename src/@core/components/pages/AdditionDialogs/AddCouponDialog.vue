@@ -9,7 +9,6 @@ import {
   requiredValidator,
 } from '@validators'
 
-import AppDateTimePicker from '@core/components/AppDateTimePicker.vue'
 
 const props = defineProps({
   isAddOpen: {
@@ -87,7 +86,7 @@ const coupon = reactive({
   country_ids: [],
   client_ids: [],
   category_child_ids: [],
-  expire_at: "",
+  expire_at: null,
   use_times_per_user: 1,
   foodics_integrate_id : null,
 })
@@ -388,11 +387,11 @@ const dialogModelValueUpdate = val => {
               cols="12"
               lg="12"
             >
-              <AppDateTimePicker
+              <VTextField
                 v-model="coupon.expire_at"
                 :label="t('forms.expire_at')"
-                :config="{ enableTime: true, dateFormat: 'Y-m-d H:i' }"
                 :rules="[requiredValidator]"
+                type="date"
               />
             </VCol>
             <VCol

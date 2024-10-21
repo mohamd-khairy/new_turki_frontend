@@ -5,7 +5,7 @@ import { useCountriesStore } from "@/store/Countries"
 import { useCouponsStore } from "@/store/Coupons"
 import { useEmployeesStore } from "@/store/Employees"
 import { useProductsStore } from "@/store/Products"
-import AppDateTimePicker from '@core/components/AppDateTimePicker.vue'
+import moment from "moment"
 
 const props = defineProps({
   isEditOpen: {
@@ -61,7 +61,7 @@ onMounted(() => {
     products.value = response.data.data
   })
   employeesListStore.fetchCustomers({ pageSize: -1 }).then(response => {
-    customers.value = response.data.data
+    customers.value = response.data.data.data
   })
 })
 
@@ -87,7 +87,7 @@ onUpdated(() => {
   couponData.country_ids = props.coupon.country_ids == "" ? [] : props.coupon.country_ids
   couponData.client_ids = props.coupon.client_ids == "" ? [] : props.coupon.client_ids
   couponData.category_child_ids = props.coupon.category_child_ids == "" ? [] : props.coupon.category_child_ids
-  couponData.expire_at = props.coupon.expire_at
+  couponData.expire_at =   moment(props.coupon.expire_at).format("YYYY-MM-DD")
   couponData.use_times_per_user = props.coupon.use_times_per_user,
   couponData.foodics_integrate_id = props.coupon.foodics_integrate_id
 })
@@ -115,7 +115,7 @@ const couponData = reactive({
   client_ids: [],
   country_ids: [],
   category_child_ids: [],
-  expire_at: "",
+  expire_at: null,
   use_times_per_user: 1,
   foodics_integrate_id: null,
 })
@@ -181,7 +181,7 @@ const dialogModelValueUpdate = val => {
 
 <template>
   <VDialog
-    :width="$vuetify.display.smAndDown ? 'auto' : 650 "
+    :width="$vuetify.display.smAndDown ? 'auto' : 650"
     persistent
     :model-value="props.isEditOpen"
     @update:model-value="dialogModelValueUpdate"
@@ -189,9 +189,7 @@ const dialogModelValueUpdate = val => {
     <!-- Dialog close btn -->
     <DialogCloseBtn @click="dialogModelValueUpdate(false)" />
 
-    <VCard
-      class="pa-sm-9 pa-5"
-    >
+    <VCard class="pa-sm-9 pa-5">
       <!-- 👉 Title -->
       <VCardItem>
         <VCardTitle class="text-h5 d-flex flex-column align-center gap-2 text-center mb-3">
@@ -307,7 +305,6 @@ const dialogModelValueUpdate = val => {
               </div>
             </VCol>
             <VCol
-
               cols="12"
               lg="12"
             >
@@ -418,11 +415,11 @@ const dialogModelValueUpdate = val => {
               cols="12"
               lg="12"
             >
-              <AppDateTimePicker
+              <VTextField
                 v-model="couponData.expire_at"
                 :label="t('forms.expire_at')"
-                :config="{ enableTime: true, dateFormat: 'Y-m-d H:i' }"
                 :rules="[requiredValidator]"
+                type="date"
               />
             </VCol>
             <VCol
@@ -490,4 +487,3 @@ const dialogModelValueUpdate = val => {
     </VCard>
   </VDialog>
 </template>
-
