@@ -124,32 +124,33 @@ let eventSource = null
 
 const startEventSource = () => {
   // eventSource = new EventSource('http://localhost:8000/sse/sse_stream')
+  if (!hasRole(['logistic_manager'])) {
+    eventSource = new EventSource('https://almaraacompany.com/dashboard/sse/sse_stream')
+    eventSource.onmessage = event => {
+      const data = JSON.parse(event.data)
+      if (data) {
+        const message = JSON.parse(data.message)
 
-  eventSource = new EventSource('https://almaraacompany.com/dashboard/sse/sse_stream')
-  eventSource.onmessage = event => {
-    const data = JSON.parse(event.data)
-    if (data) {
-      const message = JSON.parse(data.message)
+        refreshOrders('new', message)
 
-      refreshOrders('new', message)
-      
-      // orders.value.unshift(message)      
+        // orders.value.unshift(message)      
+      }
     }
-  }
 
-  eventSource.addEventListener('update-order', function (event) {
-    const data = JSON.parse(event.data)
-    if (data) {
-      const message = JSON.parse(data.message)
+    eventSource.addEventListener('update-order', function (event) {
+      const data = JSON.parse(event.data)
+      if (data) {
+        const message = JSON.parse(data.message)
 
-      refreshOrders('update', message)
+        refreshOrders('update', message)
 
+      }
+    })
+
+    eventSource.onerror = error => {
+      // console.error('EventSource failed:', error);
+      //   eventSource.close();
     }
-  })
-
-  eventSource.onerror = error => {
-    // console.error('EventSource failed:', error);
-    //   eventSource.close();
   }
 }
 
