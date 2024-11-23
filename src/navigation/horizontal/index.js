@@ -44,6 +44,25 @@ export default [
     ],
   },
   {
+    title: 'الكاشير',
+    icon: { icon: 'carbon:store' },
+    permission: "read-cashier",
+    children: [
+      {
+        title: 'اضافه طلب',
+        to: { name: 'add-order' },
+      },
+      {
+        title: 'الطلبات',
+        to: { name: 'all-orders' },
+      },
+      {
+        title: 'التسويات',
+        to: { name: 'all-settlement' },
+      },
+    ],
+  },
+  {
     title: 'Banners',
     to: { name: 'banners' },
     icon: { icon: 'game-icons:vertical-banner' },
@@ -54,6 +73,12 @@ export default [
     to: { name: 'orders' },
     icon: { icon: 'solar:delivery-broken' },
     permission: "read-order",
+  },
+  {
+    title: 'Branches',
+    to: { name: 'branches' },
+    icon: { icon: 'carbon:categories' },
+    permission: "read-branch",
   },
   {
     title: 'Categories',

@@ -1,10 +1,11 @@
 <script setup>
-import { useEmployeesStore } from "@/store/Employees"
-import { useRolesStore } from "@/store/Roles"
+import { useBranchesStore } from "@/store/Branches";
+import { useEmployeesStore } from "@/store/Employees";
+import { useRolesStore } from "@/store/Roles";
 import {
-emailValidator,
-requiredValidator,
-} from '@validators'
+  emailValidator,
+  requiredValidator,
+} from '@validators';
 
 
 const props = defineProps({
@@ -19,19 +20,25 @@ const emit = defineEmits([
   'update:isAddOpen',
 ])
 
-import { useSettingsStore } from "@/store/Settings"
-import { useI18n } from "vue-i18n"
+import { useSettingsStore } from "@/store/Settings";
+import { useI18n } from "vue-i18n";
 
 const { t } = useI18n()
 const rolesListStore = useRolesStore()
 const employeesListStore = useEmployeesStore()
 const settingsListStore = useSettingsStore()
+const branchesListStore = useBranchesStore()
 const roles = reactive([])
+const branches = reactive([])
 const isLoading = ref(false)
 
 onMounted(() => {
   rolesListStore.fetchRoles().then(response => {
     roles.value = response.data.data
+  })
+
+  branchesListStore.fetchActiveBranches().then(response => {
+    branches.value = response.data.data
   })
 })
 
@@ -48,6 +55,8 @@ const employee = reactive({
   roles: [],
   is_active: false,
   foodics_integrate_id : null,
+  branche_id : null,
+  code : null,
 })
 
 const genders = reactive([
@@ -86,6 +95,8 @@ const resetForm = () => {
   employee.roles = []
   employee.is_active = false,
   employee.foodics_integrate_id = null,
+  employee.branche_id = null,
+  employee.code = null
 
   emit('update:isAddOpen', false)
 }
@@ -284,6 +295,29 @@ const dialogModelValueUpdate = val => {
                 item-value="id"
                 multiple
                 :rules="[requiredValidator]"
+              />
+            </VCol>
+            <VCol
+              cols="12"
+              lg="12"
+              sm="6"
+            >
+              <VSelect
+                v-model="employee.branche_id"
+                :items="branches.value"
+                :label="t('forms.branches')"
+                item-title="name"
+                item-value="id"
+              />
+            </VCol>
+            <VCol
+              cols="12"
+              lg="12"
+              sm="6"
+            >
+              <VTextField
+                v-model="employee.code"
+                label="رقم الدخول"
               />
             </VCol>
             <VCol
