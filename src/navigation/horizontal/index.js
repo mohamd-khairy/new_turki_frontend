@@ -48,18 +48,7 @@ export default [
     icon: { icon: 'carbon:store' },
     permission: "read-cashier",
     children: [
-      {
-        title: 'اضافه طلب',
-        to: { name: 'add-order' },
-      },
-      {
-        title: 'الطلبات',
-        to: { name: 'all-orders' },
-      },
-      {
-        title: 'التسويات',
-        to: { name: 'all-settlement' },
-      },
+
     ],
   },
   {

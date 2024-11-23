@@ -58,7 +58,6 @@ declare module '@vue/runtime-core' {
     CardStatisticsVertical: typeof import('./src/@core/components/CardStatisticsVertical.vue')['default']
     CardStatisticsVerticalSimple: typeof import('./src/@core/components/CardStatisticsVerticalSimple.vue')['default']
     ConfirmDialog: typeof import('./src/@core/components/ConfirmDialog.vue')['default']
-    copy: typeof import('./src/@core/components/pages/DeleteDialogs/DeleteCityDialog copy.vue')['default']
     CustomizerSection: typeof import('./src/@core/components/CustomizerSection.vue')['default']
     DashboardOrdersTable: typeof import('./src/@core/components/pages/DashboardOrdersTable.vue')['default']
     DeleteBankDialog: typeof import('./src/@core/components/pages/DeleteDialogs/DeleteBankDialog.vue')['default']
