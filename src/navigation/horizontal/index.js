@@ -44,12 +44,10 @@ export default [
     ],
   },
   {
-    title: 'الكاشير',
-    icon: { icon: 'carbon:store' },
+    title: 'كاشير',
+    icon: { icon: 'game-icons:vertical-banner' },
     permission: "read-cashier",
-    children: [
-
-    ],
+    children: [],
   },
   {
     title: 'Banners',
