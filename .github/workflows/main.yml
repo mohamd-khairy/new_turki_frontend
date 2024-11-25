@@ -3,6 +3,7 @@ name: Deploy Build Folder to Server
 on:
   push:
     branches:
+      - main
       - dev  # Adjust to your deployment branch
 
 jobs:
