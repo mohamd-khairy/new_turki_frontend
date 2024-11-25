@@ -27,9 +27,10 @@ jobs:
     - name: 📂 Sync files
       uses: SamKirkland/FTP-Deploy-Action@v4.3.5
       with:
-        server: turki.almaraacompany.com
+        server: ftp.turki.almaraacompany.com
         username: turki
         password: ${{ secrets.server_dev_turki_password }}
         local-dir: ./dist/
         server-dir: /home/turki/public_html/dashboard-v2/ # Target directory on the server
         protocol: ftp
+        port: 21
