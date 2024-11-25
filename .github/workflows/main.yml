@@ -1,5 +1,10 @@
-on: push
-name: 🚀 Deploy website on push
+name: Deploy Build Folder to Server
+
+on:
+  push:
+    branches:
+      - dev  # Adjust to your deployment branch
+
 jobs:
   web-deploy:
     name: 🎉 Deploy
