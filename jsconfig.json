@@ -14,7 +14,6 @@
     "compilerOptions": {
         // "baseUrl":"",
         // "baseUrl": "./dashboard/",
-        
         "baseUrl": "./dashboard-v2/",
         "target": "esnext",
         "module": "esnext",
