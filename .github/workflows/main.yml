@@ -31,6 +31,6 @@ jobs:
         username: turki
         password: ${{ secrets.server_dev_turki_password }}
         local-dir: ./dist/
-        server-dir: /home/turki/public_html/dashboard-v2/ # Target directory on the server
+        server-dir: /public_html/dashboard-v2/ # Target directory on the server
         protocol: ftps
         port: 21
