@@ -1,6 +1,6 @@
 <script setup>
-import { useCitiesStore } from "@/store/Cities"
-import { useCategoriesStore } from "@/store/Categories"
+import { useCategoriesStore } from "@/store/Categories";
+import { useCitiesStore } from "@/store/Cities";
 
 const props = defineProps({
   isEditOpen: {
@@ -18,8 +18,8 @@ const emit = defineEmits([
   'update:isEditOpen',
 ])
 
-import { useI18n } from "vue-i18n"
-import { useSettingsStore } from "@/store/Settings"
+import { useSettingsStore } from "@/store/Settings";
+import { useI18n } from "vue-i18n";
 
 const { t } = useI18n()
 const citiesListStore = useCitiesStore()
@@ -40,7 +40,7 @@ onMounted(() => {
 
 onUpdated(() => {
   console.log(
-    props.subCategory
+    props.subCategory,
   )
   categoryData.id = props.subCategory.id
   categoryData.type_ar = props.subCategory.type_ar
@@ -48,6 +48,7 @@ onUpdated(() => {
   categoryData.description = props.subCategory.description
   categoryData.category_id = props.subCategory.category ? props.subCategory.category.id : null
   categoryData.city_ids = props.subCategory.cities
+  categoryData.image = props.subCategory.image
 })
 
 // Variables
@@ -58,6 +59,7 @@ const categoryData = reactive({
   description: null,
   category_id: null,
   city_ids: [],
+  image: {},
 })
 
 // Functions
@@ -86,6 +88,7 @@ const onFormSubmit = async () => {
     }).catch(error => {
       if (error.response.data.errors) {
         const errs = Object.keys(error.response.data.errors)
+
         errs.forEach(err => {
           settingsListStore.alertMessage = t(`errors.${err}`)
         })
@@ -119,20 +122,22 @@ const dialogModelValueUpdate = val => {
 
 <template>
   <VDialog
-    :width="$vuetify.display.smAndDown ? 'auto' : 650 "
+    :width="$vuetify.display.smAndDown ? 'auto' : 650"
     :model-value="props.isEditOpen"
     @update:model-value="dialogModelValueUpdate"
   >
     <!-- Dialog close btn -->
-    <DialogCloseBtn @click="dialogModelValueUpdate(false)"/>
+    <DialogCloseBtn @click="dialogModelValueUpdate(false)" />
 
-    <VCard
-      class="pa-sm-9 pa-5"
-    >
+    <VCard class="pa-sm-9 pa-5">
       <!-- 👉 Title -->
       <VCardItem>
         <VCardTitle class="text-h5 d-flex flex-column align-center gap-2 text-center mb-3">
-          <VIcon icon="carbon:category-new-each" size="24" color="primary"></VIcon>
+          <VIcon
+            icon="carbon:category-new-each"
+            size="24"
+            color="primary"
+          />
           <span class="mx-1 my-1">
             {{ t('Edit_Sub_Category') }}
           </span>
@@ -141,7 +146,10 @@ const dialogModelValueUpdate = val => {
 
       <VCardText>
         <!-- 👉 Form -->
-        <VForm ref="refForm" @submit.prevent="onFormSubmit">
+        <VForm
+          ref="refForm"
+          @submit.prevent="onFormSubmit"
+        >
           <VRow>
             <VCol
               cols="12"
@@ -187,17 +195,15 @@ const dialogModelValueUpdate = val => {
                 multiple
               />
             </VCol>
-            <!--            <VCol-->
-            <!--              cols="12"-->
-            <!--            >-->
-            <!--              <VFileInput-->
-            <!--                v-model="categoryData.image"-->
-            <!--                :label="t('forms.image')"-->
-            <!--                accept="image/*"-->
-            <!--                prepend-icon=""-->
-            <!--                prepend-inner-icon="mdi-image"-->
-            <!--              />-->
-            <!--            </VCol>-->
+            <VCol cols="12">
+              <VFileInput
+                v-model="categoryData.image"
+                :label="t('forms.image')"
+                accept="image/*"
+                prepend-icon=""
+                prepend-inner-icon="mdi-image"
+              />
+            </VCol>
             <VCol
               cols="12"
               lg="12"
@@ -227,7 +233,11 @@ const dialogModelValueUpdate = val => {
                 type="submit"
                 class="position-relative me-3"
               >
-                <VIcon icon="mingcute:loading-line" class="loading" size="32"></VIcon>
+                <VIcon
+                  icon="mingcute:loading-line"
+                  class="loading"
+                  size="32"
+                />
               </VBtn>
 
               <VBtn
