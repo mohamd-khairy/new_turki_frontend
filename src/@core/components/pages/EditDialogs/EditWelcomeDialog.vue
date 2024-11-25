@@ -1,14 +1,22 @@
 <script setup>
-import { useCategoriesStore } from "@/store/Categories";
-import { useCitiesStore } from "@/store/Cities";
+import { useCountriesStore } from "@/store/Countries"
+import { useSettingsStore } from "@/store/Settings"
+import { useWelcomeStore } from "@/store/Welcome"
+
+import {
+  requiredValidator,
+} from '@validators'
+import { ref } from 'vue'
+
 
 const props = defineProps({
   isEditOpen: {
     type: Boolean,
     required: true,
   },
-  subCategory: {
+  welcome: {
     type: Object,
+    default: () => ({}),
     required: true,
   },
 })
@@ -18,73 +26,66 @@ const emit = defineEmits([
   'update:isEditOpen',
 ])
 
-import { useSettingsStore } from "@/store/Settings";
-import { useI18n } from "vue-i18n";
 
 const { t } = useI18n()
-const citiesListStore = useCitiesStore()
-const categoriesListStore = useCategoriesStore()
+const welcomeStore = useWelcomeStore()
+const countriesListStore = useCountriesStore()
 const settingsListStore = useSettingsStore()
-const categories = reactive([])
-const cities = reactive([])
+
+const countries = reactive([])
+
 const isLoading = ref(false)
+const refForm = ref(null)
 
 onMounted(() => {
-  citiesListStore.fetchCities({ pageSize: -1 }).then(response => {
-    cities.value = response.data.data
+  countriesListStore.fetchCountries({}).then(response => {
+    countries.value = response.data.data
   })
-  categoriesListStore.fetchCategories({ pageSize: -1 }).then(response => {
-    categories.value = response.data.data
-  })
-})
-
-onUpdated(() => {
-  console.log(
-    props.subCategory,
-  )
-  categoryData.id = props.subCategory.id
-  categoryData.type_ar = props.subCategory.type_ar
-  categoryData.type_en = props.subCategory.type_en
-  categoryData.description = props.subCategory.description
-  categoryData.category_id = props.subCategory.category ? props.subCategory.category.id : null
-  categoryData.city_ids = props.subCategory.cities
-  categoryData.image = props.subCategory.image
 })
 
 // Variables
-const categoryData = reactive({
-  id: null,
-  type_ar: null,
-  type_en: null,
-  description: null,
-  category_id: null,
-  city_ids: [],
-  image: {},
+const welcome = reactive({
+  welcome_amount: null,
+  welcome_start_date: null,
+  welcome_end_date: null,
+  is_active: true,
+  country_id: null,
+  expired_days:null,
 })
+
+onUpdated(() => {
+  welcome.id = props.welcome.id
+  welcome.welcome_amount = props.welcome.welcome_amount
+  welcome.welcome_start_date = props.welcome.welcome_start_date
+  welcome.welcome_end_date = props.welcome.welcome_end_date
+  welcome.is_active = props.welcome.is_active ? true : false
+  welcome.country_id = props.welcome.country_id
+  welcome.expired_days = props.welcome.expired_days
+})
+
 
 // Functions
 const resetForm = () => {
   emit('update:isEditOpen', false)
 }
 
-const refForm = ref(null)
-
 const onFormSubmit = async () => {
   isLoading.value = true
 
   const res = await refForm.value.validate()
   if (res.valid) {
-    categoriesListStore.editSubCategory(categoryData).then(response => {
-      emit('update:isEditOpen', false)
+   
+    welcomeStore.editWelcome(welcome).then(response => {
+      isLoading.value=false
       emit('refreshTable')
+      emit('update:isEditOpen', false)
       settingsListStore.alertColor = "success"
-      settingsListStore.alertMessage = "تم تعديل العنصر بنجاح"
+      settingsListStore.alertMessage = "تم إضافة العنصر بنجاح"
       settingsListStore.isAlertShow = true
       setTimeout(() => {
         settingsListStore.isAlertShow = false
         settingsListStore.alertMessage = ""
-        isLoading.value = false
-      }, 1000)
+      }, 2000)
     }).catch(error => {
       if (error.response.data.errors) {
         const errs = Object.keys(error.response.data.errors)
@@ -103,7 +104,8 @@ const onFormSubmit = async () => {
         settingsListStore.alertMessage = ""
       }, 2000)
     })
-  } else {
+  }
+  else {
     isLoading.value = false
     settingsListStore.alertMessage = "يرجي تعبئة الحقول المطلوبة !"
     settingsListStore.alertColor = "error"
@@ -115,6 +117,7 @@ const onFormSubmit = async () => {
   }
 }
 
+
 const dialogModelValueUpdate = val => {
   emit('update:isEditOpen', val)
 }
@@ -123,6 +126,7 @@ const dialogModelValueUpdate = val => {
 <template>
   <VDialog
     :width="$vuetify.display.smAndDown ? 'auto' : 650"
+    persistent
     :model-value="props.isEditOpen"
     @update:model-value="dialogModelValueUpdate"
   >
@@ -134,12 +138,12 @@ const dialogModelValueUpdate = val => {
       <VCardItem>
         <VCardTitle class="text-h5 d-flex flex-column align-center gap-2 text-center mb-3">
           <VIcon
-            icon="carbon:category-new-each"
+            icon="bxs:welcome"
             size="24"
             color="primary"
           />
           <span class="mx-1 my-1">
-            {{ t('Edit_Sub_Category') }}
+            {{ t('Add_welcome') }}
           </span>
         </VCardTitle>
       </VCardItem>
@@ -148,75 +152,78 @@ const dialogModelValueUpdate = val => {
         <!-- 👉 Form -->
         <VForm
           ref="refForm"
-          @submit.prevent="onFormSubmit"
+          @submit.prevent.stop="onFormSubmit"
         >
           <VRow>
             <VCol
               cols="12"
               lg="12"
-              sm="6"
             >
               <VTextField
-                v-model="categoryData.type_ar"
-                :label="t('forms.type_ar')"
+                v-model="welcome.welcome_amount"
+                :label="t('forms.welcome_amount')"
+                :rules="[requiredValidator]"
+                type="number"
               />
             </VCol>
             <VCol
-              cols="12"
-              lg="12"
-              sm="6"
+              cols="6"
+              lg="6"
             >
               <VTextField
-                v-model="categoryData.type_en"
-                :label="t('forms.type_en')"
+                v-model="welcome.welcome_start_date"
+                :label="t('forms.welcome_start_date')"
+                type="date"
+                :rules="[requiredValidator]"
               />
             </VCol>
             <VCol
-              cols="12"
-              lg="12"
-              sm="6"
+              cols="6"
+              lg="6"
             >
               <VTextField
-                v-model="categoryData.description"
-                :label="t('forms.description')"
+                v-model="welcome.welcome_end_date"
+                :label="t('forms.welcome_end_date')"
+                type="date"
+                :rules="[requiredValidator]"
               />
             </VCol>
             <VCol
+              cols="6"
+              lg="6"
+            >
+              <VTextField
+                v-model="welcome.expired_days"
+                :label="t('forms.expired_days')"
+                type="number"
+                :rules="[requiredValidator]"
+              />
+            </VCol>
+
+            <VCol
               cols="12"
               lg="12"
-              sm="6"
             >
               <VSelect
-                v-model="categoryData.city_ids"
-                :items="cities.value"
-                :label="t('forms.cities')"
+                v-model="welcome.country_id"
+                :items="countries.value"
+                :label="t('forms.countries')"
                 item-title="name_ar"
                 item-value="id"
-                multiple
-              />
-            </VCol>
-            <VCol cols="12">
-              <VFileInput
-                v-model="categoryData.image"
-                :label="t('forms.image')"
-                accept="image/*"
-                prepend-icon=""
-                prepend-inner-icon="mdi-image"
+                :disabled="isLoading"
+                clearable
               />
             </VCol>
             <VCol
               cols="12"
-              lg="12"
-              sm="6"
+              lg="6"
             >
-              <VSelect
-                v-model="categoryData.category_id"
-                :items="categories.value"
-                :label="t('forms.categories')"
-                item-title="type_ar"
-                item-value="id"
+              <VSwitch
+                v-model="welcome.is_active"
+                :label="t('forms.is_active')"
               />
             </VCol>
+
             <VCol
               cols="12"
               class="text-center"

@@ -1,5 +1,5 @@
-import { defineStore } from 'pinia'
 import axios from '@axios'
+import { defineStore } from 'pinia'
 
 export const useCategoriesStore = defineStore('CategoriesStore', {
   actions: {
@@ -52,6 +52,9 @@ export const useCategoriesStore = defineStore('CategoriesStore', {
       formData.append("description", data.description)
       formData.append("category_id", data.category_id)
       formData.append("city_ids", cty_ids.split(" ,")[1])
+      if (data.image !== {} && data.image !== undefined) {
+        formData.append("image", data.image[0] ?? {})
+      }
 
       return axios.post(`/sub-categories/add-sub-category`, formData)
     },
@@ -75,6 +78,9 @@ export const useCategoriesStore = defineStore('CategoriesStore', {
       formData.append("description", data.description)
       formData.append("category_id", data.category_id)
       formData.append("city_ids", cty_ids.split(" ,")[1])
+      if (data.image !== {} && data.image !== undefined) {
+        formData.append("image", data.image[0] ?? {})
+      }
 
       return axios.post(`/sub-categories/update-sub-category/${data.id}`, formData)
     },

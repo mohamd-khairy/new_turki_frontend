@@ -1,13 +1,12 @@
 <script setup>
-import { useCategoriesStore } from "@/store/Categories";
-import { useCitiesStore } from "@/store/Cities";
+import { useBranchesStore } from "@/store/Branches";
 
 const props = defineProps({
   isEditOpen: {
     type: Boolean,
     required: true,
   },
-  subCategory: {
+  branch: {
     type: Object,
     required: true,
   },
@@ -22,44 +21,27 @@ import { useSettingsStore } from "@/store/Settings";
 import { useI18n } from "vue-i18n";
 
 const { t } = useI18n()
-const citiesListStore = useCitiesStore()
-const categoriesListStore = useCategoriesStore()
+const branchesListStore = useBranchesStore()
 const settingsListStore = useSettingsStore()
-const categories = reactive([])
-const cities = reactive([])
 const isLoading = ref(false)
 
-onMounted(() => {
-  citiesListStore.fetchCities({ pageSize: -1 }).then(response => {
-    cities.value = response.data.data
-  })
-  categoriesListStore.fetchCategories({ pageSize: -1 }).then(response => {
-    categories.value = response.data.data
-  })
-})
-
-onUpdated(() => {
-  console.log(
-    props.subCategory,
-  )
-  categoryData.id = props.subCategory.id
-  categoryData.type_ar = props.subCategory.type_ar
-  categoryData.type_en = props.subCategory.type_en
-  categoryData.description = props.subCategory.description
-  categoryData.category_id = props.subCategory.category ? props.subCategory.category.id : null
-  categoryData.city_ids = props.subCategory.cities
-  categoryData.image = props.subCategory.image
-})
 
 // Variables
-const categoryData = reactive({
+const branchData = reactive({
   id: null,
-  type_ar: null,
-  type_en: null,
-  description: null,
-  category_id: null,
-  city_ids: [],
-  image: {},
+  name: null,
+  address: null,
+  mobile: null,
+  is_active: null,
+})
+
+
+onUpdated(() => {
+  branchData.id = props.branch.id
+  branchData.name = props.branch.name
+  branchData.address = props.branch.address
+  branchData.mobile = props.branch.mobile
+  branchData.is_active = props.branch.is_active
 })
 
 // Functions
@@ -71,14 +53,21 @@ const refForm = ref(null)
 
 const onFormSubmit = async () => {
   isLoading.value = true
+  let branchDt = {
+    id: branchData.id,
+    name: branchData.name,
+    mobile: branchData.mobile,
+    address: branchData.address,
+    is_active: branchData.is_active,
+  }
 
   const res = await refForm.value.validate()
   if (res.valid) {
-    categoriesListStore.editSubCategory(categoryData).then(response => {
+    branchesListStore.editBranch(branchDt).then(response => {
       emit('update:isEditOpen', false)
       emit('refreshTable')
       settingsListStore.alertColor = "success"
-      settingsListStore.alertMessage = "تم تعديل العنصر بنجاح"
+      settingsListStore.alertMessage = "تم تعديل المدينة بنجاح"
       settingsListStore.isAlertShow = true
       setTimeout(() => {
         settingsListStore.isAlertShow = false
@@ -134,12 +123,12 @@ const dialogModelValueUpdate = val => {
       <VCardItem>
         <VCardTitle class="text-h5 d-flex flex-column align-center gap-2 text-center mb-3">
           <VIcon
-            icon="carbon:category-new-each"
+            icon="solar:branch-broken"
             size="24"
             color="primary"
           />
           <span class="mx-1 my-1">
-            {{ t('Edit_Sub_Category') }}
+            تعديل فرع
           </span>
         </VCardTitle>
       </VCardItem>
@@ -157,8 +146,8 @@ const dialogModelValueUpdate = val => {
               sm="6"
             >
               <VTextField
-                v-model="categoryData.type_ar"
-                :label="t('forms.type_ar')"
+                v-model="branchData.name"
+                :label="t('forms.name')"
               />
             </VCol>
             <VCol
@@ -167,56 +156,34 @@ const dialogModelValueUpdate = val => {
               sm="6"
             >
               <VTextField
-                v-model="categoryData.type_en"
-                :label="t('forms.type_en')"
+                v-model="branchData.address"
+                :label="t('forms.address')"
               />
             </VCol>
+
             <VCol
               cols="12"
               lg="12"
               sm="6"
             >
               <VTextField
-                v-model="categoryData.description"
-                :label="t('forms.description')"
+                v-model="branchData.mobile"
+                :label="t('forms.mobile')"
+                :rules="[requiredValidator]"
               />
             </VCol>
+
             <VCol
               cols="12"
               lg="12"
               sm="6"
             >
-              <VSelect
-                v-model="categoryData.city_ids"
-                :items="cities.value"
-                :label="t('forms.cities')"
-                item-title="name_ar"
-                item-value="id"
-                multiple
+              <VSwitch
+                v-model="branchData.is_active"
+                :label="t('forms.is_active')"
               />
             </VCol>
-            <VCol cols="12">
-              <VFileInput
-                v-model="categoryData.image"
-                :label="t('forms.image')"
-                accept="image/*"
-                prepend-icon=""
-                prepend-inner-icon="mdi-image"
-              />
-            </VCol>
-            <VCol
-              cols="12"
-              lg="12"
-              sm="6"
-            >
-              <VSelect
-                v-model="categoryData.category_id"
-                :items="categories.value"
-                :label="t('forms.categories')"
-                item-title="type_ar"
-                item-value="id"
-              />
-            </VCol>
+
             <VCol
               cols="12"
               class="text-center"

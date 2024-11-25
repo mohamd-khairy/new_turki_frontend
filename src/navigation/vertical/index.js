@@ -6,6 +6,50 @@ export default [
     permission: "read-dashboard",
   },
   {
+    title: 'report',
+    icon: { icon: 'carbon:store' },
+    permission: "read-reports",
+    children: [
+      {
+        title: 'carts-chart',
+        to: { name: 'carts-chart' },
+      },
+      {
+        title: 'profit-chart',
+        to: { name: 'profit-chart' },
+      },
+      {
+        title: 'product-chart',
+        to: { name: 'product-chart' },
+      },
+      {
+        title: 'customer-chart',
+        to: { name: 'customer-chart' },
+      },
+    ],
+  },
+  {
+    title: 'العروض الترويجية',
+    icon: { icon: 'carbon:store' },
+    permission: "read-promotions",
+    children: [
+      {
+        title: 'Cashback',
+        to: { name: 'cashback' },
+      },
+      {
+        title: 'welcome',
+        to: { name: 'welcome' },
+      },
+    ],
+  },
+  {
+    title: 'كاشير',
+    to: { name: 'cashier-categories' },
+    icon: { icon: 'game-icons:vertical-banner' },
+    permission: "read-cashier",
+  },
+  {
     title: 'Banners',
     to: { name: 'banners' },
     icon: { icon: 'game-icons:vertical-banner' },
@@ -16,6 +60,12 @@ export default [
     to: { name: 'orders' },
     icon: { icon: 'solar:delivery-broken' },
     permission: "read-order",
+  },
+  {
+    title: 'Branches',
+    to: { name: 'branches' },
+    icon: { icon: 'carbon:categories' },
+    permission: "read-branch",
   },
   {
     title: 'Categories',

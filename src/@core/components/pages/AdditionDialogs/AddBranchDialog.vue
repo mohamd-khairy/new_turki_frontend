@@ -1,90 +1,77 @@
 <script setup>
-import { useCategoriesStore } from "@/store/Categories";
-import { useCitiesStore } from "@/store/Cities";
+import {
+  requiredValidator,
+} from '@validators';
 
 const props = defineProps({
-  isEditOpen: {
+  isAddOpen: {
     type: Boolean,
-    required: true,
-  },
-  subCategory: {
-    type: Object,
     required: true,
   },
 })
 
 const emit = defineEmits([
   'refreshTable',
-  'update:isEditOpen',
+  'update:isAddOpen',
 ])
 
+import { useBranchesStore } from "@/store/Branches";
 import { useSettingsStore } from "@/store/Settings";
 import { useI18n } from "vue-i18n";
 
 const { t } = useI18n()
-const citiesListStore = useCitiesStore()
-const categoriesListStore = useCategoriesStore()
+const branchesListStore = useBranchesStore()
 const settingsListStore = useSettingsStore()
-const categories = reactive([])
-const cities = reactive([])
+const countries = reactive([])
 const isLoading = ref(false)
 
+const refForm = ref(null)
+
+
 onMounted(() => {
-  citiesListStore.fetchCities({ pageSize: -1 }).then(response => {
-    cities.value = response.data.data
-  })
-  categoriesListStore.fetchCategories({ pageSize: -1 }).then(response => {
-    categories.value = response.data.data
-  })
+
 })
 
-onUpdated(() => {
-  console.log(
-    props.subCategory,
-  )
-  categoryData.id = props.subCategory.id
-  categoryData.type_ar = props.subCategory.type_ar
-  categoryData.type_en = props.subCategory.type_en
-  categoryData.description = props.subCategory.description
-  categoryData.category_id = props.subCategory.category ? props.subCategory.category.id : null
-  categoryData.city_ids = props.subCategory.cities
-  categoryData.image = props.subCategory.image
-})
-
-// Variables
-const categoryData = reactive({
-  id: null,
-  type_ar: null,
-  type_en: null,
-  description: null,
-  category_id: null,
-  city_ids: [],
-  image: {},
+const branch = reactive({
+  name: null,
+  mobile: null,
+  address: null,
+  is_active: 0,
 })
 
 // Functions
 const resetForm = () => {
-  emit('update:isEditOpen', false)
+  branch.name = null,
+  branch.address = null,
+  branch.mobile = null,
+  branch.is_active = false,
+  emit('update:isAddOpen', false)
 }
-
-const refForm = ref(null)
 
 const onFormSubmit = async () => {
   isLoading.value = true
 
   const res = await refForm.value.validate()
+
   if (res.valid) {
-    categoriesListStore.editSubCategory(categoryData).then(response => {
-      emit('update:isEditOpen', false)
+    let branchDt = {
+      name: branch.name,
+      address: branch.address,
+      mobile: branch.mobile,
+      is_active: branch.is_active,
+    }
+    branchesListStore.storeBranch(branchDt).then(response => {
+      emit('update:isAddOpen', false)
       emit('refreshTable')
+      resetForm()
       settingsListStore.alertColor = "success"
-      settingsListStore.alertMessage = "تم تعديل العنصر بنجاح"
+      settingsListStore.alertMessage = "تم إضافة المدينة بنجاح"
       settingsListStore.isAlertShow = true
       setTimeout(() => {
         settingsListStore.isAlertShow = false
         settingsListStore.alertMessage = ""
-        isLoading.value = false
-      }, 1000)
+      }, 2000)
+      resetForm()
     }).catch(error => {
       if (error.response.data.errors) {
         const errs = Object.keys(error.response.data.errors)
@@ -116,14 +103,14 @@ const onFormSubmit = async () => {
 }
 
 const dialogModelValueUpdate = val => {
-  emit('update:isEditOpen', val)
+  emit('update:isAddOpen', val)
 }
 </script>
 
 <template>
   <VDialog
     :width="$vuetify.display.smAndDown ? 'auto' : 650"
-    :model-value="props.isEditOpen"
+    :model-value="props.isAddOpen"
     @update:model-value="dialogModelValueUpdate"
   >
     <!-- Dialog close btn -->
@@ -134,12 +121,12 @@ const dialogModelValueUpdate = val => {
       <VCardItem>
         <VCardTitle class="text-h5 d-flex flex-column align-center gap-2 text-center mb-3">
           <VIcon
-            icon="carbon:category-new-each"
+            icon="solar:branch-broken"
             size="24"
             color="primary"
           />
           <span class="mx-1 my-1">
-            {{ t('Edit_Sub_Category') }}
+            اضافه فرع
           </span>
         </VCardTitle>
       </VCardItem>
@@ -157,8 +144,9 @@ const dialogModelValueUpdate = val => {
               sm="6"
             >
               <VTextField
-                v-model="categoryData.type_ar"
-                :label="t('forms.type_ar')"
+                v-model="branch.name"
+                :label="t('forms.name')"
+                :rules="[requiredValidator]"
               />
             </VCol>
             <VCol
@@ -167,18 +155,21 @@ const dialogModelValueUpdate = val => {
               sm="6"
             >
               <VTextField
-                v-model="categoryData.type_en"
-                :label="t('forms.type_en')"
+                v-model="branch.address"
+                :label="t('forms.address')"
+                :rules="[requiredValidator]"
               />
             </VCol>
+
             <VCol
               cols="12"
               lg="12"
               sm="6"
             >
               <VTextField
-                v-model="categoryData.description"
-                :label="t('forms.description')"
+                v-model="branch.mobile"
+                :label="t('forms.mobile')"
+                :rules="[requiredValidator]"
               />
             </VCol>
             <VCol
@@ -186,37 +177,13 @@ const dialogModelValueUpdate = val => {
               lg="12"
               sm="6"
             >
-              <VSelect
-                v-model="categoryData.city_ids"
-                :items="cities.value"
-                :label="t('forms.cities')"
-                item-title="name_ar"
-                item-value="id"
-                multiple
+              <VSwitch
+                v-model="branch.is_active"
+                :label="t('forms.is_active')"
               />
             </VCol>
-            <VCol cols="12">
-              <VFileInput
-                v-model="categoryData.image"
-                :label="t('forms.image')"
-                accept="image/*"
-                prepend-icon=""
-                prepend-inner-icon="mdi-image"
-              />
-            </VCol>
-            <VCol
-              cols="12"
-              lg="12"
-              sm="6"
-            >
-              <VSelect
-                v-model="categoryData.category_id"
-                :items="categories.value"
-                :label="t('forms.categories')"
-                item-title="type_ar"
-                item-value="id"
-              />
-            </VCol>
+
+
             <VCol
               cols="12"
               class="text-center"

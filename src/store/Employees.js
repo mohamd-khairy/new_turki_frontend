@@ -10,6 +10,9 @@ export const useEmployeesStore = defineStore('EmployeesStore', {
     fetchCustomers(params) {
       return axios.get('customers', { params })
     },
+    fetchAllCustomers(params) {
+      return axios.get('customers/all', { params })
+    },
 
     // 👉 Fetch Single Country
     fetchEmployee(id) {
@@ -80,6 +83,8 @@ export const useEmployeesStore = defineStore('EmployeesStore', {
       formData.append("country_code", data.country_code)
       formData.append("is_active", data.is_active)
       formData.append("foodics_integrate_id", data.foodics_integrate_id)
+      formData.append("branch_id", data.branch_id)
+      formData.append("code", data.code)
 
       Object.values(data.roles).map((role, index) => {
         formData.append(`roles[${index}]`, Number.isInteger(role) ? role : role.id)
@@ -87,7 +92,7 @@ export const useEmployeesStore = defineStore('EmployeesStore', {
 
       // for (let i = 0; i < data.roles.length; i++) {
       //   formData.append(`roles[${i}]`, data[i].id)
-      // }      
+      // }
 
       return axios.post(`users/${data.id}`, formData)
     },

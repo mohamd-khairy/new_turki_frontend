@@ -43,9 +43,10 @@ const isOpen = ref(false)
 const selectedOrder = ref({})
 const isEditOpen = ref(false)
 const isPrinting = ref(false)
+const newOrder = ref(false)
 
 const isLoading = ref(false)
-const isFiltered = ref(false)
+const isFiltered = ref(true)
 const paymentTypes = ref([])
 const salesAgents = ref([])
 const salesRepresentatives = ref([])
@@ -54,13 +55,29 @@ const allOrdersSelected = ref(false)
 const currentPrintedInvoice = ref(null)
 const totalOrdersAmount = ref(0)
 
+// Get today's date
+const today = new Date()
+
+// Get the date 3 weeks (21 days) from today
+const threeWeeksFromToday = new Date(today)
+
+threeWeeksFromToday.setDate(today.getDate() + 21)
+
+// Get the last day of the current month
+const lastDayOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0)
+
+// Format the dates to YYYY-MM-DD
+const formattedToday = today.toISOString().split('T')[0]
+const formattedThreeWeeksFromToday = threeWeeksFromToday.toISOString().split('T')[0]
+const formattedLastDay = lastDayOfMonth.toISOString().split('T')[0]
+
 const filters = reactive({
   ref_no: null,
   city_ids: [],
   country_ids: [],
   order_state_ids: [],
-  date_from: null,
-  date_to: null,
+  date_from: formattedToday,
+  date_to: formattedThreeWeeksFromToday,
   delivery_date: null,
   customer_id: null,
   delivery_period_ids: [],
@@ -74,13 +91,125 @@ const selectedOrders = computed(() => orders.value.filter(order => order.selecte
 const selectAllOrders = selectedAll => {
   orders.value = orders.value.map(order => {
     order.selected = selectedAll
-    
+
     return order
   })
 }
 
+const notificationSound = ref(null)
+
+const playNotificationSound = () => {
+  if (notificationSound.value) {
+    notificationSound.value.play()
+  }
+}
+
+
+const showNotification = order => {
+
+  settingsListStore.alertColor = "success"
+  settingsListStore.alertMessage = ` تم اضافة طلب جديد برقم ` + order.ref_no
+  settingsListStore.isAlertShow = true
+  setTimeout(() => {
+    settingsListStore.isAlertShow = false
+    settingsListStore.alertMessage = ""
+    isLoading.value = false
+  }, 5000)
+
+}
+
+
+const events = ref([])
+let eventSource = null
+
+const startEventSource = () => {
+  // eventSource = new EventSource('http://localhost:8000/sse/sse_stream')
+  if (!hasRole(['logistic_manager'])) {
+    eventSource = new EventSource('https://almaraacompany.com/dashboard/sse/sse_stream')
+    eventSource.onmessage = event => {
+      const data = JSON.parse(event.data)
+      if (data) {
+        const message = JSON.parse(data.message)
+
+        refreshOrders('new', message)
+
+        // orders.value.unshift(message)      
+      }
+    }
+
+    eventSource.addEventListener('update-order', function (event) {
+      const data = JSON.parse(event.data)
+      if (data) {
+        const message = JSON.parse(data.message)
+
+        refreshOrders('update', message)
+
+      }
+    })
+
+    eventSource.onerror = error => {
+      // console.error('EventSource failed:', error);
+      //   eventSource.close();
+    }
+  }
+}
+
+const closeEventSource = () => {
+  if (eventSource) {
+    eventSource.close()
+  }
+}
+
+
+const refreshOrders = (type, message) => {
+  ordersListStore.fetchOrders({
+    ...filters,
+    q: searchQuery.value,
+    per_page: rowPerPage.value,
+    page: currentPage.value,
+  }).then(response => {
+    const ordersItems = response.data.data.data
+
+    orders.value = ordersItems
+    totalPage.value = response.data.data.last_page
+    dataFrom.value = response.data.data.from
+    dataTo.value = response.data.data.to
+    totalOrders.value = response.data.data.total
+    totalOrdersAmount.value = response.data.total
+
+    if (type === 'new') {
+      if (filters.country_ids.length < 1) {
+        showNotification(message)
+        playNotificationSound()
+      } else {
+        if (filters.country_ids == message.address_country_id) {
+          showNotification(message)
+          playNotificationSound()
+        }
+      }
+    }
+
+
+  }).catch(error => {
+    console.log(error)
+  }).finally(() => {
+    isLoading.value = false
+  })
+}
+
+onMounted(() => {
+  startEventSource()
+})
+
+onBeforeUnmount(() => {
+  closeEventSource()
+})
+
+
+
+
 watch(selectedOrders, value => {
-  if(value.length < orders.value.length) {
+  if (value.length < orders.value.length) {
     allOrdersSelected.value = false
   }
 })
@@ -96,18 +225,18 @@ const openAssignDeligateDialog = () => {
 const authUser = computed(() => authStore.currentUser)
 
 const canEditOrder = order => {
-  if(hasRole(['general_manager', 'production_manager', 'production_supervisor', 'admin'])) {
+  if (hasRole(['general_manager', 'production_manager', 'production_supervisor', 'admin'])) {
     return true
   }
 
-  if(
-    hasRole('store_manager') && 
+  if (
+    hasRole('store_manager') &&
     order.sales_representative_id == authUser.value?.id
   ) {
     return true
   }
 
-  if(order.sales_representative_id == authUser.value?.id) {
+  if (order.sales_representative_id == authUser.value?.id) {
     return true
   }
 
@@ -115,7 +244,7 @@ const canEditOrder = order => {
 }
 
 const canTakeOrder = order => {
-  if(hasRole(['store_manager']) && !order.sales_representative_id) {
+  if (hasRole(['store_manager']) && !order.sales_representative_id) {
     return true
   }
 
@@ -123,30 +252,30 @@ const canTakeOrder = order => {
 }
 
 const getOrderStatusColorClass = orderStatusCode => {
-  if([104, 105, 106].includes(orderStatusCode)) {
+  if ([104, 105, 106].includes(orderStatusCode)) {
     return 'text-warning'
   }
 
-  if([103, 107, 108, 109].includes(orderStatusCode)) {
+  if ([103, 107, 108, 109].includes(orderStatusCode)) {
     return 'text-error'
   }
 
   // order confirmed
-  if(orderStatusCode == 101) {
+  if (orderStatusCode == 101) {
     return 'text-success'
   }
 
   // delivered
-  if(orderStatusCode == 200) {
+  if (orderStatusCode == 200) {
     return 'text-delivered'
   }
 
-  if(orderStatusCode == 103) {
+  if (orderStatusCode == 103) {
     return 'text-secondary'
   }
 
   // pending
-  if(orderStatusCode == 102) {
+  if (orderStatusCode == 102) {
     return 'text-pending'
   }
 
@@ -164,7 +293,7 @@ const storeMangerCanUpdateOrderStatus = order => {
 }
 
 const printOrderInvoice = async order => {
-  if(hasRole(['production_manager'])) {
+  if (hasRole(['production_manager'])) {
     try {
       currentPrintedInvoice.value = order.ref_no
       await ordersListStore.editOrder({ id: order.id, is_printed: true })
@@ -185,6 +314,7 @@ watch(() => filters.country_ids, (newVal, oldVal) => {
   })
 })
 
+
 const getOrders = () => {
   isLoading.value = true
   ordersListStore.fetchOrders({
@@ -201,7 +331,7 @@ const getOrders = () => {
     dataTo.value = response.data.data.to
     totalOrders.value = response.data.data.total
     totalOrdersAmount.value = response.data.total
-    
+
     resetSelections()
   }).catch(error => {
     console.log(error)
@@ -212,32 +342,32 @@ const getOrders = () => {
 
 
 
-const exportOrderProducts =  () => {
+const exportOrderProducts = () => {
   isLoading.value = true
   ordersListStore.exportOrderProducts({
     ...filters,
     q: searchQuery.value,
     export: 1,
   }).then(response => {
-    
+
     let csvContent = '\uFEFF' // Unicode BOM
     csvContent += response.data
 
     // programmatically 'click'.
     const link = document.createElement('a')
-    
+
     // Tell the browser to associate the response data to
     // the URL of the link we created above.
     link.href = window.URL.createObjectURL(
-      new Blob([csvContent] , { type: 'text/csv;charset=utf-8' }),
+      new Blob([csvContent], { type: 'text/csv;charset=utf-8' }),
     )
-    
+
     // Tell the browser to download, not render, the file.
     link.setAttribute('download', 'order-products.csv')
-    
+
     // Place the link in the DOM.
     document.body.appendChild(link)
-    
+
     // Make the magic happen!
     link.click()
 
@@ -248,32 +378,32 @@ const exportOrderProducts =  () => {
   })
 }
 
-const exportOrders =  () => {
+const exportOrders = () => {
   isLoading.value = true
   ordersListStore.fetchOrders({
     ...filters,
     q: searchQuery.value,
     export: 1,
   }).then(response => {
-    
+
     let csvContent = '\uFEFF' // Unicode BOM
     csvContent += response.data
 
     // programmatically 'click'.
     const link = document.createElement('a')
-    
+
     // Tell the browser to associate the response data to
     // the URL of the link we created above.
     link.href = window.URL.createObjectURL(
-      new Blob([csvContent] , { type: 'text/csv;charset=utf-8' }),
+      new Blob([csvContent], { type: 'text/csv;charset=utf-8' }),
     )
-    
+
     // Tell the browser to download, not render, the file.
     link.setAttribute('download', 'orders.csv')
-    
+
     // Place the link in the DOM.
     document.body.appendChild(link)
-    
+
     // Make the magic happen!
     link.click()
 
@@ -296,6 +426,7 @@ watch(() => authStore.currentUser, () => {
   getOrders()
 })
 
+
 const _timerId = ref(null)
 const isLoadingCustomers = ref(false)
 const isCustomersMenuOpen = ref(false)
@@ -308,7 +439,7 @@ const searchCustomer = e => {
   clearTimeout(_timerId.value)
 
   _timerId.value = setTimeout(() => {
-    if(!isCustomersMenuOpen.value) return
+    if (!isCustomersMenuOpen.value) return
 
     isLoadingCustomers.value = true
     customers.value = []
@@ -354,7 +485,7 @@ const takeOrder = order => {
       } else {
         settingsListStore.alertMessage = "حدث خطأ ما !"
       }
-    
+
       isLoading.value = false
       settingsListStore.alertColor = "error"
       settingsListStore.isAlertShow = true
@@ -386,6 +517,7 @@ const clearFilter = () => {
   filters.payment_type_ids = []
   filters.sales_agent_id = null
   filters.sales_representative_id = null
+  isFiltered.value = false
   filterOrders()
 }
 
@@ -443,7 +575,7 @@ onMounted(() => {
   settingsListStore.fetchDelivery_Periods().then(response => {
     deliveryPeriods.value = response.data.data
   })
- 
+
   paymentTypesStore.getAll().then(response => {
     paymentTypes.value = response.data.data
   })
@@ -459,6 +591,12 @@ onMounted(() => {
 
 <template>
   <div>
+    <audio
+      ref="notificationSound"
+      src="/dashboard-v3/notification.mp3"
+      preload="auto"
+    />
+
     <div>
       <VExpansionPanels class="mb-6">
         <VExpansionPanel>
@@ -488,7 +626,7 @@ onMounted(() => {
                     />
                   </div>
                   <VTextField
-                    v-model="filters.ref_no" 
+                    v-model="filters.ref_no"
                     label="البحث برقم الطلب"
                     :disabled="isLoading"
                   />
@@ -503,7 +641,7 @@ onMounted(() => {
                       color="primary"
                     />
                   </div>
-                  
+
                   <VAutocomplete
                     v-model="filters.customer_id"
                     :items="customers"
@@ -536,7 +674,7 @@ onMounted(() => {
                     />
                     <VDivider class="mt-2" />
                     </template>
-                    </VSelect> 
+                    </VSelect>
                   -->
                 </VCol>
                 <VCol
@@ -852,7 +990,7 @@ onMounted(() => {
             <VSelect
               v-model="rowPerPage"
               variant="outlined"
-              :items="[5, 10, 20, 30, 50, 100, 200 , 300, 500 , 700 , 1000]"
+              :items="[5, 10, 20, 30, 50, 100, 200, 300, 500, 700, 1000]"
               :disabled="isLoading"
             />
           </div>
@@ -907,9 +1045,7 @@ onMounted(() => {
               v-else
               class="d-flex align-center flex-wrap gap-3"
             >
-              <VCard
-                class="py-3 px-4 w-100 w-sm-auto"
-              >
+              <VCard class="py-3 px-4 w-100 w-sm-auto">
                 <p class="mb-3">
                   <VAvatar
                     color="success"
@@ -932,7 +1068,7 @@ onMounted(() => {
                 </div>
               </VCard>
               <VCard
-                v-if="hasRole([ 'admin']) && totalOrdersAmount"
+                v-if="hasRole(['admin']) && totalOrdersAmount"
                 class="py-3 px-4 w-100 w-sm-auto"
               >
                 <p class="mb-3">
@@ -969,7 +1105,7 @@ onMounted(() => {
           show-select
           ></v-data-table> 
         -->
-        <VTable 
+        <VTable
           height="600px"
           fixed-header
           class="text-no-wrap product-list-table text-center"
@@ -1010,7 +1146,7 @@ onMounted(() => {
               >
                 {{ t('forms.order_state_ar') }} <br>
                 <span
-                  v-if="!isLoading && ( canChangeOrderStatus || hasRole(['delegate', 'store_manager']))" 
+                  v-if="!isLoading && (canChangeOrderStatus || hasRole(['delegate', 'store_manager']))"
                   class="text-primary"
                 >( {{ t('forms.click_change_status') }} )</span>
               </th>
@@ -1070,7 +1206,7 @@ onMounted(() => {
               >
                 {{ t('forms.paid_amount') }}
               </th>
-              
+
               <th
                 scope="col"
                 class="font-weight-semibold"
@@ -1123,7 +1259,9 @@ onMounted(() => {
               </td>
               <td>
                 <div class="d-flex align-center justify-end gap-2">
-                  <div v-if="!hasRole(['production_manager']) || (hasRole(['production_manager']) && !order.is_printed)">
+                  <div
+                    v-if="!hasRole(['production_manager']) || (hasRole(['production_manager']) && !order.is_printed)"
+                  >
                     <VTooltip text="طباعة الفاتورة">
                       <template #activator="{ props }">
                         <VBtn
@@ -1184,7 +1322,7 @@ onMounted(() => {
                       </VBtn>
                     </template>
                   </VTooltip>
-                  
+
                   <VTooltip
                     v-if="canTakeOrder(order)"
                     text="اخذ الطلب"
@@ -1213,11 +1351,11 @@ onMounted(() => {
                 {{ order.ref_no }}
               </td>
               <td>
-                {{ order.customer_name + '(' + order.customer_mobile +')' }}
+                {{ order.customer_name + '(' + order.customer_mobile + ')' }}
               </td>
               <td>
                 <span
-                  v-if="canChangeOrderStatus || storeMangerCanUpdateOrderStatus(order) || delegateCanUpdateOrderStatus(order)" 
+                  v-if="canChangeOrderStatus || storeMangerCanUpdateOrderStatus(order) || delegateCanUpdateOrderStatus(order)"
                   @click="openEdit(order)"
                 >
                   <VChip
@@ -1235,17 +1373,38 @@ onMounted(() => {
               </td>
               <td>
                 <VChip
+                  v-if="order.paid == 1"
                   style="cursor: pointer;"
-                  :class="{'text-error': order.paid == 0, 'text-success': order.paid == 1}"
+                  class="text-success"
                 >
-                  {{ order.paid == 1 ? "مدفوع" : "غير مدفوع" }}
+                  مدفوع
+                </VChip>
+
+                <VChip
+                  v-else-if="(order.wallet_amount_used > 0 && order.remain_amount > 0)"
+                  style="cursor: pointer;"
+                  class="text-warning"
+                >
+                  مدفوع جزئياً
+                </VChip>
+                <VChip
+                  v-else-if="order.paid == 0"
+                  style="cursor: pointer;"
+                  class="text-error"
+                >
+                  غير مدفوع
                 </VChip>
               </td>
               <td>
                 {{ order.payment_type_name }}
+                {{ order.payment_type_id != 8 && order.wallet_amount_used > 0 ? "+ المحفظة (" + order.wallet_amount_used
+                  + ")" :
+                  "" }}
               </td>
               <td>
-                {{ order.address_address.toString().length > 20 ? order.address_address.toString().slice(0,20) + "..." : order.address_address }}
+                {{ order.address_address.toString().length > 20 ? order.address_address.toString().slice(0, 20) + "..."
+                  :
+                  order.address_address }}
               </td>
               <td>
                 <span v-if="order.city_name">
@@ -1290,9 +1449,9 @@ onMounted(() => {
                 </span>
                 <span v-else>--</span>
               </td>
-                
+
               <td>
-                {{ ConvertToArabicNumbers(Intl.NumberFormat().format(parseFloat(order.total_amount_after_discount) + parseFloat(order.wallet_amount_used ?? 0))) }}
+                {{ ConvertToArabicNumbers(Intl.NumberFormat().format(parseFloat(order.final_amount))) }}
               </td>
               <!--
                 <td>
@@ -1338,7 +1497,7 @@ onMounted(() => {
       :order-details="selectedOrder"
       @close="closePriniting"
     />
-    
+
     <AddOrdersDialog
       v-if="isAddOpen"
       v-model:is-add-open="isAddOpen"
@@ -1404,4 +1563,3 @@ onMounted(() => {
   }
 }
 </style>
-

@@ -1,7 +1,7 @@
 <script setup>
-import { useCouponsStore } from "@/store/Coupons"
-import moment from "moment"
-import { useI18n } from "vue-i18n"
+import { useCouponsStore } from "@/store/Coupons";
+import moment from "moment";
+import { useI18n } from "vue-i18n";
 
 const { t } = useI18n()
 
@@ -199,7 +199,6 @@ onMounted(() => {
             </td>
             <td>
               {{ ConvertToArabicNumbers(formatDateTime(coupon.expire_at).date) }}
-              {{ ConvertToArabicNumbers(formatDateTime(coupon.expire_at).time).toString().toLowerCase().split(' ')[1] == "am" ? ConvertToArabicNumbers(formatDateTime(coupon.expire_at).time).toString().split(' ')[0] + " " + "صباحاً" : ConvertToArabicNumbers(formatDateTime(coupon.expire_at).time).toString().split(' ')[0] + " " + "مساءاً" }}
             </td>
             <td>
               <VIcon
