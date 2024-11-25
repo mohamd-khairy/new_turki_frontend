@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - dev  # Adjust to your deployment branch
 
 jobs:
   web-deploy:
@@ -18,12 +17,12 @@ jobs:
       uses: actions/setup-node@v2
       with:
         node-version: '18'
-      
+
     - name: 🔨 Build Project
       run: |
         npm install
         npm run build
-    
+
     - name: 📂 Sync files
       uses: SamKirkland/FTP-Deploy-Action@v4.3.5
       with:
