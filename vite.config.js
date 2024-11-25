@@ -14,6 +14,7 @@ import vuetify from 'vite-plugin-vuetify'
 export default defineConfig({
   // base:"",
   // base:"/dashboard/",
+
   base:"/dashboard-v2/",
 
   // base:"/dashboard-v3/",
