@@ -17,10 +17,15 @@
             <AppLoading />
           </div>
           <VRow v-else justify="flex-start">
-            <VCol v-for="category in categories" :key="category.id" cols="4" lg="2" md="3" sm="6">
-              <RouterLink :to="`/cashier/subcategories/${category.id}`" class="item">
-                <img :src="category.image_url" :alt="category.type_ar" :placeholder="placeholderImage" @error="handleImageError">
-                <p>{{ category.type_ar }}</p>
+            <VCol cols="4" lg="2" md="3" sm="6">
+              <RouterLink to="/cashier/categories" class="default item">
+                رجوع
+              </RouterLink>
+            </VCol>
+            <VCol v-for="subCategory in subCategories" :key="subCategory.id" cols="4" lg="2" md="3" sm="6">
+              <RouterLink :to="`/cashier/products/${subCategory.id}`" class="item">
+                <img :src="subCategory.image_url" :alt="subCategory.type_ar" :placeholder="placeholderImage" @error="handleImageError">
+                <p>{{ subCategory.type_ar }}</p>
               </RouterLink>
             </VCol>
           </VRow>
@@ -35,15 +40,14 @@
 
 <script setup>
 import { useCashierStore } from '@/store/Cashier';
-import { onMounted, ref, watch } from 'vue';
+import { onMounted, ref } from 'vue';
+import { useRouter } from 'vue-router';
 
-import AppLoading from '@/@core/components/AppLoading.vue';
+const router = useRouter()
 
-// Create reactive reference for search query and categories
+// Create reactive reference for search query and subCategories
 const searchQuery = ref('')
-
-
-const categories = ref([])
+const subCategories = ref([])
 
 // Placeholder image URL for fallback
 const placeholderImage = 'https://via.placeholder.com/350x150'
@@ -51,16 +55,16 @@ const placeholderImage = 'https://via.placeholder.com/350x150'
 // Access cashier store
 const cashierStore = useCashierStore()
 const isLoading = ref(false)
+const id = ref(router.currentRoute.value.params.id)
 
-
-
-const getItems = async search => {
+const getItems = async (search = '') => {
   let payload = {
-    search: search,
+    id: id.value,
+    search,
   }
   try {
     isLoading.value = true
-    categories.value = await cashierStore.getAllCategories(payload)
+    subCategories.value = await cashierStore.getAllSubCategories(payload)
   } catch (error) {
     console.error('Failed to load categories:', error)
   } finally {
@@ -70,17 +74,14 @@ const getItems = async search => {
 
 onMounted(async () => await getItems())
 
+const handleImageError = event => event.target.src = placeholderImage
 
-
-// Handle image loading failure
-const handleImageError = event => {
-  event.target.src = placeholderImage
-}
-
-
-watch(() => searchQuery.value, async () => {
-  getItems(searchQuery.value)
-})
+watch(
+  () => searchQuery.value,
+  async newSearch => {
+    await getItems(newSearch)
+  },
+)
 </script>
 
 <style lang="scss" scoped>
@@ -91,6 +92,12 @@ watch(() => searchQuery.value, async () => {
   padding: 0;
   border-radius: 5px;
   block-size: 200px;
+
+  &.default {
+    align-items: center;
+    justify-content: center;
+    background-color: #f2f2f2;
+  }
 
   img {
     block-size: 100%;
