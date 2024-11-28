@@ -46,7 +46,7 @@
       </VCol>
       <VCol v-if="cashierStore.cart.length != 0" cols="3">
         <VCard class="h-full visible">
-          <CachierCart :cart="cashierStore.cart" />
+          <CashierCart :cart="cashierStore.cart" />
         </VCard>
       </VCol>
     </VRow>
@@ -54,8 +54,8 @@
 </template>
 
 <script setup>
-import CachierCart from '@/@core/components/CachierCart.vue'
 import Calculation from '@/@core/components/Calculation.vue'
+import CashierCart from '@/@core/components/CashierCart.vue'
 import Modal from '@/@core/components/Modal.vue'
 import { useCashierStore } from '@/store/Cashier'
 import { onMounted, ref, watch } from 'vue'
