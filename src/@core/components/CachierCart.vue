@@ -7,15 +7,15 @@
             {{ item.quantity }} x {{ item.name }}
           </div>
           <div class="price">
-            {{ item.price }}
+            {{ item.price * item.quantity }}
           </div>
         </div>
       </div>
       <div class="cart__result">
-        <div class="total">
+        <RouterLink class="total" to="/cashier/payment">
           <p>الاجمالي</p>
           <p>{{ totalPrice }} ريال</p>
-        </div>
+        </RouterLink>
       </div>
     </div>
   </VCard>
@@ -30,6 +30,13 @@ const props = defineProps({
     required: true,
   },
 })
+
+const isShowPaymentMathods = ref(false)
+
+const togglePaymentMathods = () => {
+  isShowPaymentMathods.value = !isShowPaymentMathods.value
+
+}
 
 
 const totalPrice = computed(() => props.cart.reduce((acc, item) => acc + item.price * item.quantity, 0))
@@ -70,6 +77,7 @@ const totalPrice = computed(() => props.cart.reduce((acc, item) => acc + item.pr
       background-color: rgba(var(--v-theme-primary), 1);
       block-size: 50px;
       color: #fff;
+      inline-size: 100%;
 
       p {
         margin-block-end: 0;

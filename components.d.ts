@@ -145,7 +145,6 @@ declare module '@vue/runtime-core' {
     ErrorHeader: typeof import('./src/@core/components/ErrorHeader.vue')['default']
     GoogleMaps: typeof import('./src/@core/components/GLobal/GoogleMaps.vue')['default']
     I18n: typeof import('./src/@core/components/I18n.vue')['default']
-    Item: typeof import('./src/@core/components/pages/cashier/item.vue')['default']
     MapAutoComplete: typeof import('./src/@core/components/GLobal/MapAutoComplete.vue')['default']
     Modal: typeof import('./src/@core/components/Modal.vue')['default']
     Notifications: typeof import('./src/@core/components/Notifications.vue')['default']

@@ -45,7 +45,7 @@
         </VCard>
       </VCol>
       <VCol v-if="cashierStore.cart.length != 0" cols="3">
-        <VCard class="h-full">
+        <VCard class="h-full visible">
           <CachierCart :cart="cashierStore.cart" />
         </VCard>
       </VCol>
@@ -159,6 +159,10 @@ watch(
     max-inline-size: 100%;
     text-align: center;
   }
+}
+
+.visible {
+  overflow: visible;
 }
 
 .buttons {
