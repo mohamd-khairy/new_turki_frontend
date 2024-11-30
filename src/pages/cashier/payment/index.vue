@@ -12,22 +12,25 @@
             <h2 class="cart">
               طرق الدفع
             </h2>
-            <div class="payment-methods-grid">
-              <div v-for="method in paymentMethods" :key="method.id" class="payment-method-item" :class="{ 'selected': selectedPaymentMethod === method.id }" @click="selectPaymentMethod(method.id)">
+            <div v-if="isLoading" class="h-full d-flex align-center justify-center">
+              <AppLoading />
+            </div>
+            <div v-else class="payment-methods-grid">
+              <div v-for="method in paymentMethods" :key="method.id" class="payment-method-item" :class="{ 'selected': paymentInfo?.payment_type_id === method.id }" @click="selectPaymentMethod(method.id)">
                 <div class="radio-circle">
-                  <div v-if="selectedPaymentMethod === method.id" class="radio-circle-inner" />
+                  <div v-if="paymentInfo?.payment_type_id === method.id" class="radio-circle-inner" />
                 </div>
-                <span class="payment-method-name">{{ method.name }}</span>
+                <span class="payment-method-name">{{ method.name_ar }}</span>
               </div>
             </div>
           </div>
-          <button class="pay">
+          <button class="pay" @click="storePaymentTypes">
             دفع
           </button>
         </div>
       </VCol>
       <VCol v-if="cashierStore.cart.length != 0" cols="3">
-        <CashierCart :cart="cashierStore.cart" />
+        <CashierCart :is-payment="true" />
       </VCol>
     </VRow>
   </div>
@@ -36,27 +39,40 @@
 <script setup>
 import CashierCart from '@/@core/components/CashierCart.vue';
 import { useCashierStore } from '@/store/Cashier';
-import { ref } from 'vue';
+import { onMounted, reactive, ref } from 'vue';
+import { useRouter } from 'vue-router';
 
 const cashierStore = useCashierStore()
 
+const isLoading = ref(false)
+const paymentMethods = ref([])
+const router = useRouter()
 
-const paymentMethods = ref([
-  {
-    id: 1,
-    name: 'كاش',
-  },
-  {
-    id: 2,
-    name: 'بطاقة ائتمان',
-  },
-])
-
-const selectedPaymentMethod = ref(null)
+const paymentInfo = reactive({
+  payment_type_id: null,
+  order_ref_no: null,
+  comment: '',
+})
 
 const selectPaymentMethod = methodId => {
-  selectedPaymentMethod.value = methodId
+  paymentInfo.payment_type_id = methodId
 }
+
+const storePaymentTypes = () => {
+  paymentInfo.order_ref_no = cashierStore?.order?.ref_no
+  cashierStore.storePayment(paymentInfo)
+}
+
+
+onMounted(async () => {
+
+  if (cashierStore.order?.ref_no == undefined) router.go(-1)
+
+  isLoading.value = true
+  paymentMethods.value = await cashierStore.getAllPaymentTypes()
+  isLoading.value = false
+
+})
 </script>
 
 <style lang="scss" scoped>

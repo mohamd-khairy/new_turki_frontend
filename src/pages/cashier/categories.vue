@@ -27,7 +27,7 @@
         </VCard>
       </VCol>
       <VCol v-if="cashierStore.cart.length != 0" cols="3">
-        <CashierCart :cart="cashierStore.cart" />
+        <CashierCart />
       </VCol>
     </VRow>
   </div>
