@@ -60,6 +60,8 @@ declare module '@vue/runtime-core' {
     CardStatisticsHorizontal: typeof import('./src/@core/components/CardStatisticsHorizontal.vue')['default']
     CardStatisticsVertical: typeof import('./src/@core/components/CardStatisticsVertical.vue')['default']
     CardStatisticsVerticalSimple: typeof import('./src/@core/components/CardStatisticsVerticalSimple.vue')['default']
+    CashierCart: typeof import('./src/@core/components/CashierCart.vue')['default']
+    CashierSearch: typeof import('./src/@core/components/CashierSearch.vue')['default']
     ConfirmDialog: typeof import('./src/@core/components/ConfirmDialog.vue')['default']
     CustomizerSection: typeof import('./src/@core/components/CustomizerSection.vue')['default']
     DashboardOrdersTable: typeof import('./src/@core/components/pages/DashboardOrdersTable.vue')['default']

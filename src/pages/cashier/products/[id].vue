@@ -29,14 +29,44 @@
               </button>
             </VCol>
           </VRow>
-          <Modal v-model="showAddingModal" width="400px" :custom-action="true">
+          <Modal v-model="showAddingPropertiesModal" width="800px" :custom-action="true">
             <template #content>
-              <Calculation v-model="quantity" />
+              <VRow>
+                <VCol cols="12" md="6">
+                  <VSelect v-model="item.cut_id" label="قطع المنتجات" :items="selectedProduct?.cuts" item-title="name_ar" item-value="id" />
+                </VCol>
+                <VCol cols="12" md="6">
+                  <VSelect v-model="item.size_id" label="احجام المنتجات" :items="selectedProduct?.sizes" item-title="name_ar" item-value="id" />
+                </VCol>
+                <VCol cols="12" md="6">
+                  <VSelect v-model="item.preparation_id" label="تجهيز المنتجات" :items="selectedProduct?.preparations" item-title="name_ar" item-value="id" />
+                </VCol>
+                <VCol cols="12" md="12" class="d-flex gap-9">
+                  <VCheckbox v-model="item.shalwata" label="مع شلوطة" :false-value="0" :true-value="1" />
+                  <VCheckbox v-model="item.is_karashah" label="بدون كرشة" :false-value="0" :true-value="1" />
+                  <VCheckbox v-model="item.is_kwar3" label="بدون كوارع" :false-value="0" :true-value="1" />
+                  <VCheckbox v-model="item.is_lyh" label="بدون لية" :false-value="0" :true-value="1" />
+                  <VCheckbox v-model="item.is_Ras" label="بدون رأس" :false-value="0" :true-value="1" />
+                </VCol>
+              </VRow>
               <div class="buttons">
-                <VBtn @click="handleQuantity">
+                <VBtn class="primary" @click="addingProperties">
                   تم
                 </VBtn>
-                <VBtn @click="showAddingModal = false">
+                <VBtn class="secondary" @click="resetModal">
+                  إلغاء
+                </VBtn>
+              </div>
+            </template>
+          </Modal>
+          <Modal v-model="showAddingModal" width="400px" :custom-action="true">
+            <template #content>
+              <Calculation v-model="item.quantity" />
+              <div class="buttons ">
+                <VBtn class="primary" @click="handleQuantity">
+                  تم
+                </VBtn>
+                <VBtn class="secondary" @click="resetModal">
                   إلغاء
                 </VBtn>
               </div>
@@ -45,8 +75,8 @@
         </VCard>
       </VCol>
       <VCol v-if="cashierStore.cart.length != 0" cols="3">
-        <VCard class="h-full">
-          <CachierCart :cart="cashierStore.cart" />
+        <VCard class="h-full visible">
+          <CashierCart />
         </VCard>
       </VCol>
     </VRow>
@@ -54,36 +84,81 @@
 </template>
 
 <script setup>
-import CachierCart from '@/@core/components/CachierCart.vue'
 import Calculation from '@/@core/components/Calculation.vue'
+import CashierCart from '@/@core/components/CashierCart.vue'
 import Modal from '@/@core/components/Modal.vue'
 import { useCashierStore } from '@/store/Cashier'
-import { onMounted, ref, watch } from 'vue'
+import { onMounted, reactive, ref, toRaw, watch } from 'vue'
 import { useRouter } from 'vue-router'
-import { VCol } from 'vuetify/lib/components/index.mjs'
 
 const router = useRouter()
 const cashierStore = useCashierStore()
 const isLoading = ref(false)
 const quantity = ref('')
 const selectedProduct = ref({})
-const cart = ref([])
 const searchQuery = ref('')
 const products = ref([])
+const showAddingPropertiesModal = ref(false)
 const showAddingModal = ref(false)
 const id = ref(router.currentRoute.value.params.id)
 
+const item = reactive({
+  cut_id: null,
+  size_id: null,
+  preparation_id: null,
+  price: null,
+  quantity: null,
+  total_price: null,
+  product_id: null,
+  name: null,
+  quantity: null,
+  is_Ras: 0,
+  is_lyh: 0,
+  is_kwar3: 0,
+  is_karashah: 0,
+  shalwata: 0,
+})
 
-const handleQuantity = () => {
-  let payload = {
-    id: selectedProduct.value?.id,
-    name: selectedProduct.value?.name_ar,
-    price: selectedProduct.value?.['sale price'],
-    quantity: quantity.value,
-  }
-  cashierStore.addToCart(payload)
-  quantity.value = ''
+const resetItem = () => {
+  item.cut_id = null
+  item.size_id = null
+  item.preparation_id = null
+  item.price = null
+  item.quantity = null
+  item.total_price = null
+  item.id = null
+  item.name = null
+  item.is_Ras = 0
+  item.is_lyh = 0
+  item.is_kwar3 = 0
+  item.is_karashah = 0
+  item.shalwata = 0
+
+}
+
+const addingProperties = () => {
+  let selectedSize = selectedProduct.value.sizes.find(size => size.id == item.size_id)
+  item.price = selectedSize.price || selectedProduct.value.sale_price
+  item.product_id = selectedProduct.value.id
+  item.name = selectedProduct.value.name_ar
+  showAddingPropertiesModal.value = false
+  showAddingModal.value = true
+}
+
+const handleQuantity = async () => {
+  item.total_price = item.quantity * item.price
+
+  const itemToAdd = toRaw({ ...item })
+
+  cashierStore.addToCart(itemToAdd)
+  resetItem()
   showAddingModal.value = false
+}
+
+const resetModal = () => {
+  showAddingModal.value = false
+  showAddingPropertiesModal.value = false
+  resetItem()
 }
 
 
@@ -95,13 +170,12 @@ const placeholderImage = 'https://via.placeholder.com/350x150'
 
 const selectProduct = product => {
   selectedProduct.value = product
-  showAddingModal.value = true
+  showAddingPropertiesModal.value = true
 }
 
-const getItems = async (search = '') => {
+const getItems = async () => {
   let payload = {
     id: id.value,
-    search,
   }
 
   try {
@@ -118,10 +192,25 @@ onMounted(async () => await getItems())
 
 const handleImageError = event => event.target.src = placeholderImage
 
+const getProduct = async (search = '') => {
+  let payload = {
+    search,
+  }
+  try {
+    isLoading.value = true
+    subCategories.value = await cashierStore.searchProducts(payload)
+  } catch (error) {
+    console.error('Failed to load products:', error)
+  } finally {
+    isLoading.value = false
+  }
+}
+
 watch(
   () => searchQuery.value,
   async newSearch => {
-    await getItems(newSearch)
+    if (!newSearch) getItems()
+    else getProduct(newSearch)
   },
 )
 </script>
@@ -161,6 +250,10 @@ watch(
   }
 }
 
+.visible {
+  overflow: visible;
+}
+
 .buttons {
   display: flex;
   gap: 0.5rem;
@@ -168,11 +261,19 @@ watch(
 
   :deep(.v-btn) {
     flex: 1;
-    background-color: #fff !important;
-    block-size: 60px !important;
-    color: #333 !important;
-    font-size: 1.2rem;
+    block-size: 40px !important;
+    font-size: 1rem;
     text-align: center;
+
+    &.primary {
+      background-color: rgba(var(--v-theme-primary), 1) !important;
+      color: #fff;
+    }
+
+    &.secondary {
+      background-color: #fff !important;
+      color: #333 !important;
+    }
   }
 }
 </style>

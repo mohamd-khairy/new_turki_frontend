@@ -27,13 +27,14 @@
         </VCard>
       </VCol>
       <VCol v-if="cashierStore.cart.length != 0" cols="3">
-        <CachierCart :cart="cashierStore.cart" />
+        <CashierCart />
       </VCol>
     </VRow>
   </div>
 </template>
 
 <script setup>
+import CashierCart from '@/@core/components/CashierCart.vue';
 import { useCashierStore } from '@/store/Cashier';
 import { onMounted, ref, watch } from 'vue';
 

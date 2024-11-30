@@ -32,13 +32,14 @@
         </VCard>
       </VCol>
       <VCol v-if="cashierStore.cart.length != 0" cols="3">
-        <CachierCart :cart="cashierStore.cart" />
+        <CashierCart />
       </VCol>
     </VRow>
   </div>
 </template>
 
 <script setup>
+import CashierCart from '@/@core/components/CashierCart.vue';
 import { useCashierStore } from '@/store/Cashier';
 import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
@@ -57,10 +58,9 @@ const cashierStore = useCashierStore()
 const isLoading = ref(false)
 const id = ref(router.currentRoute.value.params.id)
 
-const getItems = async (search = '') => {
+const getItems = async () => {
   let payload = {
     id: id.value,
-    search,
   }
   try {
     isLoading.value = true
@@ -72,14 +72,31 @@ const getItems = async (search = '') => {
   }
 }
 
+
 onMounted(async () => await getItems())
 
 const handleImageError = event => event.target.src = placeholderImage
 
+const getProduct = async (search = '') => {
+  let payload = {
+    search,
+  }
+
+  try {
+    isLoading.value = true
+    subCategories.value = await cashierStore.searchProducts(payload)
+  } catch (error) {
+    console.error('Failed to load products:', error)
+  } finally {
+    isLoading.value = false
+  }
+}
+
 watch(
   () => searchQuery.value,
   async newSearch => {
-    await getItems(newSearch)
+    if (!newSearch) getItems()
+    else getProduct(newSearch)
   },
 )
 </script>
