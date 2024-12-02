@@ -7,7 +7,7 @@
             {{ item.quantity }} x {{ item.name }}
           </div>
           <div class="price">
-            {{ item.price * item.quantity }}
+            {{ item.total_price }} ريال
           </div>
         </div>
       </div>
@@ -27,7 +27,7 @@
       <template #content>
         <VRow>
           <VCol cols="12" md="12">
-            <VTextField v-model="client.customer_mobile" dirty name="mobile" type="number" prefix="+966" label="رقم الجوال" placeholder="202 555 0111" class="mb-5" />
+            <VTextField v-model="client.customer_mobile" dirty name="mobile" type="number" suffix="+966" label="رقم الجوال" placeholder="202 555 0111" class="mb-5" />
           </VCol>
         </VRow>
         <div class="buttons">
