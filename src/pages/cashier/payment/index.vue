@@ -4,11 +4,7 @@
       <VCol :cols="cashierStore.cart.length > 0 ? 9 : 12">
         <div class="payment-mathods">
           <div class="info">
-            <div class="button">
-              <button class="goBack" @click="$router.go(-1)">
-                رجوع
-              </button>
-            </div>
+            <VTextarea v-model="paymentInfo.comment" rows="3" label="الملاحظات" />
             <h2 class="cart">
               طرق الدفع
             </h2>
@@ -24,9 +20,14 @@
               </div>
             </div>
           </div>
-          <button class="pay" @click="storePaymentTypes">
-            دفع
-          </button>
+          <div class="buttons">
+            <button class="pay" :disabled="cashierStore.isClicked" @click="storePaymentTypes">
+              تم الدفع
+            </button>
+            <button @click="cancelOrder">
+              الغاء
+            </button>
+          </div>
         </div>
       </VCol>
       <VCol v-if="cashierStore.cart.length != 0" cols="3">
@@ -63,14 +64,22 @@ const storePaymentTypes = () => {
   cashierStore.storePayment(paymentInfo)
 }
 
+const cancelOrder = () => {
+  const { code } = cashierStore.cancelOrder(cashierStore?.order?.ref_no)
+  if (code == 200) router.push('/cashier/categories')
+
+}
+
 
 onMounted(async () => {
 
   if (cashierStore.order?.ref_no == undefined) router.go(-1)
+  else {
+    isLoading.value = true
+    paymentMethods.value = await cashierStore.getAllPaymentTypes()
+    isLoading.value = false
+  }
 
-  isLoading.value = true
-  paymentMethods.value = await cashierStore.getAllPaymentTypes()
-  isLoading.value = false
 
 })
 </script>
@@ -90,18 +99,6 @@ onMounted(async () => {
 }
 
 .goBack,
-.pay {
-  border-radius: 8px;
-  background-color: rgba(var(--v-theme-primary), 1);
-  block-size: 50px;
-  color: #fff;
-  inline-size: 100px;
-}
-
-.pay {
-  inline-size: 100%;
-}
-
 .payment-methods-grid,
 .info {
   display: flex;
@@ -122,13 +119,28 @@ onMounted(async () => {
   padding-inline: 1rem;
   transition: all 0.3s ease;
 
-  // &:hover {
-  //   border-color: #007bff;
-  // }
-
   &.selected {
     background-color: rgba(var(--v-theme-primary), 1);
     color: #fff;
+  }
+}
+
+.buttons {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+
+  > button {
+    flex: 1;
+    border-radius: 8px;
+    background-color: #fff;
+    block-size: 50px;
+
+    &.pay {
+      background-color: rgba(var(--v-theme-primary), 1);
+      color: #fff;
+    }
   }
 }
 </style>

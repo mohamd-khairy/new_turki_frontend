@@ -4,6 +4,7 @@ import { defineStore } from 'pinia'
 export const useCashierStore = defineStore('cashier', {
   state: () => ({
     cart: [],
+    isClicked: false,
     order: {},
   }),
   actions: {
@@ -67,7 +68,7 @@ export const useCashierStore = defineStore('cashier', {
       } catch (error) {
         console.error('Error fetching products:', error)
         throw error
-      }
+      } 
 
     },
 
@@ -86,6 +87,8 @@ export const useCashierStore = defineStore('cashier', {
       }
     },
     async storePayment(data) {
+      this.isClicked = true
+
       try {
         const response = await axios.post(`/cashier-store-payment`, {
           ...data,
@@ -96,8 +99,32 @@ export const useCashierStore = defineStore('cashier', {
       } catch (error) {
         console.error('Error fetching products:', error)
         throw error
+      }finally {
+        this.isClicked = false
       }
     },
+    async orderDetails(data) {
+      try {
+        const response = await axios.get(`/cashier-order-details/${data}`)
 
+        
+        return response.data
+      } catch (error) {
+        console.error('Error fetching products:', error)
+        throw error
+      }
+    },
+    async cancelOrder(data) {
+      try {
+        const response = await axios.delete(`/cashier-delete-order/${data}`)
+
+        this.order = {}
+        
+        return response.data
+      } catch (error) {
+        console.error('Error fetching products:', error)
+        throw error
+      }
+    },
   },
 })
