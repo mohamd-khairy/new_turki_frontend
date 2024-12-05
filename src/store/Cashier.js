@@ -6,6 +6,8 @@ export const useCashierStore = defineStore('cashier', {
     cart: [],
     isClicked: false,
     order: {},
+    orderList: [],
+    orderListPaginated: {},
   }),
   actions: {
     async addToCart(item) {
@@ -124,6 +126,40 @@ export const useCashierStore = defineStore('cashier', {
       } catch (error) {
         console.error('Error fetching products:', error)
         throw error
+      }
+    },
+    async ordersList() {
+      try {
+        this.isLoading = true
+
+        const response = await axios.get(`/cashier-orders`)
+
+        this.orderList = response.data.data.data
+        console.log(this.orderList)
+        this.orderListPaginated['total'] = response.data.total
+        this.orderListPaginated['itemsPerPage'] = response.data.per_page
+        
+        return response.data
+      } catch (error) {
+        console.error('Error fetching products:', error)
+        throw error
+      } finally {
+        this.isLoading = false
+      }
+    },
+    async userSalesList() {
+      try {
+        this.isLoading = true
+
+        const response = await axios.get(`/cashier-user-sales-details`)
+
+
+        return response.data
+      } catch (error) {
+        console.error('Error fetching products:', error)
+        throw error
+      } finally {
+        this.isLoading = false
       }
     },
   },
