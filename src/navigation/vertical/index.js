@@ -50,6 +50,18 @@ export default [
     permission: "read-cashier",
   },
   {
+    title: 'طلبات',
+    to: { name: 'cashier-orders' },
+    icon: { icon: 'game-icons:vertical-banner' },
+    permission: "read-cashier",
+  },
+  {
+    title: 'التسويات',
+    to: { name: 'cashier-user-sales' },
+    icon: { icon: 'game-icons:vertical-banner' },
+    permission: "read-cashier",
+  },
+  {
     title: 'Banners',
     to: { name: 'banners' },
     icon: { icon: 'game-icons:vertical-banner' },

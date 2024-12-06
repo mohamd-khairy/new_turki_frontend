@@ -59,14 +59,17 @@ const selectPaymentMethod = methodId => {
   paymentInfo.payment_type_id = methodId
 }
 
-const storePaymentTypes = () => {
+const storePaymentTypes = async () => {
   paymentInfo.order_ref_no = cashierStore?.order?.ref_no
-  cashierStore.storePayment(paymentInfo)
+
+  const { code, data } = await cashierStore.storePayment(paymentInfo)
+
+  if (code == 200) router.push(`/cashier/order-details/${data.ref_no}`)
 }
 
 const cancelOrder = () => {
   const { code } = cashierStore.cancelOrder(cashierStore?.order?.ref_no)
-  if (code == 200) router.push('/cashier/categories')
+  if (code == 200) router.push(`/cashier/categories`)
 
 }
 
