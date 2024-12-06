@@ -9,6 +9,10 @@ export const useCashierStore = defineStore('cashier', {
     discount: 0,
     order: {},
     orderList: [],
+    orderInfo: {
+      products: [],
+      order: {},
+    },
     orderListPaginated: {
       total: 0,
     },
@@ -121,6 +125,7 @@ export const useCashierStore = defineStore('cashier', {
       try {
         const response = await axios.get(`/cashier-order-details/${data}`)
 
+        this.orderInfo = response.data.data
         
         return response.data
       } catch (error) {

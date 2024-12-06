@@ -1,5 +1,6 @@
 <template>
   <div>
+    <CashierInvoice ref="orderContainerRef" />
     <div v-if="isLoading" class="loader_wrap">
       <img src="@/assets/images/logo.png" alt="turki">
       <p class="text-2xl">
@@ -7,7 +8,7 @@
       </p>
     </div>
     <div v-else class="">
-      <div ref="orderContainerRef" class="card-wrapper invoice-container">
+      <div class="card-wrapper invoice-container">
         <VRow justify="space-between" class="mb-2 pa-0">
           <VCol cols="12" class="py-0">
             <div class="d-flex justify-space-between align-center">
@@ -86,12 +87,6 @@
                 </h4>
               </VCol>
               <VCol cols="6" class="d-flex align-center gap-3 text-base py-1">
-                <h4> العنوان :</h4>
-                <h4>
-                  {{ ConvertToArabicNumbers(orderDetails.order.selected_address?.address) }}
-                </h4>
-              </VCol>
-              <VCol cols="6" class="d-flex align-center gap-3 text-base py-1">
                 <h4>طريقة الدفع :</h4>
                 <h4>
                   {{ orderDetails.order.payment_type ? orderDetails.order.payment_type.name_ar : "لا يوجد" }}
@@ -157,25 +152,7 @@
                     <small>
                       {{ product.preparation ? product.preparation.name_ar : "لا يوجد" }}</small>
                   </td>
-                  <!--
-                    <td>
-                    <small>
-                    {{ product.is_karashah ? "بدون" : "" }}</small>
-                    </td>
-                    <td>
-                    <small>
-                    {{ product.is_kwar3 ? "بدون" : "" }}</small>
-                    </td>
-                    <td>
-                    <small>
-                    {{ product.is_lyh ? "بدون" : "" }}</small>
-                    </td>
-                    <td>
-                    <small>
-                    {{ product.is_Ras ? "بدون" : "" }}</small>
-                    </td> 
-                
-                  -->
+
                   <td>
                     <small>
                       {{ product.shalwata ? "مع شلوطة" : "بدون" }}</small>
@@ -285,10 +262,11 @@
 </template>
 
 <script setup>
-import { useCashierStore } from '@/store/Cashier';
-import moment from "moment";
-import { computed, onMounted } from 'vue';
-import { useVueToPrint } from "vue-to-print";
+import { useCashierStore } from '@/store/Cashier'
+import moment from "moment"
+import { computed, onMounted } from 'vue'
+import { useVueToPrint } from "vue-to-print"
+import CashierInvoice from '@/@core/components/CashierInvoice.vue'
 
 const orderDetails = ref({})
 const cashierStore = useCashierStore()
@@ -316,6 +294,7 @@ const { handlePrint } = useVueToPrint({
   content: () => orderContainerRef.value,
   documentTitle: "تفاصيل الطلبية",
   removeAfterPrint: true,
+
 })
 
 const isUAEOrder = computed(() => orderDetails.value.order?.selected_address?.country_id == 4)
@@ -345,9 +324,6 @@ onMounted(() => getOrderDetails())
 
 <style scoped lang="scss">
 .invoice-container {
-  padding: 50px;
-  direction: rtl;
-
   .text-base {
     font-size: 1rem !important;
     font-weight: 600;

@@ -27,17 +27,8 @@
               {{ t('forms.payment_type_name') }}
             </th>
             <th scope="col" class="font-weight-semibold">
-              {{ t('forms.address_address') }}
-            </th>
-            <th scope="col" class="font-weight-semibold">
               مسئول المبيعات
             </th>
-
-
-            <th scope="col" class="font-weight-semibold">
-              {{ t('forms.paid_amount_wallet') }}
-            </th>
-
             <th scope="col" class="font-weight-semibold">
               {{ t('forms.delivery_date') }}
             </th>
@@ -100,25 +91,11 @@
                 "" }}
             </td>
             <td>
-              <span v-if="order.address">
-                {{ order.address }}
-              </span>
-              <span v-else>--</span>
-            </td>
-            <td>
               <span v-if="order.sales_officer_name">
                 {{ order.sales_officer_name }}
               </span>
               <span v-else>--</span>
             </td>
-
-
-            <td>
-              <VChip style="cursor: pointer;" :class="{ 'text-error': order.wallet_amount_used <= 0, 'text-success': order.wallet_amount_used > 0 }">
-                {{ order.wallet_amount_used > 0 ? "نعم" : "لا" }}
-              </VChip>
-            </td>
-
             <td>
               {{ ConvertToArabicNumbers(formatDateTime(order.delivery_date).date) }}
             </td>
@@ -137,8 +114,6 @@
             </td>
           </tr>
         </tbody>
-
-        <!-- 👉 table footer  -->
         <tfoot v-show="!cashierStore.isLoading && cashierStore.orderList.length == 0">
           <tr>
             <td colspan="8" class="text-center text-body-1">
