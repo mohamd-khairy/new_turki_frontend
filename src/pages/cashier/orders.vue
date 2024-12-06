@@ -1,51 +1,187 @@
 <template>
-  <VCard height="400">
-    <VTable class="text-no-wrap order-list-table">
-      <thead>
-        <tr>
-          <th scope="col" class="font-weight-semibold">
-            {{ t('forms.id') }}
-          </th>
-          <th scope="col" class="font-weight-semibold">
-            {{ t('forms.customer_name') }}
-          </th>
-          <th scope="col" class="font-weight-semibold">
-            {{ t('forms.mobile') }}
-          </th>
-          <th scope="col" class="font-weight-semibold">
-            {{ t('forms.payment_type') }}
-          </th>
-        </tr>
-      </thead>
+  <VCard :loading="cashierStore.isLoading">
+    <VCardTitle class="d-flex align-center">
+      <VIcon icon="solar:delivery-broken" size="24" color="primary" />
+      <span class="mx-1">{{ t('Orders') }}</span>
+    </VCardTitle>
+    <div class="">
+      <VTable height="600px" fixed-header class="text-no-wrap product-list-table text-center">
+        <thead>
+          <tr>
+            <th scope="col" class="font-weight-semibold">
+              {{ t('forms.actions') }}
+            </th>
+            <th scope="col" class="font-weight-semibold">
+              {{ t('ref_no') }}
+            </th>
+            <th scope="col" class="font-weight-semibold">
+              {{ t('forms.customer_name') }}
+            </th>
+            <th scope="col" class="font-weight-semibold">
+              {{ t('customer_mobile') }}
+            </th>
+            <th scope="col" class="font-weight-semibold">
+              {{ t('forms.order_payment_status') }}
+            </th>
+            <th scope="col" class="font-weight-semibold">
+              {{ t('forms.payment_type_name') }}
+            </th>
+            <th scope="col" class="font-weight-semibold">
+              {{ t('forms.address_address') }}
+            </th>
+            <th scope="col" class="font-weight-semibold">
+              مسئول المبيعات
+            </th>
 
-      <tbody>
-        <tr v-for="order in cashierStore.orderList" :key="order?.id">
-          <td>#{{ order.id }}</td>
-          <td>{{ order.customer_name }}</td>
-          <td>{{ order.customer_mobile }}</td>
-          <td>{{ order.payment_type_name }}</td>
-        </tr>
-      </tbody>
 
-      <tfoot v-show="!1">
-        <tr>
-          <td colspan="8" class="text-center text-body-1">
-            لا يوجد بيانات
-          </td>
-        </tr>
-      </tfoot>
-    </VTable>
+            <th scope="col" class="font-weight-semibold">
+              {{ t('forms.paid_amount_wallet') }}
+            </th>
+
+            <th scope="col" class="font-weight-semibold">
+              {{ t('forms.delivery_date') }}
+            </th>
+
+            <th scope="col" class="font-weight-semibold">
+              {{ t('forms.total_amount_before_discount') }}
+            </th>
+            <th scope="col" class="font-weight-semibold">
+              {{ t('forms.total_amount_after_discount') }}
+            </th>
+          </tr>
+        </thead>
+        <tbody v-if="cashierStore.isLoading">
+          <tr v-for="tableRow in 9" :key="tableRow">
+            <td v-for="tableTD in 15" :key="tableTD">
+              <div>
+                <VSkeletonLoader type="text" :height="40" :width="100" />
+              </div>
+            </td>
+          </tr>
+        </tbody>
+
+        <tbody v-else>
+          <tr v-for="order in cashierStore.orderList" :key="order.id">
+            <td>
+              <VTooltip text="تفاصيل الطلب">
+                <template #activator="{ props }">
+                  <VBtn v-bind="props" icon variant="plain" color="default" size="x-small" @click="openDetails(order)">
+                    <VIcon :size="22" icon="tabler-eye" />
+                  </VBtn>
+                </template>
+              </VTooltip>
+            </td>
+            <td>
+              {{ order.ref_no }}
+            </td>
+            <td>
+              {{ order.customer_name }}
+            </td>
+            <td>
+              {{
+                order.customer_mobile }}
+            </td>
+            <td>
+              <VChip v-if="order.paid == 1" style="cursor: pointer;" class="text-success">
+                مدفوع
+              </VChip>
+
+              <VChip v-else-if="(order.wallet_amount_used > 0 && order.remain_amount > 0)" style="cursor: pointer;" class="text-warning">
+                مدفوع جزئياً
+              </VChip>
+              <VChip v-else-if="order.paid == 0" style="cursor: pointer;" class="text-error">
+                غير مدفوع
+              </VChip>
+            </td>
+            <td>
+              {{ order.payment_type_name }}
+              {{ order.payment_type_id != 8 && order.wallet_amount_used > 0 ? "+ المحفظة (" + order.wallet_amount_used
+                + ")" :
+                "" }}
+            </td>
+            <td>
+              <span v-if="order.address">
+                {{ order.address }}
+              </span>
+              <span v-else>--</span>
+            </td>
+            <td>
+              <span v-if="order.sales_officer_name">
+                {{ order.sales_officer_name }}
+              </span>
+              <span v-else>--</span>
+            </td>
+
+
+            <td>
+              <VChip style="cursor: pointer;" :class="{ 'text-error': order.wallet_amount_used <= 0, 'text-success': order.wallet_amount_used > 0 }">
+                {{ order.wallet_amount_used > 0 ? "نعم" : "لا" }}
+              </VChip>
+            </td>
+
+            <td>
+              {{ ConvertToArabicNumbers(formatDateTime(order.delivery_date).date) }}
+            </td>
+            <td>
+              <span v-if="order.total_amount_after_discount">
+                {{ ConvertToArabicNumbers(order.total_amount_after_discount) }}
+              </span>
+              <span v-else>--</span>
+            </td>
+
+            <td>
+              <span v-if="order.total_amount_before_discount">
+                {{ ConvertToArabicNumbers(order.total_amount_before_discount) }}
+              </span>
+              <span v-else>--</span>
+            </td>
+          </tr>
+        </tbody>
+
+        <!-- 👉 table footer  -->
+        <tfoot v-show="!cashierStore.isLoading && cashierStore.orderList.length == 0">
+          <tr>
+            <td colspan="8" class="text-center text-body-1">
+              لا يوجد بيانات
+            </td>
+          </tr>
+        </tfoot>
+      </VTable>
+      <VDivider />
+
+      <VCardText class="d-flex align-center flex-wrap justify-space-between gap-4 py-3">
+        <span class="text-sm text-disabled">{{ paginationData }}</span>
+
+        <VPagination v-model="currentPage" size="small" :total-visible="5" :length="cashierStore.orderListPaginated?.total" />
+      </VCardText>
+    </div>
   </VCard>
 </template>
 
 
 <script setup>
-import { useCashierStore } from '@/store/Cashier';
-import { onMounted } from 'vue';
+import { useCashierStore } from '@/store/Cashier'
+import { ref, onMounted, watch } from 'vue'
+import moment from "moment"
+import { useRouter } from "vue-router"
 
+const router = useRouter()
 const cashierStore = useCashierStore()
 const { t } = useI18n()
-const orders = ref([])
+const dataFrom = ref(1)
+const dataTo = ref(1)
+const currentPage = ref(1)
+
+
+const handleDeliveryDate = (date, createdDate) => {
+  const newDate = moment(date).format("DD-MM-YYYY")
+
+  return ConvertToArabicNumbers(newDate)
+}
+
+const paginationData = computed(() => {
+  return ` عرض من ${ConvertToArabicNumbers(dataFrom.value)} إلي ${ConvertToArabicNumbers(dataTo.value)} من ${ConvertToArabicNumbers(cashierStore.orderListPaginated?.total)} الإجمالي `
+})
 
 const ConvertToArabicNumbers = num => {
   const arabicNumbers = "\u0660\u0661\u0662\u0663\u0664\u0665\u0666\u0667\u0668\u0669"
@@ -55,7 +191,27 @@ const ConvertToArabicNumbers = num => {
   })
 }
 
+const formatDateTime = data => {
+  let date = moment(data).format("YYYY-MM-DD")
+  let time = moment(data).format("hh:mm:ss A")
+
+  return { date, time }
+}
+
+const getOrders = async () => {
+  cashierStore.ordersList({ page: currentPage.value })
+}
+
+const openDetails = order => {
+  router.push(`/cashier/order-details/${order.ref_no}`)
+}
+
+
 onMounted(async () => {
-  await cashierStore.ordersList()
+  await getOrders()
+})
+
+watch(() => currentPage.value, () => {
+  getOrders()
 })
 </script>

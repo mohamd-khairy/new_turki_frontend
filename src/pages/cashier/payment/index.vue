@@ -21,12 +21,8 @@
             </div>
           </div>
           <div class="buttons">
-            <button class="pay" :disabled="cashierStore.isClicked" @click="storePaymentTypes">
-              تم الدفع
-            </button>
-            <button @click="cancelOrder">
-              الغاء
-            </button>
+            <AppButton type="primary" title="تم الدفع" :disabled="preventPay" :is-loading="cashierStore.isClicked" @click="storePaymentTypes" />
+            <AppButton type="close" title="الغاء" @click="cancelOrder" />
           </div>
         </div>
       </VCol>
@@ -38,10 +34,11 @@
 </template>
 
 <script setup>
-import CashierCart from '@/@core/components/CashierCart.vue';
-import { useCashierStore } from '@/store/Cashier';
-import { onMounted, reactive, ref } from 'vue';
-import { useRouter } from 'vue-router';
+import AppButton from '@/@core/components/AppButton.vue'
+import CashierCart from '@/@core/components/CashierCart.vue'
+import { useCashierStore } from '@/store/Cashier'
+import { computed, onMounted, reactive, ref } from 'vue'
+import { useRouter } from 'vue-router'
 
 const cashierStore = useCashierStore()
 
@@ -54,6 +51,18 @@ const paymentInfo = reactive({
   order_ref_no: null,
   comment: '',
 })
+
+const preventPay = computed(() => {
+  let paymentSelected = paymentInfo.payment_type_id == null ? true : false
+  let isClicked = cashierStore.isClicked
+
+  return paymentSelected || isClicked
+
+})
+
+console.log(preventPay.value)
+
+
 
 const selectPaymentMethod = methodId => {
   paymentInfo.payment_type_id = methodId

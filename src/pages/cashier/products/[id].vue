@@ -50,12 +50,8 @@
                 </VCol>
               </VRow>
               <div class="buttons">
-                <VBtn class="primary" @click="addingProperties">
-                  تم
-                </VBtn>
-                <VBtn class="secondary" @click="resetModal">
-                  إلغاء
-                </VBtn>
+                <AppButton type="primary" title="تم" @click="addingProperties" />
+                <AppButton type="close" title="الغاء" @click="resetModal" />
               </div>
             </template>
           </Modal>
@@ -63,12 +59,8 @@
             <template #content>
               <Calculation v-model="item.quantity" />
               <div class="buttons ">
-                <VBtn class="primary" @click="handleQuantity">
-                  تم
-                </VBtn>
-                <VBtn class="secondary" @click="resetModal">
-                  إلغاء
-                </VBtn>
+                <AppButton type="primary" title="تم" @click="handleQuantity" />
+                <AppButton type="close" title="الغاء" @click="resetModal" />
               </div>
             </template>
           </Modal>
@@ -264,16 +256,6 @@ watch(
     block-size: 40px !important;
     font-size: 1rem;
     text-align: center;
-
-    &.primary {
-      background-color: rgba(var(--v-theme-primary), 1) !important;
-      color: #fff;
-    }
-
-    &.secondary {
-      background-color: #fff !important;
-      color: #333 !important;
-    }
   }
 }
 </style>

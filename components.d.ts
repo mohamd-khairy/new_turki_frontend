@@ -43,6 +43,7 @@ declare module '@vue/runtime-core' {
     AddWelcomeDialog: typeof import('./src/@core/components/pages/AdditionDialogs/AddWelcomeDialog.vue')['default']
     Alert: typeof import('./src/@core/components/GLobal/Alert.vue')['default']
     AppBarSearch: typeof import('./src/@core/components/AppBarSearch.vue')['default']
+    AppButton: typeof import('./src/@core/components/AppButton.vue')['default']
     AppCardActions: typeof import('./src/@core/components/AppCardActions.vue')['default']
     AppCardCode: typeof import('./src/@core/components/AppCardCode.vue')['default']
     AppDateTimePicker: typeof import('./src/@core/components/AppDateTimePicker.vue')['default']
