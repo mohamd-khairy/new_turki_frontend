@@ -231,18 +231,6 @@
                   <small>{{ orderCurrency }}</small>
                 </h3>
               </VCol>
-              <VCol v-if="orderDetails.order && orderDetails.order.boxes_count" cols="6" class="d-flex align-center gap-3 text-base py-1">
-                <h4>عدد الكراتين </h4>
-                <h4>
-                  {{ ConvertToArabicNumbers(orderDetails.order.boxes_count) }}
-                </h4>
-              </VCol>
-              <VCol v-if="orderDetails.order && orderDetails.order.dishes_count" cols="6" class="d-flex align-center gap-3 text-base py-1">
-                <h4>عدد الأطباق</h4>
-                <h4>
-                  {{ ConvertToArabicNumbers(orderDetails.order.dishes_count) }}
-                </h4>
-              </VCol>
             </VRow>
             <h3 class="d-flex align-center justify-space-between pa-2 mb-1 text-base" style="background-color: #ddd;">
               ملاحظات
