@@ -186,7 +186,7 @@ export const useCashierStore = defineStore('cashier', {
         })
 
         this.isCodeSubmitted = true
-        this.discount = response.data
+        this.discount = response.data.data
         
         return response.data
       } catch (error) {
