@@ -80,7 +80,7 @@
     </p>
     <p>=======================================</p>
     <div class="text-center">
-      <img :src="cashierStore.orderInfo?.order?.qr">
+      <img class="qr" :src="cashierStore.orderInfo?.order?.qr">
     </div>
   </div>
 </template>
@@ -130,18 +130,18 @@ img {
   line-height: 1.5;
   margin-block: 0;
   margin-inline: auto;
+  page-break-after: avoid;
+  page-break-inside: avoid;
 }
 
 p {
   margin-block-end: 0;
 }
 
-p,
-h4,
-.table {
-  /* Prevent page breaks inside elements */
-  page-break-after: avoid;
-  page-break-inside: avoid;
+.qr {
+  inline-size: 80%;
+  max-block-size: unset;
+  max-inline-size: 200px;
 }
 
 .table {

@@ -1,9 +1,9 @@
 <script setup>
+import { useProductsStore } from "@/store/Products"
 import { useSettingsStore } from "@/store/Settings"
-import { useStocksStore } from "@/store/Stocks"
 import { useStoresStore } from "@/store/Stores"
 import {
-requiredValidator,
+  requiredValidator,
 } from '@validators'
 import { useI18n } from "vue-i18n"
 
@@ -21,7 +21,7 @@ const emit = defineEmits([
 
 const settingsListStore = useSettingsStore()
 const storesStore = useStoresStore()
-const stocksStore = useStocksStore()
+const productsStore = useProductsStore()
 
 const { t } = useI18n()
 
@@ -49,7 +49,7 @@ const refForm = ref(null)
 const addProductStore = () => {
   storesItems.value.push({
     store_id: null,
-    stock_id: null,
+    product_id: null,
     quantity: 1,
   })
 }
@@ -243,7 +243,7 @@ const dialogModelValueUpdate = val => {
                   cols="12"
                   md="6"
                 >
-                  <AutoCompleteDropdown 
+                  <AutoCompleteDropdown
                     v-model="store.store_id"
                     :api-model="storesStore"
                     api-search-method="getAll"
@@ -259,14 +259,14 @@ const dialogModelValueUpdate = val => {
                   cols="12"
                   md="6"
                 >
-                  <AutoCompleteDropdown 
-                    v-model="store.stock_id"
-                    :api-model="stocksStore"
-                    api-search-method="getAll"
-                    item-title="product_name"
+                  <AutoCompleteDropdown
+                    v-model="store.product_id"
+                    :api-model="productsStore"
+                    api-search-method="fetchProducts"
+                    item-title="name_ar"
                     item-value="id"
-                    label="المخزون"
-                    placeholder="البحث في المخزون"
+                    label="المنتجات"
+                    placeholder="البحث في المنتجات"
                     :rules="[requiredValidator]"
                     style="background-color: #fff;"
                   />
@@ -302,7 +302,7 @@ const dialogModelValueUpdate = val => {
                     />
                   </VBtn>
                 </VCol>
-              </VRow> 
+              </VRow>
             </VCol>
 
             <VCol

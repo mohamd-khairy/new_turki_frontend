@@ -119,7 +119,6 @@ const resetItem = () => {
 }
 
 const addingProperties = () => {
-  item.product_id = selectedProduct.value.id
   showAddingPropertiesModal.value = false
   showAddingModal.value = true
 }
@@ -127,6 +126,7 @@ const addingProperties = () => {
 const handleQuantity = async () => {
   let selectedSize = selectedProduct.value?.sizes.find(size => size.id == item.size_id)
   item.price = selectedSize == undefined ? selectedProduct.value.sale_price : selectedSize?.price
+  item.product_id = selectedProduct.value.id
   item.name = selectedProduct.value.name_ar
   item.total_price = item.quantity * item.price
 

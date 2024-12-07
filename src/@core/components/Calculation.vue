@@ -23,38 +23,39 @@ const modelValue = defineModel({
   required: true,
 })
 
-
 const buttons = [
-  { label: "1", action: () => appendNum(1) },
-  { label: "2", action: () => appendNum(2) },
-  { label: "3", action: () => appendNum(3) },
-  { label: "4", action: () => appendNum(4) },
-  { label: "5", action: () => appendNum(5) },
-  { label: "6", action: () => appendNum(6) },
-  { label: "7", action: () => appendNum(7) },
-  { label: "8", action: () => appendNum(8) },
-  { label: "9", action: () => appendNum(9) },
+  { label: "1", action: () => appendNum("1") },
+  { label: "2", action: () => appendNum("2") },
+  { label: "3", action: () => appendNum("3") },
+  { label: "4", action: () => appendNum("4") },
+  { label: "5", action: () => appendNum("5") },
+  { label: "6", action: () => appendNum("6") },
+  { label: "7", action: () => appendNum("7") },
+  { label: "8", action: () => appendNum("8") },
+  { label: "9", action: () => appendNum("9") },
   { label: ".", action: () => addDecimal() },
-  { label: "0", action: () => appendNum(0) },
+  { label: "0", action: () => appendNum("0") },
   { label: "C", action: () => clearValue() },
 ]
 
 const appendNum = num => {
   if (modelValue.value === "0" && num === "0") return
-  modelValue.value += num
+  modelValue.value = (modelValue.value || "") + num
 }
 
 const addDecimal = () => {
-  if (!modelValue.value.includes(".")) {
-    modelValue.value += modelValue.value ? "." : "0."
+  if (!String(modelValue.value).includes(".")) {
+    modelValue.value = modelValue.value ? String(modelValue.value) + "." : "0."
   }
 }
 
-const clearValue = () => modelValue.value = ""
-
+const clearValue = () => {
+  modelValue.value = ""
+}
 
 const handleButtonClick = action => action()
 </script>
+
 
 <style lang="scss" scoped>
 .flex {
