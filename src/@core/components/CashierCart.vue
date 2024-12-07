@@ -59,9 +59,9 @@
 </template>
 
 <script setup>
-import { useCashierStore } from '@/store/Cashier'
-import { computed, reactive, ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { useCashierStore } from '@/store/Cashier';
+import { computed, reactive, ref } from 'vue';
+import { useRouter } from 'vue-router';
 
 const props = defineProps({
   isPayment: {
@@ -125,7 +125,7 @@ const preventMakeOrder = computed(() => {
 
 const makeOrder = async () => {
   client["products"] = cashierStore.cart
-  client["total_amount"] = totalQuantity
+  client["total_amount"] = totalPrice
   client["customer_mobile"] = `+966${client.customer_mobile}`
   client["applied_discount_code"] = discountCode.discount_code
 
@@ -222,7 +222,7 @@ const makeOrder = async () => {
       position: absolute;
       block-size: 40px;
       inset-block-start: 50%;
-      inset-inline-start: 74%;
+      inset-inline-end: 15px;
       transform: translateY(-50%);
     }
   }
