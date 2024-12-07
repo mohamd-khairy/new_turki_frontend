@@ -1,87 +1,77 @@
 <template>
-  <div>
-    <!-- Search Card -->
-    <VRow>
-      <VCol :cols="cashierStore.cart.length > 0 ? 9 : 12">
-        <VCard class="mb-5 pa-5">
-          <VRow justify="space-between">
-            <VCol cols="12">
-              <VTextField v-model="searchQuery" label="بحث" class="search-wrap" prepend-inner-icon="iconamoon:search-thin" />
-            </VCol>
-          </VRow>
-        </VCard>
+  <CashierLayout>
+    <VCard class="mb-5 pa-5">
+      <VRow justify="space-between">
+        <VCol cols="12">
+          <VTextField v-model="searchQuery" label="بحث" class="search-wrap" prepend-inner-icon="iconamoon:search-thin" />
+        </VCol>
+      </VRow>
+    </VCard>
 
-        <!-- Categories Card -->
-        <VCard class="pa-5">
-          <div v-if="isLoading" class="h-full d-flex align-center justify-center">
-            <AppLoading />
-          </div>
-          <VRow v-else justify="flex-start">
-            <VCol cols="4" lg="2" md="3" sm="6">
-              <button class="default item" @click="$router.go(-1)">
-                رجوع
-              </button>
+    <!-- Categories Card -->
+    <VCard class="pa-5">
+      <div v-if="isLoading" class="h-full d-flex align-center justify-center">
+        <AppLoading />
+      </div>
+      <VRow v-else justify="flex-start">
+        <VCol cols="4" lg="2" md="3" sm="6">
+          <button class="default item" @click="$router.go(-1)">
+            رجوع
+          </button>
+        </VCol>
+        <VCol v-for="product in products" :key="product.id" cols="4" lg="2" md="3" sm="6">
+          <button class="item" @click="selectProduct(product)">
+            <img :src="product.image_url" :alt="product.type_ar" :placeholder="placeholderImage" @error="handleImageError">
+            <p>{{ product.name_ar }}</p>
+          </button>
+        </VCol>
+      </VRow>
+      <Modal v-model="showAddingPropertiesModal" width="800px" :custom-action="true">
+        <template #content>
+          <VRow>
+            <VCol cols="12" md="6">
+              <VSelect v-model="item.cut_id" label="قطع المنتجات" :items="selectedProduct?.cuts" item-title="name_ar" item-value="id" />
             </VCol>
-            <VCol v-for="product in products" :key="product.id" cols="4" lg="2" md="3" sm="6">
-              <button class="item" @click="selectProduct(product)">
-                <img :src="product.image_url" :alt="product.type_ar" :placeholder="placeholderImage" @error="handleImageError">
-                <p>{{ product.name_ar }}</p>
-              </button>
+            <VCol cols="12" md="6">
+              <VSelect v-model="item.size_id" label="احجام المنتجات" :items="selectedProduct?.sizes" item-title="name_ar" item-value="id" />
+            </VCol>
+            <VCol cols="12" md="6">
+              <VSelect v-model="item.preparation_id" label="تجهيز المنتجات" :items="selectedProduct?.preparations" item-title="name_ar" item-value="id" />
+            </VCol>
+            <VCol cols="12" md="12" class="d-flex gap-9">
+              <VCheckbox v-model="item.shalwata" label="مع شلوطة" :false-value="0" :true-value="1" />
+              <VCheckbox v-model="item.is_karashah" label="بدون كرشة" :false-value="0" :true-value="1" />
+              <VCheckbox v-model="item.is_kwar3" label="بدون كوارع" :false-value="0" :true-value="1" />
+              <VCheckbox v-model="item.is_lyh" label="بدون لية" :false-value="0" :true-value="1" />
+              <VCheckbox v-model="item.is_Ras" label="بدون رأس" :false-value="0" :true-value="1" />
             </VCol>
           </VRow>
-          <Modal v-model="showAddingPropertiesModal" width="800px" :custom-action="true">
-            <template #content>
-              <VRow>
-                <VCol cols="12" md="6">
-                  <VSelect v-model="item.cut_id" label="قطع المنتجات" :items="selectedProduct?.cuts" item-title="name_ar" item-value="id" />
-                </VCol>
-                <VCol cols="12" md="6">
-                  <VSelect v-model="item.size_id" label="احجام المنتجات" :items="selectedProduct?.sizes" item-title="name_ar" item-value="id" />
-                </VCol>
-                <VCol cols="12" md="6">
-                  <VSelect v-model="item.preparation_id" label="تجهيز المنتجات" :items="selectedProduct?.preparations" item-title="name_ar" item-value="id" />
-                </VCol>
-                <VCol cols="12" md="12" class="d-flex gap-9">
-                  <VCheckbox v-model="item.shalwata" label="مع شلوطة" :false-value="0" :true-value="1" />
-                  <VCheckbox v-model="item.is_karashah" label="بدون كرشة" :false-value="0" :true-value="1" />
-                  <VCheckbox v-model="item.is_kwar3" label="بدون كوارع" :false-value="0" :true-value="1" />
-                  <VCheckbox v-model="item.is_lyh" label="بدون لية" :false-value="0" :true-value="1" />
-                  <VCheckbox v-model="item.is_Ras" label="بدون رأس" :false-value="0" :true-value="1" />
-                </VCol>
-              </VRow>
-              <div class="buttons">
-                <AppButton type="primary" title="تم" @click="addingProperties" />
-                <AppButton type="close" title="الغاء" @click="resetModal" />
-              </div>
-            </template>
-          </Modal>
-          <Modal v-model="showAddingModal" width="400px" :custom-action="true">
-            <template #content>
-              <Calculation v-model="item.quantity" />
-              <div class="buttons ">
-                <AppButton type="primary" title="تم" @click="handleQuantity" />
-                <AppButton type="close" title="الغاء" @click="resetModal" />
-              </div>
-            </template>
-          </Modal>
-        </VCard>
-      </VCol>
-      <VCol v-if="cashierStore.cart.length != 0" cols="3">
-        <VCard class="h-full visible">
-          <CashierCart />
-        </VCard>
-      </VCol>
-    </VRow>
-  </div>
+          <div class="buttons">
+            <AppButton type="primary" title="تم" @click="addingProperties" />
+            <AppButton type="close" title="الغاء" @click="resetModal" />
+          </div>
+        </template>
+      </Modal>
+      <Modal v-model="showAddingModal" width="400px" :custom-action="true">
+        <template #content>
+          <Calculation v-model="item.quantity" />
+          <div class="buttons ">
+            <AppButton type="primary" title="تم" @click="handleQuantity" />
+            <AppButton type="close" title="الغاء" @click="resetModal" />
+          </div>
+        </template>
+      </Modal>
+    </VCard>
+  </CashierLayout>
 </template>
 
 <script setup>
 import Calculation from '@/@core/components/Calculation.vue'
-import CashierCart from '@/@core/components/CashierCart.vue'
 import Modal from '@/@core/components/Modal.vue'
 import { useCashierStore } from '@/store/Cashier'
 import { onMounted, reactive, ref, toRaw, watch } from 'vue'
 import { useRouter } from 'vue-router'
+import CashierLayout from '../cashierLayout.vue'
 
 const router = useRouter()
 const cashierStore = useCashierStore()

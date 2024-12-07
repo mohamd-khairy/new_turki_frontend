@@ -1,48 +1,40 @@
 <template>
-  <div>
-    <VRow>
-      <VCol :cols="cashierStore.cart.length > 0 ? 9 : 12">
-        <!-- Search Card -->
-        <VCard class="mb-5 pa-5">
-          <VRow justify="space-between">
-            <VCol cols="12">
-              <VTextField v-model="searchQuery" label="بحث" class="search-wrap" prepend-inner-icon="iconamoon:search-thin" />
-            </VCol>
-          </VRow>
-        </VCard>
+  <CashierLayout>
+    <VCard class="mb-5 pa-5">
+      <VRow justify="space-between">
+        <VCol cols="12">
+          <VTextField v-model="searchQuery" label="بحث" class="search-wrap" prepend-inner-icon="iconamoon:search-thin" />
+        </VCol>
+      </VRow>
+    </VCard>
 
-        <!-- Categories Card -->
-        <VCard class="pa-5">
-          <div v-if="isLoading" class="h-full d-flex align-center justify-center">
-            <AppLoading />
-          </div>
-          <VRow v-else justify="flex-start">
-            <VCol cols="4" lg="2" md="3" sm="6">
-              <RouterLink to="/cashier/categories" class="default item">
-                رجوع
-              </RouterLink>
-            </VCol>
-            <VCol v-for="subCategory in subCategories" :key="subCategory.id" cols="4" lg="2" md="3" sm="6">
-              <RouterLink :to="`/cashier/products/${subCategory.id}`" class="item">
-                <img :src="subCategory.image_url" :alt="subCategory.type_ar" :placeholder="placeholderImage" @error="handleImageError">
-                <p>{{ subCategory.type_ar }}</p>
-              </RouterLink>
-            </VCol>
-          </VRow>
-        </VCard>
-      </VCol>
-      <VCol v-if="cashierStore.cart.length != 0" cols="3">
-        <CashierCart />
-      </VCol>
-    </VRow>
-  </div>
+    <!-- Categories Card -->
+    <VCard class="pa-5">
+      <div v-if="isLoading" class="h-full d-flex align-center justify-center">
+        <AppLoading />
+      </div>
+      <VRow v-else justify="flex-start">
+        <VCol cols="4" lg="2" md="3" sm="6">
+          <RouterLink to="/cashier/categories" class="default item">
+            رجوع
+          </RouterLink>
+        </VCol>
+        <VCol v-for="subCategory in subCategories" :key="subCategory.id" cols="4" lg="2" md="3" sm="6">
+          <RouterLink :to="`/cashier/products/${subCategory.id}`" class="item">
+            <img :src="subCategory.image_url" :alt="subCategory.type_ar" :placeholder="placeholderImage" @error="handleImageError">
+            <p>{{ subCategory.type_ar }}</p>
+          </RouterLink>
+        </VCol>
+      </VRow>
+    </VCard>
+  </CashierLayout>
 </template>
 
 <script setup>
-import CashierCart from '@/@core/components/CashierCart.vue';
 import { useCashierStore } from '@/store/Cashier';
 import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
+import CashierLayout from '../cashierLayout.vue';
 
 const router = useRouter()
 
