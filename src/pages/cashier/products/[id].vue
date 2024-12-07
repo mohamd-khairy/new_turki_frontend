@@ -50,12 +50,8 @@
                 </VCol>
               </VRow>
               <div class="buttons">
-                <VBtn class="primary" @click="addingProperties">
-                  تم
-                </VBtn>
-                <VBtn class="secondary" @click="resetModal">
-                  إلغاء
-                </VBtn>
+                <AppButton type="primary" title="تم" @click="addingProperties" />
+                <AppButton type="close" title="الغاء" @click="resetModal" />
               </div>
             </template>
           </Modal>
@@ -63,12 +59,8 @@
             <template #content>
               <Calculation v-model="item.quantity" />
               <div class="buttons ">
-                <VBtn class="primary" @click="handleQuantity">
-                  تم
-                </VBtn>
-                <VBtn class="secondary" @click="resetModal">
-                  إلغاء
-                </VBtn>
+                <AppButton type="primary" title="تم" @click="handleQuantity" />
+                <AppButton type="close" title="الغاء" @click="resetModal" />
               </div>
             </template>
           </Modal>
@@ -137,15 +129,15 @@ const resetItem = () => {
 }
 
 const addingProperties = () => {
-  let selectedSize = selectedProduct.value.sizes.find(size => size.id == item.size_id)
-  item.price = selectedSize.price || selectedProduct.value.sale_price
   item.product_id = selectedProduct.value.id
-  item.name = selectedProduct.value.name_ar
   showAddingPropertiesModal.value = false
   showAddingModal.value = true
 }
 
 const handleQuantity = async () => {
+  let selectedSize = selectedProduct.value?.sizes.find(size => size.id == item.size_id)
+  item.price = selectedSize == undefined ? selectedProduct.value.sale_price : selectedSize?.price
+  item.name = selectedProduct.value.name_ar
   item.total_price = item.quantity * item.price
 
   const itemToAdd = toRaw({ ...item })
@@ -170,7 +162,9 @@ const placeholderImage = 'https://via.placeholder.com/350x150'
 
 const selectProduct = product => {
   selectedProduct.value = product
-  showAddingPropertiesModal.value = true
+
+  if (product.preparations.length == 0 && product.cuts.length == 0) showAddingModal.value = true
+  else showAddingPropertiesModal.value = true
 }
 
 const getItems = async () => {
@@ -264,16 +258,6 @@ watch(
     block-size: 40px !important;
     font-size: 1rem;
     text-align: center;
-
-    &.primary {
-      background-color: rgba(var(--v-theme-primary), 1) !important;
-      color: #fff;
-    }
-
-    &.secondary {
-      background-color: #fff !important;
-      color: #333 !important;
-    }
   }
 }
 </style>

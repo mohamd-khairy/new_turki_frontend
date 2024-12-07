@@ -52,7 +52,7 @@ export default [
   {
     title: 'طلبات',
     to: { name: 'cashier-orders' },
-    icon: { icon: 'game-icons:vertical-banner' },
+    icon: { icon: 'solar:delivery-broken' },
     permission: "read-cashier",
   },
   {
