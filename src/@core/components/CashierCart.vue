@@ -13,7 +13,7 @@
       </div>
       <div class="cart__result">
         <div v-if="!cashierStore.isCodeSubmitted && !isPayment" class="discount">
-          <VTextField v-model="discountCode.discount_code" label="كوبون كود" />
+          <VTextField v-model="discountCode.discount_code" label="كود الخصم" />
           <AppButton type="primary" :is-loading="isDiscountSubmit" title="تطبيق" @click="makeDiscount" />
         </div>
 
