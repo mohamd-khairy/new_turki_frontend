@@ -9,7 +9,7 @@
     </div>
     <div v-else class="">
       <div class="card-wrapper invoice-container">
-        <VRow justify="space-between" class="mb-2 pa-0">
+        <VRow justify="space-between hidden" class="mb-2 pa-0">
           <VCol cols="12" class="py-0">
             <div class="d-flex justify-space-between align-center">
               <div>
@@ -250,11 +250,11 @@
 </template>
 
 <script setup>
+import CashierInvoice from '@/@core/components/CashierInvoice.vue'
 import { useCashierStore } from '@/store/Cashier'
 import moment from "moment"
 import { computed, onMounted } from 'vue'
 import { useVueToPrint } from "vue-to-print"
-import CashierInvoice from '@/@core/components/CashierInvoice.vue'
 
 const orderDetails = ref({})
 const cashierStore = useCashierStore()
@@ -311,6 +311,10 @@ onMounted(() => getOrderDetails())
 
 
 <style scoped lang="scss">
+.hidden {
+  display: none !important;
+}
+
 .invoice-container {
   .text-base {
     font-size: 1rem !important;

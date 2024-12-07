@@ -50,20 +50,16 @@
       </div>
       <p>=======================================</p>
       <div class="head">
-        <div class="cell text-center" />
         <div class="cell description">
-          <p>Net Total</p>
           <p>المجموع النهائى</p>
         </div>
         <div class="cell price">
-          {{ cashierStore.orderInfo.order?.total_amount }} ريال
+          {{ cashierStore.orderInfo.order?.total_amount_after_tax }} ريال
         </div>
       </div>
       <div class="head">
-        <div class="cell text-center" />
         <div class="cell description">
-          <p>VAT 15%</p>
-          <p>الضريبة</p>
+          <p>الضريبة 15%</p>
         </div>
         <div class="cell price">
           {{ cashierStore.orderInfo.order?.tax_fees }} ريال
@@ -73,26 +69,24 @@
     </div>
 
     <p class="d-flex bold justify-space-between w-100">
-      <span>Total:</span>
-      <span>{{ cashierStore.orderInfo.order?.total_amount_after_tax }} ريال</span>
+      <span>الاجمالي:</span>
+      <span>{{ cashierStore.orderInfo.order?.total_amount }} ريال</span>
     </p>
     <p>المجموع يشمل ضريبة القيمة المضافة</p>
     <p>=======================================</p>
     <p class="d-flex bold justify-space-between w-100">
-      <span>PAID BY:</span>
       <span>طريقة الدفع</span>
-    </p>
-    <p class="d-flex bold justify-space-between w-100">
-      <span>{{ cashierStore.orderInfo.order?.payment_type?.name_ar }}/{{ cashierStore.orderInfo.order?.payment_type?.name_en }}</span>
-      <span>{{ cashierStore.orderInfo.order?.total_amount_after_tax }} ريال</span>
+      <span>{{ cashierStore.orderInfo.order?.payment_type?.name_ar }}</span>
     </p>
     <p>=======================================</p>
+    <div class="text-center">
+      <img :src="cashierStore.orderInfo?.order?.qr">
+    </div>
   </div>
 </template>
 
 <script setup>
-import { useCashierStore } from '@/store/Cashier'
-import { computed } from 'vue'
+import { useCashierStore } from '@/store/Cashier';
 
 const cashierStore = useCashierStore()
 
@@ -131,7 +125,7 @@ img {
   justify-content: center;
   padding: 0;
   direction: rtl;
-  font-size: 12px;
+  font-size: 16px;
   inline-size: 80mm;
   line-height: 1.5;
   margin-block: 0;
@@ -195,7 +189,7 @@ p.d-felx {
 }
 
 .bold {
-  font-size: 14px;
+  font-size: 18px;
   font-weight: 700;
 }
 </style>
