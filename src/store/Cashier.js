@@ -4,6 +4,8 @@ import { defineStore } from 'pinia'
 export const useCashierStore = defineStore('cashier', {
   state: () => ({
     cart: [],
+    usersSales: [],
+    paymentTypes: [],
     isClicked: false,
     isCodeSubmitted: false,
     discount: 0,
@@ -169,7 +171,9 @@ export const useCashierStore = defineStore('cashier', {
 
         const response = await axios.get(`/cashier-user-sales-details`)
 
-
+        this.usersSales = response.data.data
+        this.paymentTypes = response.data.payment_types
+        
         return response.data
       } catch (error) {
         console.error('Error fetching products:', error)
