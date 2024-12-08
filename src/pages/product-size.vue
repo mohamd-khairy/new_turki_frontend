@@ -189,7 +189,7 @@ onMounted(() => {
               scope="col"
               class="font-weight-semibold"
             >
-              foodics_integrate_id
+              كود المنتج
             </th>
             <th
               scope="col"
@@ -221,7 +221,7 @@ onMounted(() => {
               {{ ConvertToArabicNumbers(item.weight) }}
             </td>
             <td>
-              {{ item.foodics_integrate_id ? item.foodics_integrate_id : '-' }}
+              {{ item.product_code ? item.product_code : '-' }}
             </td>
             <td>
               <VBtn

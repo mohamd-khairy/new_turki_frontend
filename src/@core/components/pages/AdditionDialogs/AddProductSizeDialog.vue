@@ -33,6 +33,7 @@ const itemData = reactive({
   weight: null,
   is_available_for_use: 0,
   foodics_integrate_id : null,
+  product_code : null,
 })
 
 const storesItems = ref([])
@@ -195,6 +196,15 @@ const dialogModelValueUpdate = val => {
                 v-model="itemData.weight"
                 :label="t('forms.weight')"
                 :rules="[requiredValidator]"
+              />
+            </VCol>
+            <VCol
+              cols="12"
+              md="6"
+            >
+              <VTextField
+                v-model="itemData.product_code"
+                label="كود المنتج"
               />
             </VCol>
             <VCol
