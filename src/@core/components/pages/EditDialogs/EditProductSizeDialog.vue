@@ -1,9 +1,9 @@
 <script setup>
+import { useProductsStore } from "@/store/Products"
 import { useSettingsStore } from "@/store/Settings"
-import { useStocksStore } from "@/store/Stocks"
 import { useStoresStore } from "@/store/Stores"
 import {
-requiredValidator,
+  requiredValidator,
 } from '@validators'
 import { useI18n } from "vue-i18n"
 
@@ -25,7 +25,7 @@ const emit = defineEmits([
 
 const settingsListStore = useSettingsStore()
 const storesStore = useStoresStore()
-const stocksStore = useStocksStore()
+const productsStore = useProductsStore()
 
 const isLoading = ref(false)
 const { t } = useI18n()
@@ -38,6 +38,7 @@ const itemData = reactive({
   weight: null,
   is_available_for_use: false,
   foodics_integrate_id: null,
+  product_code: null,
 })
 
 const storesItems = ref([])
@@ -51,7 +52,7 @@ const resetForm = () => {
 const addProductStore = () => {
   storesItems.value.push({
     store_id: null,
-    stock_id: null,
+    product_id: null,
     quantity: 1,
   })
 }
@@ -67,11 +68,15 @@ onUpdated(() => {
   itemData.price = props.item.price
   itemData.sale_price = props.item.sale_price
   itemData.weight = props.item.weight
+  itemData.product_code = props.item.product_code
   itemData.foodics_integrate_id = props.item.foodics_integrate_id
   itemData.is_available_for_use = props.item.use_again == 1 ? true : false
 
+  console.log(props.item.stores)
   if(props.item.stores && props.item.stores.length) {
     storesItems.value = props.item.stores
+
+
   }
 })
 
@@ -220,6 +225,15 @@ const dialogModelValueUpdate = val => {
               md="6"
             >
               <VTextField
+                v-model="itemData.product_code"
+                label="كود المنتج"
+              />
+            </VCol>
+            <VCol
+              cols="12"
+              md="6"
+            >
+              <VTextField
                 v-model="itemData.foodics_integrate_id"
                 label="foodics_integrate_id"
               />
@@ -261,7 +275,7 @@ const dialogModelValueUpdate = val => {
                   cols="12"
                   md="6"
                 >
-                  <AutoCompleteDropdown 
+                  <AutoCompleteDropdown
                     v-model="store.store_id"
                     :model-value="store.store_id ? store : null"
                     :api-model="storesStore"
@@ -278,12 +292,12 @@ const dialogModelValueUpdate = val => {
                   cols="12"
                   md="6"
                 >
-                  <AutoCompleteDropdown 
-                    v-model="store.stock_id"
-                    :model-value="store.stock_id ? store : null"
-                    :api-model="stocksStore"
-                    api-search-method="getAll"
-                    item-title="product_name"
+                  <AutoCompleteDropdown
+                    v-model="store.product_id"
+                    :model-value="store.product_id ? store : null"
+                    :api-model="productsStore"
+                    api-search-method="fetchProducts"
+                    item-title="name_ar"
                     item-value="id"
                     label="المخزون"
                     placeholder="البحث في المخزون"

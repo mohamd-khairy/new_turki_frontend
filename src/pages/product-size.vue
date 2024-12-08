@@ -1,8 +1,8 @@
 <script setup>
-import { useSettingsStore } from "@/store/Settings"
-import moment from "moment"
-import { onMounted } from "vue"
-import { useI18n } from "vue-i18n"
+import { useSettingsStore } from "@/store/Settings";
+import moment from "moment";
+import { onMounted } from "vue";
+import { useI18n } from "vue-i18n";
 
 const { t } = useI18n()
 
@@ -91,8 +91,8 @@ const openEdit = item => {
   isEditOpen.value = true
   item.stores = item?.stores?.map(store => {
     store.name = store.store.name
-    store.product_name = store.stock.product_name
-    
+    store.name_ar = store.product.name_ar
+
     return store
   })
   selectedItem.value = item
@@ -189,7 +189,7 @@ onMounted(() => {
               scope="col"
               class="font-weight-semibold"
             >
-              foodics_integrate_id
+              كود المنتج
             </th>
             <th
               scope="col"
@@ -221,7 +221,7 @@ onMounted(() => {
               {{ ConvertToArabicNumbers(item.weight) }}
             </td>
             <td>
-              {{ item.foodics_integrate_id ? item.foodics_integrate_id : '-' }}
+              {{ item.product_code ? item.product_code : '-' }}
             </td>
             <td>
               <VBtn
@@ -282,9 +282,9 @@ onMounted(() => {
       </VCardText>
     </VCard>
 
-    <AddProductSizeDialog 
-      v-if="isAddOpen" 
-      v-model:isAddOpen="isAddOpen" 
+    <AddProductSizeDialog
+      v-if="isAddOpen"
+      v-model:isAddOpen="isAddOpen"
       @refreshTable="getItems"
     />
     <EditProductSizeDialog
