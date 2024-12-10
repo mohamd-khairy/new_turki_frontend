@@ -1,7 +1,7 @@
 <script setup>
 import AddProductQunatity from "@/pages/orders/[id]/AddProductQunatity.vue"
 import {
-requiredValidator,
+  requiredValidator,
 } from '@validators'
 import { useI18n } from "vue-i18n"
 
@@ -87,15 +87,17 @@ const isAddCustomerOpen = ref(false)
 const isAddCustomerAddressOpen = ref(false)
 const customerAddresses = ref([])
 
-const updateProducts = (products) => {
-  const selected = [];
+const updateProducts = products => {
+  const selected = []
+
   selectedProducts.value  = products.filter(product => {
     if(selected.includes(product.id)) {
-      return false;
+      return false
     }
 
-    selected.push(product.id);
-    return true;
+    selected.push(product.id)
+
+    return true
   })
 }
 
@@ -121,9 +123,9 @@ watch(() => itemData.country_id, (newVal, oldVal) => {
 })
 
 const getSelectedCustomerAddresses = () => {
-  if (!selectedCustomer.value) return;
-  
-  customerAddresses.value = [];
+  if (!selectedCustomer.value) return
+
+  customerAddresses.value = []
 
   customersStore.getAddresses(selectedCustomer.value).then(response => {
     customerAddresses.value = response.data?.data || []
@@ -178,8 +180,8 @@ const onFormSubmit = async () => {
   }
 }
 
-const getProductData = (ev) => {
-  console.log({ev});
+const getProductData = ev => {
+  console.log({ ev })
   isQuantityOpen.value = true
   selectedProduct.value = ev
 
@@ -187,7 +189,7 @@ const getProductData = (ev) => {
   let indexToRemove = -1
 
   itemData.products.some((obj, index) => {
-    console.log({obj});
+    console.log({ obj })
     if (obj.product_id === targetId) {
       indexToRemove = index
       savedProduct.quantity = obj.quantity
@@ -274,50 +276,52 @@ const AddQuantity = data => {
 
 const _timerId = ref(null)
 const isLoadingCustomers = ref(false)
-const searchCustomer = (e) => {
+
+const searchCustomer = e => {
   clearTimeout(_timerId.value)
   _timerId.value = setTimeout(() => {
     isLoadingCustomers.value = true
     customersListStore.fetchCustomers({ search: e.target.value, wallet: "all" })
-    .then(response => {
-      customers.value = response.data?.data?.data || [];
-    })
-    .finally(() => {
-      isLoadingCustomers.value = false
-    })
-  }, 800);
+      .then(response => {
+        customers.value = response.data?.data?.data || []
+      })
+      .finally(() => {
+        isLoadingCustomers.value = false
+      })
+  }, 800)
 }
 
 const _timerProductsId = ref(null)
 const isLoadingProducts = ref(false)
-const searchProduct = (e) => {
+
+const searchProduct = e => {
   clearTimeout(_timerProductsId.value)
   _timerProductsId.value = setTimeout(() => {
     isLoadingProducts.value = true
-    productsListStore.fetchProducts({ search: e.target.value}).then(response => {
-      products.value = response.data?.data?.data || [];
+    productsListStore.fetchProducts({ search: e.target.value }).then(response => {
+      products.value = response.data?.data?.data || []
     })
-    .finally(() => {
-      isLoadingProducts.value = false
-    });
-  }, 800);
+      .finally(() => {
+        isLoadingProducts.value = false
+      })
+  }, 800)
 }
 
 const _timerCouponsId = ref(null)
 const isLoadingCoupons = ref(false)
-const searchCoupon = (e) => {
+
+const searchCoupon = e => {
   clearTimeout(_timerCouponsId.value)
   _timerCouponsId.value = setTimeout(() => {
     isLoadingCoupons.value = true
     couponsListStore.fetchCoupons({ search: e.target.value }).then(response => {
-      coupons.value = response.data?.data?.data || [];
+      coupons.value = response.data?.data?.data || []
     })
-    .finally(() => {
-      isLoadingCoupons.value = false
-    });
-  }, 800);
+      .finally(() => {
+        isLoadingCoupons.value = false
+      })
+  }, 800)
 }
-
 </script>
 
 <template>
@@ -493,13 +497,6 @@ const searchCoupon = (e) => {
               <VCol
                 cols="12"
               >
-                <!-- <VSelect
-                  v-model="itemData.discount_code"
-                  :items="props.coupons"
-                  :label="t('Coupons')"
-                  item-title="name"
-                  item-value="name"
-                /> -->
                 <VSelect
                   v-model="itemData.discount_code"
                   :items="coupons"
@@ -562,8 +559,8 @@ const searchCoupon = (e) => {
                 </div>
               </VCol>
               <VCol
-                cols="12"
                 v-if="hasRole(['production_manager', 'production_supervisor'])"
+                cols="12"
               >
                 <VTextField
                   v-model="itemData.boxes_count"
@@ -573,8 +570,8 @@ const searchCoupon = (e) => {
                 />
               </VCol>
               <VCol
-                cols="12"
                 v-if="hasRole(['production_manager', 'production_supervisor'])"
+                cols="12"
               >
                 <VTextField
                   v-model="itemData.dishes_count"
@@ -637,16 +634,19 @@ const searchCoupon = (e) => {
       </VCard>
     </VDialog>
 
-    <AddProductQunatity v-if="isQuantityOpen"
+    <AddProductQunatity
+      v-if="isQuantityOpen"
       v-model:is-add-open="isQuantityOpen"
       :item-saved="savedProduct"
       :item="selectedProduct"
       @addProductQuantity="AddQuantity"
     />
-    <AddCustomerDialog v-if="isAddCustomerOpen"
+    <AddCustomerDialog
+      v-if="isAddCustomerOpen"
       v-model:is-add-open="isAddCustomerOpen"
     />
-    <AddCustomerAddressDialog v-if="isAddCustomerAddressOpen"
+    <AddCustomerAddressDialog
+      v-if="isAddCustomerAddressOpen"
       v-model:is-add-open="isAddCustomerAddressOpen"
       :customer-id="selectedCustomer"
       @update="getSelectedCustomerAddresses"
