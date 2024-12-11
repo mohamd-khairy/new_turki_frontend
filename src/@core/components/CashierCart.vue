@@ -1,66 +1,79 @@
 <template>
-  <VCard class="screen-layout">
-    <div class="cart">
-      <div class="cart__items">
-        <div v-for="item in cashierStore.cart" :key="item.id" class="cart__item">
-          <div class="info">
-            {{ item.quantity }} x {{ item.name }}
+  <div class="screen-layout">
+    <VCard v-if="!isPayment" class="mb-5 pa-5">
+      <VRow justify="space-between">
+        <VCol cols="12">
+          <VTextField ref="searchInput" v-model="scanValue" label="مسح الكود" class="search-wrap" @blur="focusInput" />
+        </VCol>
+      </VRow>
+    </VCard>
+
+    <VCard class="cart-wrap" :class="isPayment ? 'screen-layout' : ''">
+      <div class="cart">
+        <div class="cart__items">
+          <div v-for="(item, index) in cashierStore.cart" :key="item.id" class="cart__item">
+            <div class="info">
+              {{ item.quantity }} x {{ item.name }}
+            </div>
+            <div class="d-flex gap-4 align-center">
+              <span>{{ item.total_price }} ريال</span>
+              <VBtn icon variant="text" color="default" class="ms-n3" size="small" @click="cashierStore.removeItem(index)">
+                <VIcon icon="tabler-x" size="20" />
+              </VBtn>
+            </div>
           </div>
-          <div class="price">
-            {{ item.total_price }} ريال
+        </div>
+        <div class="cart__result">
+          <div v-if="!cashierStore.isCodeSubmitted && !isPayment" class="discount">
+            <VTextField v-model="discountCode.discount_code" label="كود الخصم" />
+            <AppButton type="primary" :is-loading="isDiscountSubmit" title="تطبيق" @click="makeDiscount" />
+          </div>
+
+          <div v-if="cashierStore.isCodeSubmitted" class="discount">
+            <div class="discount__info">
+              <div class="">
+                <span>السعر قبل الخصم</span>
+                <span>{{ totalPrice }} ريال</span>
+              </div>
+              <div class="">
+                <span>الخصم</span>
+                <span>{{ cashierStore.discount }} ريال</span>
+              </div>
+            </div>
+            <!-- <AppButton type="primary icon-only" title="x" @click="removeDiscount" /> -->
+          </div>
+
+          <button v-if="cashierStore.cart.length != 0 && !isPayment" class="total" @click="addCustomerInfo">
+            <p>الاجمالي</p>
+            <p>{{ totalPriceAfterDiscount }} ريال</p>
+          </button>
+
+          <div v-else class="total">
+            <p>الاجمالي</p>
+            <p>{{ totalPriceAfterDiscount }} ريال</p>
           </div>
         </div>
       </div>
-      <div class="cart__result">
-        <div v-if="!cashierStore.isCodeSubmitted && !isPayment" class="discount">
-          <VTextField v-model="discountCode.discount_code" label="كود الخصم" />
-          <AppButton type="primary" :is-loading="isDiscountSubmit" title="تطبيق" @click="makeDiscount" />
-        </div>
-
-        <div v-if="cashierStore.isCodeSubmitted" class="discount">
-          <div class="discount__info">
-            <div class="">
-              <span>السعر قبل الخصم</span>
-              <span>{{ totalPrice }} ريال</span>
-            </div>
-            <div class="">
-              <span>الخصم</span>
-              <span>{{ cashierStore.discount }} ريال</span>
-            </div>
+      <Modal v-model="showCustomerInfoModal" width="400px" :custom-action="true">
+        <template #content>
+          <VRow>
+            <VCol cols="12" md="12">
+              <VTextField v-model="client.customer_mobile" dirty name="mobile" type="number" suffix="+966" label="رقم الجوال" placeholder="202 555 0111" class="mb-5" />
+            </VCol>
+          </VRow>
+          <div class="buttons">
+            <AppButton type="primary" title="أضافة" :disabled="preventMakeOrder" :is-loading="isLoading" @click="makeOrder" />
+            <AppButton type="close" title="الغاء" @click="resetModal" />
           </div>
-          <!-- <AppButton type="primary icon-only" title="x" @click="removeDiscount" /> -->
-        </div>
-
-        <button v-if="!isPayment" class="total" @click="addCustomerInfo">
-          <p>الاجمالي</p>
-          <p>{{ totalPriceAfterDiscount }} ريال</p>
-        </button>
-
-        <div v-else class="total">
-          <p>الاجمالي</p>
-          <p>{{ totalPriceAfterDiscount }} ريال</p>
-        </div>
-      </div>
-    </div>
-    <Modal v-model="showCustomerInfoModal" width="400px" :custom-action="true">
-      <template #content>
-        <VRow>
-          <VCol cols="12" md="12">
-            <VTextField v-model="client.customer_mobile" dirty name="mobile" type="number" suffix="+966" label="رقم الجوال" placeholder="202 555 0111" class="mb-5" />
-          </VCol>
-        </VRow>
-        <div class="buttons">
-          <AppButton type="primary" title="أضافة" :disabled="preventMakeOrder" :is-loading="isLoading" @click="makeOrder" />
-          <AppButton type="close" title="الغاء" @click="resetModal" />
-        </div>
-      </template>
-    </Modal>
-  </VCard>
+        </template>
+      </Modal>
+    </VCard>
+  </div>
 </template>
 
 <script setup>
 import { useCashierStore } from '@/store/Cashier';
-import { computed, reactive, ref } from 'vue';
+import { computed, onMounted, reactive, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 
 const props = defineProps({
@@ -69,6 +82,23 @@ const props = defineProps({
     default: false,
   },
 })
+
+const scanValue = ref('')
+const searchInput = ref(null)
+
+
+watch(() => scanValue.value, () => {
+  if (scanValue.value.length === 12) {
+    cashierStore.scanCode(scanValue.value)
+    scanValue.value = ''
+  }
+})
+
+const focusInput = () => {
+  if (showCustomerInfoModal.value) return
+  searchInput.value?.focus()
+}
+
 
 
 const router = useRouter()
@@ -104,6 +134,10 @@ const makeDiscount = async () => {
   // console.log(discountCode.value) 
 }
 
+const removeItem = item => {
+
+}
+
 const removeDiscount = () => {
   discountCode.discount_code = ''
   cashierStore.isCodeSubmitted = false
@@ -136,8 +170,15 @@ const makeOrder = async () => {
     resetModal()
   }
   isLoading.value = false
-
 }
+
+watch(() => showCustomerInfoModal.value, newValue => {
+  if (newValue) return
+  focusInput()
+})
+onMounted(() => {
+  focusInput()
+})
 </script>
 
 <style lang='scss' scoped>
@@ -145,6 +186,15 @@ const makeOrder = async () => {
   position: sticky;
   block-size: 80vh;
   inset-block-start: 100px;
+
+  .cart-wrap {
+    block-size: calc(80vh - 100px);
+
+    &.screen-layout {
+      position: sticky;
+      block-size: 80vh;
+    }
+  }
 }
 
 .cart {

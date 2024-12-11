@@ -1,10 +1,10 @@
 <template>
   <div>
     <VRow>
-      <VCol :cols="cashierStore.cart.length > 0 ? 9 : 12" :lg="cashierStore.cart.length > 0 ? 9 : 12" :sm="cashierStore.cart.length > 0 ? 7 : 12">
+      <VCol cols="9" lg="9" sm="7">
         <slot />
       </VCol>
-      <VCol v-if="cashierStore.cart.length != 0" lg="3" cols="3" sm="5">
+      <VCol lg="3" cols="3" sm="5">
         <CashierCart />
       </VCol>
     </VRow>

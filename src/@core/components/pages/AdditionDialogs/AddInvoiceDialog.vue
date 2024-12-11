@@ -1,16 +1,16 @@
 <script setup>
-import { useCitiesStore } from "@/store/Cities";
-import { useEmployeesStore } from "@/store/Employees";
-import { useInvoicesStore } from "@/store/Invoices";
-import { useProductsStore } from "@/store/Products";
-import { useSettingsStore } from "@/store/Settings";
-import { useStocksStore } from "@/store/Stocks";
-import { useStoresStore } from "@/store/Stores";
-import { useSuppliersStore } from "@/store/Suppliers";
+import { useCitiesStore } from "@/store/Cities"
+import { useEmployeesStore } from "@/store/Employees"
+import { useInvoicesStore } from "@/store/Invoices"
+import { useProductsStore } from "@/store/Products"
+import { useSettingsStore } from "@/store/Settings"
+import { useStocksStore } from "@/store/Stocks"
+import { useStoresStore } from "@/store/Stores"
+import { useSuppliersStore } from "@/store/Suppliers"
 import {
-requiredValidator,
-} from '@validators';
-import { useI18n } from "vue-i18n";
+  requiredValidator,
+} from '@validators'
+import { useI18n } from "vue-i18n"
 
 const props = defineProps({
   isAddOpen: {
@@ -56,7 +56,7 @@ const storesItems = ref([
     product_id: null,
     quantity: 1,
     price: null,
-  }
+  },
 ])
 
 const isLoading = ref(false)
@@ -79,11 +79,11 @@ const addProductStore = () => {
   })
 }
 
-const removeProductStore = (index) => {
-  storesItems.value = storesItems.value.filter((store, i) => i != index);
+const removeProductStore = index => {
+  storesItems.value = storesItems.value.filter((store, i) => i != index)
 }
 
-const assignStockItem = (item) => {
+const assignStockItem = item => {
 
 }
 
@@ -94,30 +94,31 @@ const onFormSubmit = async () => {
   const res = await refForm.value.validate()
   if (res.valid) {
     const formData = new FormData()
-    formData.append('store_id', itemData.store_id);
-    formData.append('supplier_id', itemData.supplier_id);
-    formData.append('user_id', itemData.user_id);
-    formData.append('city_id', itemData.city_id);
-    formData.append('tax', itemData.tax);
-    formData.append('invoice', itemData.invoice[0]);
-    formData.append('date', itemData.date);
-    formData.append('notes', itemData.notes);
+
+    formData.append('store_id', itemData.store_id)
+    formData.append('supplier_id', itemData.supplier_id)
+    formData.append('user_id', itemData.user_id)
+    formData.append('city_id', itemData.city_id)
+    formData.append('tax', itemData.tax)
+    formData.append('invoice', itemData.invoice[0])
+    formData.append('date', itemData.date)
+    formData.append('notes', itemData.notes)
 
     // calculate total invoice's price
-    let totalInvoicePrice = 0;
+    let totalInvoicePrice = 0
 
     storesItems.value.forEach((store, index) => {
-      totalInvoicePrice += parseFloat(store.price);
+      totalInvoicePrice += parseFloat(store.price)
       for (const key in store) {
         if (Object.hasOwnProperty.call(store, key)) {
           if(store[key] && store[key] != '') {
-            formData.append(`stocks[${index}][${key}]`, store[key]);
+            formData.append(`stocks[${index}][${key}]`, store[key])
           }
         }
       }
     })
 
-    formData.append('invoice_price', totalInvoicePrice.toFixed(2));
+    formData.append('invoice_price', totalInvoicePrice.toFixed(2))
 
     invoicesStore.store(formData).then(response => {
       emit('refreshTable')
@@ -139,7 +140,7 @@ const onFormSubmit = async () => {
       } else {
         settingsListStore.alertMessage = "حدث خطأ ما !"
       }
-      
+
       settingsListStore.alertColor = "error"
       settingsListStore.isAlertShow = true
       setTimeout(() => {
@@ -147,7 +148,7 @@ const onFormSubmit = async () => {
         settingsListStore.alertMessage = ""
       }, 2000)
     }).finally(() => {
-        isLoading.value = false
+      isLoading.value = false
     })
   }
   else {
@@ -168,7 +169,7 @@ const getAllData = async () => {
   })
 
   employeesStore.fetchEmployees({ pageSize: -1 }).then(response => {
-    employees.value = response.data.data?.data;
+    employees.value = response.data.data?.data
   })
 
   suppliersStore.getAll({ pageSize: -1 }).then(response => {
@@ -177,7 +178,7 @@ const getAllData = async () => {
 }
 
 onMounted(() => {
-  getAllData();
+  getAllData()
 })
 </script>
 
@@ -278,53 +279,72 @@ onMounted(() => {
               cols="12"
               md="6"
             >
-              <VSwitch label="الضريبة" 
-              v-model="itemData.tax"
-              :true-value="1"
-              :false-value="0"
-              ></VSwitch>
+              <VSwitch
+                v-model="itemData.tax"
+                label="الضريبة"
+                :true-value="1"
+                :false-value="0"
+              />
             </VCol>
             <VCol cols="12">
               <div class="d-flex justify-space-between align-center mb-6">
-                <h3 class="">المنتجات</h3>
+                <h3 class="">
+                  المنتجات
+                </h3>
 
-                <VBtn @click="addProductStore" class="position-relative" icon size="small">
-                  <VIcon icon="ei:plus" size="30"></VIcon>
-                </VBtn>
+                <!--
+                  <VBtn
+                  class="position-relative"
+                  icon
+                  size="small"
+                  @click="addProductStore"
+                  >
+                  <VIcon
+                  icon="ei:plus"
+                  size="30"
+                  />
+                  </VBtn>
+                -->
               </div>
-              <VRow v-for="(store, index) in storesItems" :key="index"
-              style="background-color: #fafafa;border-radius: 10px;" class="mb-6 py-3">
-              <VCol
-                cols="12"
-                md="6"
+              <VRow
+                v-for="(store, index) in storesItems"
+                :key="index"
+                style="border-radius: 10px;background-color: #fafafa;"
+                class="mb-6 py-3"
               >
-                <AutoCompleteDropdown 
-                  v-model="store.store_id"
-                  :apiModel="storesStore"
-                  apiSearchMethod="getAll"
-                  item-title="name"
-                  item-value="id"
-                  label="المخزن"
-                  placeholder="البحث في المخزن"
-                  :rules="[requiredValidator]"
-                  style="background-color: #fff;"
-                />
-              </VCol>
+                <VCol
+                  cols="12"
+                  md="6"
+                >
+                  <AutoCompleteDropdown
+                    v-model="store.store_id"
+                    :api-model="storesStore"
+                    api-search-method="getAll"
+                    item-title="name"
+                    item-value="id"
+                    label="المخزن"
+                    placeholder="البحث في المخزن"
+                    :rules="[requiredValidator]"
+                    style="background-color: #fff;"
+                  />
+                </VCol>
                 <VCol
                   cols="12"
                   md="6"
                   class="d-flex gap-2"
                 >
-                  <VTextField v-if="isAddProduct"
+                  <VTextField
+                    v-if="isAddProduct"
                     v-model="store.product_name"
                     label="اسم المنتج"
                     :rules="[requiredValidator]"
                     style="background-color: #fff;"
                   />
-                  <AutoCompleteDropdown v-else
+                  <AutoCompleteDropdown
+                    v-else
                     v-model="store.product_id"
-                    :apiModel="productsStore"
-                    apiSearchMethod="fetchProducts"
+                    :api-model="productsStore"
+                    api-search-method="fetchProducts"
                     item-title="name_ar"
                     item-value="id"
                     label="المنتج"
@@ -334,11 +354,24 @@ onMounted(() => {
                   />
                   <VTooltip :text="isAddProduct ? 'اختيار من المنتجات' : 'إضافة منتج جديد'">
                     <template #activator="{ props }">
-                      <VBtn v-bind="props"
-                      @click="isAddProduct = !isAddProduct" 
-                      flat class="position-relative" icon size="small">
-                        <VIcon v-if="isAddProduct" icon="ei:minus" size="30"></VIcon>
-                        <VIcon v-else icon="ei:plus" size="30"></VIcon>
+                      <VBtn
+                        v-bind="props"
+                        flat
+                        class="position-relative"
+                        icon
+                        size="small"
+                        @click="isAddProduct = !isAddProduct"
+                      >
+                        <VIcon
+                          v-if="isAddProduct"
+                          icon="ei:minus"
+                          size="30"
+                        />
+                        <VIcon
+                          v-else
+                          icon="ei:plus"
+                          size="30"
+                        />
                       </VBtn>
                     </template>
                   </VTooltip>
@@ -370,16 +403,23 @@ onMounted(() => {
                   />
                 </VCol>
                 <VCol
+                  v-if="index > 0 || storesItems.length > 1"
                   cols="12"
                   class="d-flex justify-end py-0"
-                  v-if="index > 0 || storesItems.length > 1"
                 >
-                  <VBtn @click="removeProductStore(index)" icon size="small"
-                  style="top: 5px;left: 5px;">
-                    <VIcon icon="simple-line-icons:minus" size="20"></VIcon>
+                  <VBtn
+                    icon
+                    size="small"
+                    style="top: 5px;left: 5px;"
+                    @click="removeProductStore(index)"
+                  >
+                    <VIcon
+                      icon="simple-line-icons:minus"
+                      size="20"
+                    />
                   </VBtn>
                 </VCol>
-              </VRow> 
+              </VRow>
             </VCol>
             <VCol cols="12">
               <VTextarea
@@ -414,8 +454,8 @@ onMounted(() => {
               <VBtn
                 variant="tonal"
                 color="secondary"
-                @click="resetForm"
                 class="px-8"
+                @click="resetForm"
               >
                 {{ t('buttons.cancel') }}
               </VBtn>
@@ -425,5 +465,4 @@ onMounted(() => {
       </VCardText>
     </VCard>
   </VDialog>
-
 </template>

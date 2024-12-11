@@ -1,11 +1,13 @@
 <script setup>
-import { useSettingsStore } from "@/store/Settings";
-import moment from "moment";
-import { onMounted } from "vue";
-import { useI18n } from "vue-i18n";
+import { useProductsStore } from "@/store/Products"
+import { useSettingsStore } from "@/store/Settings"
+import moment from "moment"
+import { onMounted } from "vue"
+import { useI18n } from "vue-i18n"
 
 const { t } = useI18n()
 
+const productListStore = useProductsStore()
 const settingsListStore = useSettingsStore()
 const searchQuery = ref('')
 const selectedStatus = ref()
@@ -20,11 +22,51 @@ const isDeleteOpen = ref(false)
 const selectedItem = ref({})
 const isEditOpen = ref(false)
 const isLoading = ref(false)
+const isFiltered = ref(false)
+const products = ref([])
+const _timerProductsId = ref(null)
+const isLoadingProducts = ref(false)
+
+const filters = reactive({
+  product_id: null,
+  search: null,
+
+})
+
+const searchProducts = e => {
+  console.log('here')
+
+  clearTimeout(_timerProductsId.value)
+  _timerProductsId.value = setTimeout(() => {
+    isLoadingProducts.value = true
+    productListStore.fetchProducts({ search: e.target.value }).then(response => {
+      products.value = response.data?.data?.data || []
+    })
+      .finally(() => {
+        isLoadingProducts.value = false
+      })
+  }, 800)
+}
+
+
+
+onMounted(() => {
+  productListStore.fetchProducts().then(response => {
+    products.value = response.data.data.data
+  })
+})
+
+const clearFilter = () => {
+  filters.product_id = null,
+  filters.search = null
+}
 
 const getItems = () => {
   isLoading.value = true
+
   settingsListStore.fetchProductSize({
-    q: searchQuery.value,
+    q: filters.search,
+    product_id: filters.product_id,
   }).then(response => {
     items.value = response.data.data
     totalPage.value = items.value / rowPerPage
@@ -121,6 +163,95 @@ onMounted(() => {
 
 <template>
   <div>
+    <VCard class="mb-5 pa-5">
+      <VForm @submit.stop>
+        <VRow justify="space-between">
+          <VCol
+            cols="12"
+            lg="8"
+            md="8"
+            sm="12"
+          >
+            <VRow>
+              <VCol
+                cols="12"
+                lg="8"
+                md="8"
+                sm="8"
+                class="d-flex align-center gap-3"
+              >
+                <div class="icon">
+                  <VIcon
+                    icon="clarity:users-line"
+                    color="primary"
+                  />
+                </div>
+                <VTextField
+                  v-model="filters.search"
+                  label="البحث بالاسم "
+                  :disabled="isLoading"
+                />
+              </VCol>
+              <VCol
+                cols="12"
+                lg="4"
+                md="3"
+                sm="6"
+                class="d-flex align-center gap-3"
+              >
+                <VSelect
+                  v-model="filters.product_id"
+                  :items="products"
+                  :label="t('forms.products')"
+                  item-title="name_ar"
+                  item-value="id"
+                  :loading="isLoadingProducts"
+                >
+                  <template #prepend-item>
+                    <VListItem>
+                      <VListItemContent>
+                        <VTextField
+                          placeholder="البحث في المنتجات"
+                          @input="searchProducts"
+                        />
+                      </VListItemContent>
+                    </VListItem>
+                    <VDivider class="mt-2" />
+                  </template>
+                </VSelect>
+              </VCol>
+            </VRow>
+          </VCol>
+          <VCol
+            cols="12"
+            lg="4"
+            md="6"
+            sm="6"
+          >
+            <VRow
+              align="center"
+              justify="end"
+            >
+              <VCol
+                cols="12"
+                lg="5"
+                md="5"
+                sm="6"
+              >
+                <VBtn
+                  class="w-100"
+                  prepend-icon="healthicons:x"
+                  :disabled="isLoading"
+                  @click.stop="clearFilter"
+                >
+                  {{ t('Clear_Filter') }}
+                </VBtn>
+              </VCol>
+            </VRow>
+          </VCol>
+        </VRow>
+      </VForm>
+    </VCard>
     <VCard :loading="isLoading">
       <VCardTitle class="d-flex align-center">
         <VIcon

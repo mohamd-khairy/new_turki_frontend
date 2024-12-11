@@ -45,9 +45,21 @@ export default [
   },
   {
     title: 'كاشير',
+    to: { name: 'cashier-categories' },
     icon: { icon: 'game-icons:vertical-banner' },
     permission: "read-cashier",
-    children: [],
+  },
+  {
+    title: 'طلبات',
+    to: { name: 'cashier-orders' },
+    icon: { icon: 'solar:delivery-broken' },
+    permission: "read-cashier",
+  },
+  {
+    title: 'التسويات',
+    to: { name: 'cashier-user-sales' },
+    icon: { icon: 'game-icons:vertical-banner' },
+    permission: "read-cashier",
   },
   {
     title: 'Banners',
