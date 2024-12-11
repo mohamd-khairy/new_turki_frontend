@@ -13,10 +13,18 @@
         {{ ConvertToArabicNumbers(310841577800003) }}
       </span>
     </h4>
-    <span>الفاتورة الضريبة المبسطة</span>
-    <span>Simplified Tax Invoice</span>
+    <p>الفاتورة الضريبة المبسطة</p>
+    <p>Simplified Tax Invoice</p>
     <p>=======================================</p>
-
+    <p class="d-flex  justify-space-between w-100">
+      <span>اسم العميل:</span>
+      <span>{{ cashierStore.orderInfo.order?.customer?.name }}</span>
+    </p>
+    <p class="d-flex  justify-space-between w-100">
+      <span>رقم الجوال:</span>
+      <span dir="ltr">{{ cashierStore.orderInfo.order?.customer?.mobile }}</span>
+    </p>
+    <p>=======================================</p>
     <div class="table">
       <div class="head">
         <div class="cell text-center">
@@ -31,21 +39,35 @@
       </div>
       <p>=======================================</p>
       <div v-for="product in cashierStore.orderInfo.products" :key="product.id" class="body">
-        <div class="cell text-center">
-          {{ product.quantity }}
-        </div>
-        <div class="cell description">
-          {{ product.product?.name_ar }}
-          <div class="addons">
-            <div>{{ product.is_Ras ? '- بدون رأس' : '' }}</div>
-            <div>{{ product.is_lyh ? '- بدون لية' : '' }}</div>
-            <div>{{ product.is_kwar3 ? '- بدون كوارع' : '' }}</div>
-            <div>{{ product.is_karashah ? '- بدون كرشة' : '' }}</div>
-            <div>{{ product.shalwata ? '- مع شلوطة' : '' }}</div>
+        <div class="item">
+          <div class="cell text-center">
+            {{ product.quantity }}
           </div>
-        </div>
-        <div class="cell price">
-          {{ product.total_price }} ريال
+          <div class="cell description">
+            {{ product.product?.name_ar }}
+            <div class="addons">
+              <div v-if="product?.cut?.name_ar">
+                التقطيع: {{ product?.cut?.name_ar }}
+              </div>
+              <div v-if="product?.preparation?.name_ar">
+                التجهيز: {{ product?.preparation?.name_ar }}
+              </div>
+              <div class="flex flex-col gap-1">
+                <div class="d-flex gap-2">
+                  {{ product.is_Ras ? 'بدون رأس -' : '' }}
+                  {{ product.is_lyh ? 'بدون لية -' : '' }}
+                  {{ product.is_kwar3 ? 'بدون كوارع -' : '' }}
+                </div>
+                <div class="d-flex gap-2">
+                  {{ product.is_karashah ? 'بدون كرشة -' : '' }}
+                  {{ product.shalwata ? 'مع شلوطة' : '' }}
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="cell price">
+            {{ product.total_price }} ريال
+          </div>
         </div>
       </div>
       <p>=======================================</p>
@@ -126,10 +148,9 @@ img {
   padding: 0;
   direction: rtl;
   font-size: 16px;
-  inline-size: 80mm;
-  line-height: 1.5;
   margin-block: 0;
   margin-inline: auto;
+  max-inline-size: 70%;
   page-break-after: avoid;
   page-break-inside: avoid;
 }
@@ -176,6 +197,15 @@ p {
         margin-inline-start: 5px;
       }
     }
+  }
+
+  .body {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .item {
+    display: flex;
   }
 
   .body {

@@ -23,6 +23,11 @@ export const useCashierStore = defineStore('cashier', {
     async addToCart(item) {
       this.cart.push(item)
     },
+
+    async removeItem(index) {
+      this.cart.splice(index, 1)
+    },
+
     async getAllCategories(params) {
       try {
         const response = await axios.get('/cashier-categories', {
@@ -199,5 +204,37 @@ export const useCashierStore = defineStore('cashier', {
         return error
       }
     },
+
+    async scanCode(code) {
+      const numberStr = String(code)
+      const product_id = numberStr.slice(0, 6)
+      const part1 = numberStr.slice(6, 8)
+      const part2 = numberStr.slice(8)
+      const product_quantity = `${part1}.${part2}`
+
+      try {
+        const response = await axios.get(`/cashier-product-code/${product_id}`)
+
+        const item = {
+          quantity: product_quantity,
+          price: response.data.data.sale_price,
+          product_id: response.data.data.id,
+          name: response.data.data.name_ar,
+          total_price: product_quantity * response.data.data.sale_price, // Calculate total price
+        }
+
+        console.log(item)
+
+        this.addToCart(item)
+
+        return response.data
+      } catch (error) {
+        console.error('Error fetching products:', error)
+        
+        return error
+      }
+    },
+
+
   },
 })
