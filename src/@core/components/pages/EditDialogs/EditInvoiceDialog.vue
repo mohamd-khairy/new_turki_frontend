@@ -1,16 +1,16 @@
 <script setup>
-import { useCitiesStore } from "@/store/Cities";
-import { useEmployeesStore } from "@/store/Employees";
-import { useInvoicesStore } from "@/store/Invoices";
-import { useProductsStore } from "@/store/Products";
-import { useSettingsStore } from "@/store/Settings";
-import { useStocksStore } from "@/store/Stocks";
-import { useStoresStore } from "@/store/Stores";
-import { useSuppliersStore } from "@/store/Suppliers";
+import { useCitiesStore } from "@/store/Cities"
+import { useEmployeesStore } from "@/store/Employees"
+import { useInvoicesStore } from "@/store/Invoices"
+import { useProductsStore } from "@/store/Products"
+import { useSettingsStore } from "@/store/Settings"
+import { useStocksStore } from "@/store/Stocks"
+import { useStoresStore } from "@/store/Stores"
+import { useSuppliersStore } from "@/store/Suppliers"
 import {
-requiredValidator,
-} from '@validators';
-import { useI18n } from "vue-i18n";
+  requiredValidator,
+} from '@validators'
+import { useI18n } from "vue-i18n"
 
 const props = defineProps({
   isEditOpen: {
@@ -53,12 +53,14 @@ const itemData = reactive({
   date: props.item.date,
   invoice_price: props.item.invoice_price,
   notes: props.item.notes,
+
   // invoice: [],
 })
 
 const storesItems = ref(props.item.stocks)
 
 const isLoading = ref(false)
+
 const resetForm = () => {
   emit('update:isEditOpen', false)
 }
@@ -76,8 +78,8 @@ const addProductStore = () => {
   })
 }
 
-const removeProductStore = (index) => {
-  storesItems.value = storesItems.value.filter((store, i) => i != index);
+const removeProductStore = index => {
+  storesItems.value = storesItems.value.filter((store, i) => i != index)
 }
 
 const onFormSubmit = async () => {
@@ -86,26 +88,28 @@ const onFormSubmit = async () => {
   const res = await refForm.value.validate()
   if (res.valid) {
     // calculate total invoice's price
-    let totalInvoicePrice = 0;
+    let totalInvoicePrice = 0
+
     const storesFormatedItems = storesItems.value.map(store => {
-      totalInvoicePrice += parseFloat(store.price);
+      totalInvoicePrice += parseFloat(store.price)
+
       const formatedStore = {}
       for (const key in store) {
         if (Object.hasOwnProperty.call(store, key)) {
           if(store[key] && store[key] != '') {
-            formatedStore[key] = store[key];
+            formatedStore[key] = store[key]
           }
         }
       }
 
-      return formatedStore;
+      return formatedStore
     })
 
     const formData = {
       ...itemData,
       invoice_price: totalInvoicePrice,
       id: props.item.id,
-      stocks: storesFormatedItems
+      stocks: storesFormatedItems,
     }
 
     invoicesStore.update(formData).then(response => {
@@ -128,7 +132,7 @@ const onFormSubmit = async () => {
       } else {
         settingsListStore.alertMessage = "حدث خطأ ما !"
       }
-      
+
       settingsListStore.alertColor = "error"
       settingsListStore.isAlertShow = true
       setTimeout(() => {
@@ -136,7 +140,7 @@ const onFormSubmit = async () => {
         settingsListStore.alertMessage = ""
       }, 2000)
     }).finally(() => {
-        isLoading.value = false
+      isLoading.value = false
     })
   }
   else {
@@ -157,7 +161,7 @@ const getAllData = async () => {
   })
 
   employeesStore.fetchEmployees({ pageSize: -1 }).then(response => {
-    employees.value = response.data.data?.data;
+    employees.value = response.data.data?.data
   })
 
   suppliersStore.getAll({ pageSize: -1 }).then(response => {
@@ -166,7 +170,7 @@ const getAllData = async () => {
 }
 
 onMounted(() => {
-  getAllData();
+  getAllData()
 })
 </script>
 
@@ -200,19 +204,21 @@ onMounted(() => {
           @submit.prevent="onFormSubmit"
         >
           <VRow>
-            <!-- <VCol
+            <!--
+              <VCol
               cols="12"
               md="6"
-            >
+              >
               <VFileInput
-                v-model="itemData.invoice"
-                label="الفاتورة"
-                accept="image/*"
-                prepend-icon=""
-                prepend-inner-icon="mdi-image"
-                :rules="[requiredValidator]"
+              v-model="itemData.invoice"
+              label="الفاتورة"
+              accept="image/*"
+              prepend-icon=""
+              prepend-inner-icon="mdi-image"
+              :rules="[requiredValidator]"
               />
-            </VCol> -->
+              </VCol>
+            -->
             <VCol
               cols="12"
               md="6"
@@ -278,56 +284,73 @@ onMounted(() => {
             <VCol
               cols="12"
             >
-              <VSwitch label="الضريبة" 
-              v-model="itemData.tax"
-              :true-value="1"
-              :false-value="0"
-              ></VSwitch>
+              <VSwitch
+                v-model="itemData.tax"
+                label="الضريبة"
+                :true-value="1"
+                :false-value="0"
+              />
             </VCol>
             <VCol cols="12">
               <div class="d-flex justify-space-between align-center mb-6">
-                <h3 class="">المنتجات</h3>
+                <h3 class="">
+                  المنتجات
+                </h3>
 
-                <VBtn @click="addProductStore" class="position-relative" icon size="small">
-                  <VIcon icon="ei:plus" size="30"></VIcon>
-                </VBtn>
+                <!--
+                  <VBtn
+                  class="position-relative"
+                  icon
+                  size="small"
+                  @click="addProductStore"
+                  >
+                  <VIcon
+                  icon="ei:plus"
+                  size="30"
+                  />
+                  </VBtn>
+                -->
               </div>
-              <VRow v-for="(store, index) in storesItems" :key="index"
-              style="background-color: #fafafa;border-radius: 10px;" class="mb-6 py-3">
-              <VCol
-                cols="12"
-                md="6"
+              <VRow
+                v-for="(store, index) in storesItems"
+                :key="index"
+                style="border-radius: 10px;background-color: #fafafa;"
+                class="mb-6 py-3"
               >
-                <AutoCompleteDropdown 
-                  v-model="store.store_id"
-                  :valueText="store.name"
-                  :apiModel="storesStore"
-                  apiSearchMethod="getAll"
-                  item-title="name"
-                  item-value="id"
-                  label="المخزن"
-                  placeholder="البحث في المخزن"
-                  :rules="[requiredValidator]"
-                  style="background-color: #fff;"
-                />
-              </VCol>
-              <VCol
-                cols="12"
-                md="6"
-              >
-                <AutoCompleteDropdown 
-                  v-model="store.product_id"
-                  :valueText="store.name_ar"
-                  :apiModel="productsStore"
-                  apiSearchMethod="fetchProducts"
-                  item-title="name_ar"
-                  item-value="id"
-                  label="المخزون"
-                  placeholder="البحث في المخزون"
-                  :rules="[requiredValidator]"
-                  style="background-color: #fff;"
-                />
-              </VCol>
+                <VCol
+                  cols="12"
+                  md="6"
+                >
+                  <AutoCompleteDropdown
+                    v-model="store.store_id"
+                    :value-text="store.name"
+                    :api-model="storesStore"
+                    api-search-method="getAll"
+                    item-title="name"
+                    item-value="id"
+                    label="المخزن"
+                    placeholder="البحث في المخزن"
+                    :rules="[requiredValidator]"
+                    style="background-color: #fff;"
+                  />
+                </VCol>
+                <VCol
+                  cols="12"
+                  md="6"
+                >
+                  <AutoCompleteDropdown
+                    v-model="store.product_id"
+                    :value-text="store.name_ar"
+                    :api-model="productsStore"
+                    api-search-method="fetchProducts"
+                    item-title="name_ar"
+                    item-value="id"
+                    label="المخزون"
+                    placeholder="البحث في المخزون"
+                    :rules="[requiredValidator]"
+                    style="background-color: #fff;"
+                  />
+                </VCol>
                 <VCol
                   cols="10"
                   md="6"
@@ -355,16 +378,23 @@ onMounted(() => {
                   />
                 </VCol>
                 <VCol
+                  v-if="index > 0 || storesItems.length > 1"
                   cols="12"
                   class="d-flex justify-end py-0"
-                  v-if="index > 0 || storesItems.length > 1"
                 >
-                  <VBtn @click="removeProductStore(index)" icon size="small"
-                  style="top: 5px;left: 5px;">
-                    <VIcon icon="simple-line-icons:minus" size="20"></VIcon>
+                  <VBtn
+                    icon
+                    size="small"
+                    style="top: 5px;left: 5px;"
+                    @click="removeProductStore(index)"
+                  >
+                    <VIcon
+                      icon="simple-line-icons:minus"
+                      size="20"
+                    />
                   </VBtn>
                 </VCol>
-              </VRow> 
+              </VRow>
             </VCol>
             <VCol cols="12">
               <VTextarea
@@ -399,8 +429,8 @@ onMounted(() => {
               <VBtn
                 variant="tonal"
                 color="secondary"
-                @click="resetForm"
                 class="px-8"
+                @click="resetForm"
               >
                 {{ t('buttons.cancel') }}
               </VBtn>
