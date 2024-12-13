@@ -4,6 +4,7 @@
       <VIcon icon="solar:delivery-broken" size="24" color="primary" />
       <span class="mx-1">{{ t('Orders') }}</span>
     </VCardTitle>
+    <EditCashierStatusDialog v-if="isEditOpen" v-model:is-edit-open="isEditOpen" :item="selectedOrder" :order-statuses="orderStatuses" @refreshTable="getOrders" />
     <div class="">
       <VTable height="600px" fixed-header class="text-no-wrap product-list-table text-center">
         <thead>
@@ -21,8 +22,13 @@
               {{ t('customer_mobile') }}
             </th>
             <th scope="col" class="font-weight-semibold">
+              {{ t('forms.order_state_ar') }} <br>
+              <span class="text-primary">( {{ t('forms.click_change_status') }} )</span>
+            </th>
+            <th scope="col" class="font-weight-semibold">
               {{ t('forms.order_payment_status') }}
             </th>
+
             <th scope="col" class="font-weight-semibold">
               {{ t('forms.payment_type_name') }}
             </th>
@@ -71,6 +77,10 @@
             <td>
               {{
                 order.customer_mobile }}
+            </td>
+            <td @click="openEdit(order)">
+              {{
+                order.order_state_ar }}
             </td>
             <td>
               <VChip v-if="order.paid == 1" style="cursor: pointer;" class="text-success">
@@ -135,18 +145,29 @@
 
 
 <script setup>
+import EditCashierStatusDialog from '@/@core/components/pages/EditDialogs/EditCashierStatusDialog.vue'
 import { useCashierStore } from '@/store/Cashier'
-import { ref, onMounted, watch } from 'vue'
+import { useOrdersStore } from "@/store/Orders"
 import moment from "moment"
+import { onMounted, ref, watch } from 'vue'
 import { useRouter } from "vue-router"
 
 const router = useRouter()
 const cashierStore = useCashierStore()
+const ordersListStore = useOrdersStore()
+
 const { t } = useI18n()
 const dataFrom = ref(1)
 const dataTo = ref(1)
 const currentPage = ref(1)
+const isEditOpen = ref(false)
+const selectedOrder = ref({})
+const orderStatuses = ref([])
 
+const openEdit = order => {
+  isEditOpen.value = true
+  selectedOrder.value = order
+}
 
 const handleDeliveryDate = (date, createdDate) => {
   const newDate = moment(date).format("DD-MM-YYYY")
@@ -183,6 +204,9 @@ const openDetails = order => {
 
 
 onMounted(async () => {
+  ordersListStore.fetchOrderStatus().then(response => {
+    orderStatuses.value = response.data.data
+  })
   await getOrders()
 })
 
