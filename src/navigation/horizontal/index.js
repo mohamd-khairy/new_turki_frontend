@@ -144,6 +144,11 @@ export default [
         // icon: { icon: 'mdi-bank-outline' },
         // permission: "read-bank",
       },
+      {
+        title: 'سجل المخزون',
+        to: { name: 'stock-logs' },
+
+      },
     ],
   },
   {
