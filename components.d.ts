@@ -63,7 +63,6 @@ declare module '@vue/runtime-core' {
     CashierCart: typeof import('./src/@core/components/CashierCart.vue')['default']
     CashierInvoice: typeof import('./src/@core/components/CashierInvoice.vue')['default']
     ConfirmDialog: typeof import('./src/@core/components/ConfirmDialog.vue')['default']
-    copy: typeof import('./src/@core/components/pages/EditDialogs/EditOrderStatusDialog copy.vue')['default']
     CustomizerSection: typeof import('./src/@core/components/CustomizerSection.vue')['default']
     DashboardOrdersTable: typeof import('./src/@core/components/pages/DashboardOrdersTable.vue')['default']
     DeleteBankDialog: typeof import('./src/@core/components/pages/DeleteDialogs/DeleteBankDialog.vue')['default']

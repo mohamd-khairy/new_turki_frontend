@@ -1,5 +1,5 @@
-import { defineStore } from 'pinia'
 import axios from '@axios'
+import { defineStore } from 'pinia'
 
 export const useSettingsStore = defineStore('SettingsStore', {
   state: () => {
@@ -117,6 +117,9 @@ export const useSettingsStore = defineStore('SettingsStore', {
     },
     deleteProductSize(data) {
       return axios.post(`product-sizes/delete-size/${data.id}`)
+    },
+    fetchStockLogs(params) {
+      return axios.get('stock-logs', { params })
     },
   },
 })
