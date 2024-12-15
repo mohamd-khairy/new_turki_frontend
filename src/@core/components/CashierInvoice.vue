@@ -1,12 +1,13 @@
 <template>
-  <div class="text-center invoice hide-on-screen">
+  <div class="text-center invoice ">
+    <!-- hide-on-screen -->
     <div class="text-center">
       <img src="@/assets/images/logo.png" alt="turki">
       <p class="">
         الرياض
       </p>
     </div>
-    <p>=======================================</p>
+    <p>===============================================================</p>
     <h4 class="d-flex align-center justify-center gap-3 mb-3 text-base">
       <span>رقم السجل الضريبي: </span>
       <span>
@@ -15,7 +16,7 @@
     </h4>
     <p>الفاتورة الضريبة المبسطة</p>
     <p>Simplified Tax Invoice</p>
-    <p>=======================================</p>
+    <p>===============================================================</p>
     <p class="d-flex  justify-space-between w-100">
       <span>اسم العميل:</span>
       <span>{{ cashierStore.orderInfo.order?.customer?.name }}</span>
@@ -24,7 +25,7 @@
       <span>رقم الجوال:</span>
       <span dir="ltr">{{ cashierStore.orderInfo.order?.customer?.mobile }}</span>
     </p>
-    <p>=======================================</p>
+    <p>===============================================================</p>
     <div class="table">
       <div class="head">
         <div class="cell text-center">
@@ -37,7 +38,7 @@
           السعر
         </div>
       </div>
-      <p>=======================================</p>
+      <p>===============================================================</p>
       <div v-for="product in cashierStore.orderInfo.products" :key="product.id" class="body">
         <div class="item">
           <div class="cell text-center">
@@ -70,7 +71,7 @@
           </div>
         </div>
       </div>
-      <p>=======================================</p>
+      <p>===============================================================</p>
       <div class="head">
         <div class="cell description">
           <p>المجموع النهائى</p>
@@ -87,7 +88,7 @@
           {{ cashierStore.orderInfo.order?.tax_fees }} ريال
         </div>
       </div>
-      <p>=======================================</p>
+      <p>===============================================================</p>
     </div>
 
     <p class="d-flex bold justify-space-between w-100">
@@ -95,12 +96,12 @@
       <span>{{ cashierStore.orderInfo.order?.total_amount }} ريال</span>
     </p>
     <p>المجموع يشمل ضريبة القيمة المضافة</p>
-    <p>=======================================</p>
+    <p>===============================================================</p>
     <p class="d-flex bold justify-space-between w-100">
       <span>طريقة الدفع</span>
       <span>{{ cashierStore.orderInfo.order?.payment_type?.name_ar }}</span>
     </p>
-    <p>=======================================</p>
+    <p>===============================================================</p>
     <div class="text-center">
       <img class="qr" :src="cashierStore.orderInfo?.order?.qr">
     </div>
@@ -138,7 +139,8 @@ img {
 
 @page {
   margin: 0;
-  size: a5 portrait;
+
+  // size: a5 portrait;
 }
 
 .invoice {
@@ -151,8 +153,9 @@ img {
   margin-block: 0;
   margin-inline: auto;
   max-inline-size: 70%;
-  page-break-after: avoid;
-  page-break-inside: avoid;
+
+  // page-break-after: avoid;
+  // page-break-inside: avoid;
 }
 
 p {

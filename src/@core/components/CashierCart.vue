@@ -16,7 +16,7 @@
               {{ item.quantity }} x {{ item.name }}
             </div>
             <div class="d-flex gap-4 align-center">
-              <span>{{ item.total_price }} ريال</span>
+              <span class="nowrap">{{ item.total_price }} ريال</span>
               <VBtn icon variant="text" color="default" class="ms-n3" size="small" @click="cashierStore.removeItem(index)">
                 <VIcon icon="tabler-x" size="20" />
               </VBtn>
@@ -286,6 +286,10 @@ onMounted(() => {
       color: rgba(var(--v-theme-primary), 1);
     }
   }
+}
+
+.nowrap {
+  white-space: nowrap;
 }
 
 .buttons {
