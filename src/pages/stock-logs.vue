@@ -307,12 +307,6 @@ const formatDateTime = data => {
             >
               الكميه النهائية
             </th>
-            <th
-              scope="col"
-              class="font-weight-semibold"
-            >
-              {{ t('forms.actions') }}
-            </th>
           </tr>
         </thead>
 
@@ -341,32 +335,6 @@ const formatDateTime = data => {
             </td>
             <td>
               {{ item.new_quantity }}
-            </td>
-            <td>
-              <VBtn
-                icon
-                variant="plain"
-                color="default"
-                size="x-small"
-                @click="openEdit(item)"
-              >
-                <VIcon
-                  :size="22"
-                  icon="tabler-pencil"
-                />
-              </VBtn>
-              <VBtn
-                icon
-                variant="plain"
-                color="default"
-                size="x-small"
-                @click="openDelete(item)"
-              >
-                <VIcon
-                  :size="22"
-                  icon="tabler-trash"
-                />
-              </VBtn>
             </td>
           </tr>
         </tbody>
