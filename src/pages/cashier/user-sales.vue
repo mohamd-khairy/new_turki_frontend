@@ -1,39 +1,118 @@
 <template>
+  <div>
+    <VCard class="mb-5 pa-5">
+      <VRow>
+        <VCol
+          cols="12"
+          class="d-flex align-center gap-3"
+        >
+          <div class="icon">
+            <VIcon
+              icon="fluent-mdl2:date-time"
+              color="primary"
+            />
+          </div>
+          <VTextField
+            v-model="filters.start_date"
+            type="date"
+            :label="t('forms.from')"
+          />
+
+          <div class="icon">
+            <VIcon
+              icon="fluent-mdl2:date-time"
+              color="primary"
+            />
+          </div>
+          <VTextField
+            v-model="filters.end_date"
+            type="date"
+            :label="t('forms.to')"
+          />
+
+          <VBtn
+            prepend-icon="healthicons:x"
+            @click.stop="clearFilter"
+          >
+            {{ t('Clear_Filter') }}
+          </VBtn>
+        </VCol>
+      </VRow>
+    </VCard>
+  </div>
+
   <VCard :loading="cashierStore.isLoading">
     <VCardTitle class="d-flex align-center">
-      <VIcon icon="solar:delivery-broken" size="24" color="primary" />
+      <VIcon
+        icon="solar:delivery-broken"
+        size="24"
+        color="primary"
+      />
       <span class="mx-1">التسويات</span>
     </VCardTitle>
-    <VTable height="600px" fixed-header class="text-no-wrap product-list-table text-center">
+    <VTable
+      height="600px"
+      fixed-header
+      class="text-no-wrap product-list-table text-center"
+    >
       <thead>
         <tr>
-          <th scope="col" class="font-weight-semibold">
+          <th
+            scope="col"
+            class="font-weight-semibold"
+          >
             {{ $t("forms.id") }}
           </th>
-          <th scope="col" class="font-weight-semibold">
+          <th
+            scope="col"
+            class="font-weight-semibold"
+          >
             اسم الموظف
             {{ }}
           </th>
-          <th v-for="paymentType in cashierStore.paymentTypes" :key="paymentType.id" scope="col" class="font-weight-semibold">
+          <th
+            v-for="paymentType in cashierStore.paymentTypes"
+            :key="paymentType.id"
+            scope="col"
+            class="font-weight-semibold"
+          >
             {{ locale == 'en' ? paymentType.name_en : paymentType.name_ar }}
           </th>
         </tr>
       </thead>
       <tbody v-if="cashierStore.isLoading">
-        <tr v-for="tableRow in 5" :key="tableRow">
-          <td v-for="tableTD in 5" :key="tableTD">
+        <tr
+          v-for="tableRow in 5"
+          :key="tableRow"
+        >
+          <td
+            v-for="tableTD in 5"
+            :key="tableTD"
+          >
             <div>
-              <VSkeletonLoader type="text" :height="40" :width="100" />
+              <VSkeletonLoader
+                type="text"
+                :height="40"
+                :width="100"
+              />
             </div>
           </td>
         </tr>
       </tbody>
       <tbody v-else>
-        <template v-for="user in cashierStore.usersSales" :key="user.user_id">
+        <template
+          v-for="user in cashierStore.usersSales"
+          :key="user.user_id"
+        >
           <tr>
             <td>{{ user.user_id }}</td>
             <td>{{ user.user_name }}</td>
-            <td v-for="paymentType in cashierStore.paymentTypes" :key="paymentType.id" scope="col" class="font-weight-semibold">
+            <td
+              v-for="paymentType in cashierStore.paymentTypes"
+              :key="paymentType.id"
+              scope="col"
+              class="font-weight-semibold"
+            >
               {{ ConvertToArabicNumbers(user[paymentType.name_en]) }}
             </td>
           </tr>
@@ -41,7 +120,10 @@
       </tbody>
       <tfoot v-show="!cashierStore.isLoading && cashierStore.usersSales.length == 0">
         <tr>
-          <td colspan="8" class="text-center text-body-1">
+          <td
+            colspan="8"
+            class="text-center text-body-1"
+          >
             لا يوجد بيانات
           </td>
         </tr>
@@ -59,6 +141,20 @@ import { useI18n } from 'vue-i18n'
 const cashierStore = useCashierStore()
 const { t, locale } = useI18n()
 
+const filters = reactive({
+  start_date: null,
+  end_date: null,
+})
+
+const isLoading = ref(false)
+const isFiltered = ref(false)
+
+
+const clearFilter = () => {
+  filters.start_date = null,
+  filters.end_date = null
+}
+
 const ConvertToArabicNumbers = num => {
   console.log("num", num)
 
@@ -67,8 +163,17 @@ const ConvertToArabicNumbers = num => {
   return String(num).replace(/[0123456789]/g, d => arabicNumbers[d])
 }
 
-onMounted(async () => {
-  await cashierStore.userSalesList()
+const getItems = () => {
+  cashierStore.userSalesList({
+    start_date: filters.start_date,
+    end_date: filters.end_date,
+  })
+}
+
+
+
+watchEffect(() => {
+  getItems()
 })
 </script>
 

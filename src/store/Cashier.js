@@ -43,7 +43,7 @@ export const useCashierStore = defineStore('cashier', {
     async getAllSubCategories({ id, search }) {
       try {
         const response = await axios.get(`/cashier-subcategories/${id}`, {
-          params: { search }, 
+          params: { search },
         })
 
         return response.data.data
@@ -55,7 +55,7 @@ export const useCashierStore = defineStore('cashier', {
     async getAllProducts({ id, search }) {
       try {
         const response = await axios.get(`/cashier-products/${id}`, {
-          params: { search }, 
+          params: { search },
         })
 
         return response.data.data
@@ -67,7 +67,7 @@ export const useCashierStore = defineStore('cashier', {
     async searchProducts({ search }) {
       try {
         const response = await axios.get(`/cashier-products`, {
-          params: { search }, 
+          params: { search },
         })
 
         return response.data.data
@@ -80,12 +80,12 @@ export const useCashierStore = defineStore('cashier', {
     async getAllPaymentTypes() {
       try {
         const response = await axios.get(`cashier-payment-types`)
-        
+
         return response.data.data
       } catch (error) {
         console.error('Error fetching products:', error)
         throw error
-      } 
+      }
 
     },
 
@@ -98,11 +98,11 @@ export const useCashierStore = defineStore('cashier', {
         })
 
         this.order = response.data.data
-        
+
         return response.data
       } catch (error) {
         console.error('Error fetching products:', error)
-        
+
         return error
       } finally {
         this.isClicked = false
@@ -118,11 +118,11 @@ export const useCashierStore = defineStore('cashier', {
 
         this.cart = []
         this.order = {}
-        
+
         return response.data
       } catch (error) {
         console.error('Error fetching products:', error)
-        
+
         return error
       } finally {
         this.isClicked = false
@@ -133,7 +133,7 @@ export const useCashierStore = defineStore('cashier', {
         const response = await axios.get(`/cashier-order-details/${data}`)
 
         this.orderInfo = response.data.data
-        
+
         return response.data
       } catch (error) {
         console.error('Error fetching products:', error)
@@ -145,7 +145,7 @@ export const useCashierStore = defineStore('cashier', {
         const response = await axios.delete(`/cashier-delete-order/${data}`)
 
         this.order = {}
-        
+
         return response.data
       } catch (error) {
         console.error('Error fetching products:', error)
@@ -161,7 +161,7 @@ export const useCashierStore = defineStore('cashier', {
         this.orderList = response.data.data.data
         console.log(this.orderList)
         this.orderListPaginated['total'] = response.data.data.last_page
-        
+
         return response.data
       } catch (error) {
         console.error('Error fetching products:', error)
@@ -170,15 +170,15 @@ export const useCashierStore = defineStore('cashier', {
         this.isLoading = false
       }
     },
-    async userSalesList() {
+    async userSalesList(params) {
       try {
         this.isLoading = true
 
-        const response = await axios.get(`/cashier-user-sales-details`)
+        const response = await axios.get(`/cashier-user-sales-details` , { params })
 
         this.usersSales = response.data.data
         this.paymentTypes = response.data.payment_types
-        
+
         return response.data
       } catch (error) {
         console.error('Error fetching products:', error)
@@ -188,7 +188,7 @@ export const useCashierStore = defineStore('cashier', {
       }
     },
     async hasCoupon(data) {
-      
+
       try {
         const response = await axios.post(`/cashier-discount-code-details`,{
           ...data,
@@ -196,27 +196,27 @@ export const useCashierStore = defineStore('cashier', {
 
         this.isCodeSubmitted = true
         this.discount = response.data.data
-        
+
         return response.data
       } catch (error) {
         console.error('Error fetching products:', error)
-        
+
         return error
       }
     },
 
     async changeOrderStatus(data) {
-      
+
       try {
         const response = await axios.put(`/cashier-order-update/${data.id}`, {
           ...data,
         })
 
-        
+
         return response.data
       } catch (error) {
         console.error('Error fetching products:', error)
-        
+
         return error
       }
     },
@@ -246,7 +246,7 @@ export const useCashierStore = defineStore('cashier', {
         return response.data
       } catch (error) {
         console.error('Error fetching products:', error)
-        
+
         return error
       }
     },
