@@ -205,6 +205,22 @@ export const useCashierStore = defineStore('cashier', {
       }
     },
 
+    async changeOrderStatus(data) {
+      
+      try {
+        const response = await axios.put(`/cashier-order-update/${data.id}`, {
+          ...data,
+        })
+
+        
+        return response.data
+      } catch (error) {
+        console.error('Error fetching products:', error)
+        
+        return error
+      }
+    },
+
     async scanCode(code) {
       const numberStr = String(code)
       const product_id = numberStr.slice(0, 6)
