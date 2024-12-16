@@ -1,9 +1,9 @@
 <script setup>
-import { useSettingsStore } from "@/store/Settings"
-import { useProductsStore } from "@/store/Products"
+import { useProductsStore } from "@/store/Products";
+import { useSettingsStore } from "@/store/Settings";
 
-import moment from "moment"
-import { useI18n } from "vue-i18n"
+import moment from "moment";
+import { useI18n } from "vue-i18n";
 
 const { t } = useI18n()
 
@@ -52,10 +52,14 @@ const getItems = () => {
   settingsListStore.fetchStockLogs({
     search: filters.search,
     product_id: filters.product_id,
+    per_page: rowPerPage.value,
+    page: currentPage.value,
   }).then(response => {
     items.value = response.data.data.data
-    totalPage.value = items.value / rowPerPage
-    totalItems.value = items.value.length
+
+    totalPage.value = response.data.data.last_page
+
+    totalItems.value = items.data.data.total
     currentPage.value = 1
   }).catch(error => {
     console.log(error)
@@ -87,15 +91,15 @@ watchEffect(() => {
   }
 })
 
-const paginateItems = computed(() => {
-  totalPage.value = Math.ceil(items.value.length / rowPerPage.value)
+// const paginateItems = computed(() => {
+//   totalPage.value = Math.ceil(items.value.length / rowPerPage.value)
 
-  return items.value.filter((row, index) => {
-    let start = (currentPage.value - 1) * rowPerPage.value
-    let end = currentPage.value * rowPerPage.value
-    if (index >= start && index < end) return true
-  })
-})
+//   return items.value.filter((row, index) => {
+//     let start = (currentPage.value - 1) * rowPerPage.value
+//     let end = currentPage.value * rowPerPage.value
+//     if (index >= start && index < end) return true
+//   })
+// })
 
 const nextPage = () => {
   if ((currentPage.value * rowPerPage.value) < items.value.length) currentPage.value
@@ -312,7 +316,7 @@ const formatDateTime = data => {
 
         <tbody>
           <tr
-            v-for="(item, i) in paginateItems"
+            v-for="(item, i) in items"
             :key="item.id"
           >
             <td>
@@ -352,7 +356,22 @@ const formatDateTime = data => {
         </tfoot>
       </VTable>
       <!-- !SECTION -->
+      <!--
+        <VDivider />
 
+        <VCardText class="d-flex align-center flex-wrap justify-space-between gap-4 py-3">
+        <span class="text-sm text-disabled">{{ paginationData }}</span>
+
+        <VPagination
+        v-model="currentPage"
+        size="small"
+        :total-visible="rowPerPage"
+        :length="totalPage"
+        @next="nextPage"
+        @prev="prevPage"
+        />
+        </VCardText>
+      -->
       <VDivider />
 
       <VCardText class="d-flex align-center flex-wrap justify-space-between gap-4 py-3">
@@ -363,8 +382,8 @@ const formatDateTime = data => {
           size="small"
           :total-visible="rowPerPage"
           :length="totalPage"
-          @next="nextPage"
-          @prev="prevPage"
+          @next="selectedRows = []"
+          @prev="selectedRows = []"
         />
       </VCardText>
     </VCard>
