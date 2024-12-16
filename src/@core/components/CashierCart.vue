@@ -13,10 +13,10 @@
         <div class="cart__items">
           <div v-for="(item, index) in cashierStore.cart" :key="item.id" class="cart__item">
             <div class="info">
-              {{ item.quantity }} x {{ item.name }}
+              {{ parseFloat(item.quantity).toString() }} x {{ item.name }}
             </div>
             <div class="d-flex gap-4 align-center">
-              <span class="nowrap">{{ item.total_price }} ريال</span>
+              <span class="nowrap">{{ item.total_price.toFixed(2) }} ريال</span>
               <VBtn icon variant="text" color="default" class="ms-n3" size="small" @click="cashierStore.removeItem(index)">
                 <VIcon icon="tabler-x" size="20" />
               </VBtn>
@@ -45,16 +45,16 @@
 
           <button v-if="cashierStore.cart.length != 0 && !isPayment" class="total" @click="addCustomerInfo">
             <p>الاجمالي</p>
-            <p>{{ totalPriceAfterDiscount }} ريال</p>
+            <p>{{ totalPriceAfterDiscount.toFixed(2) }} ريال</p>
           </button>
 
           <div v-else class="total">
             <p>الاجمالي</p>
-            <p>{{ totalPriceAfterDiscount }} ريال</p>
+            <p>{{ totalPriceAfterDiscount.toFixed(2) }} ريال</p>
           </div>
         </div>
       </div>
-      <Modal v-model="showCustomerInfoModal" width="400px" :custom-action="true">
+      <Modal v-model="showCustomerInfoModal" width="600px" :custom-action="true">
         <template #content>
           <VRow>
             <VCol cols="12" md="12">
@@ -64,6 +64,7 @@
           <div class="buttons">
             <AppButton type="primary" title="أضافة" :disabled="preventMakeOrder" :is-loading="isLoading" @click="makeOrder" />
             <AppButton type="close" title="الغاء" @click="resetModal" />
+            <AppButton type="primary" title="زائر" :is-loading="isCustomerLoading" @click="makeOrderAsCustomer" />
           </div>
         </template>
       </Modal>
@@ -107,6 +108,7 @@ const totalPrice = computed(() => cashierStore.cart.reduce((acc, item) => acc + 
 const totalPriceAfterDiscount = computed(() => totalPrice.value - cashierStore.discount)
 const totalQuantity = cashierStore.cart.reduce((total, item) => total + Number(item.quantity), 0)
 const isLoading = ref(false)
+const isCustomerLoading = ref(false)
 const isDiscountSubmit = ref(false)
 const showCustomerInfoModal = ref(false)
 
@@ -170,6 +172,21 @@ const makeOrder = async () => {
     resetModal()
   }
   isLoading.value = false
+}
+
+const makeOrderAsCustomer = async () => {
+  client["products"] = cashierStore.cart
+  client["total_amount"] = totalPrice
+  client["customer_mobile"] = `+9660123456789`
+  client["applied_discount_code"] = discountCode.discount_code
+
+  isCustomerLoading.value = true
+  let { code } = await cashierStore.createOrder(client)
+  if (code == '200') {
+    router.push('/cashier/payment')
+    resetModal()
+  }
+  isCustomerLoading.value = false
 }
 
 watch(() => showCustomerInfoModal.value, newValue => {
