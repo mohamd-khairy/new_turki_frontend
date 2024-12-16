@@ -1,12 +1,14 @@
 <template>
-  <div class="text-center invoice hide-on-screen">
+  <div id="invoice" class="text-center invoice hide-on-screen">
     <div class="text-center">
       <img src="@/assets/images/logo.png" alt="turki">
       <p class="">
         الرياض
       </p>
     </div>
-    <p>===============================================================</p>
+    <p class="text-center">
+      =========================================================
+    </p>
     <h4 class="d-flex align-center justify-center gap-3 mb-3 text-base">
       <span>رقم السجل الضريبي: </span>
       <span>
@@ -15,16 +17,20 @@
     </h4>
     <p>الفاتورة الضريبة المبسطة</p>
     <p>Simplified Tax Invoice</p>
-    <p>===============================================================</p>
-    <p class="d-flex  justify-space-between w-100">
+    <p class="text-center">
+      =========================================================
+    </p>
+    <p v-if="orderDetails.order.customer.mobile != '+9660123456789'" class="d-flex  justify-space-between w-100">
       <span>اسم العميل:</span>
       <span>{{ cashierStore.orderInfo.order?.customer?.name }}</span>
     </p>
-    <p class="d-flex  justify-space-between w-100">
+    <p v-if="orderDetails.order.customer.mobile != '+9660123456789'" class="d-flex  justify-space-between w-100">
       <span>رقم الجوال:</span>
       <span dir="ltr">{{ cashierStore.orderInfo.order?.customer?.mobile }}</span>
     </p>
-    <p>===============================================================</p>
+    <p class="text-center">
+      =========================================================
+    </p>
     <div class="table">
       <div class="head">
         <div class="cell text-center">
@@ -37,7 +43,9 @@
           السعر
         </div>
       </div>
-      <p>===============================================================</p>
+      <p class="text-center">
+        =========================================================
+      </p>
       <div v-for="product in cashierStore.orderInfo.products" :key="product.id" class="body">
         <div class="item">
           <div class="cell text-center">
@@ -70,7 +78,9 @@
           </div>
         </div>
       </div>
-      <p>===============================================================</p>
+      <p class="text-center">
+        =========================================================
+      </p>
       <div class="head">
         <div class="cell description">
           <p>المجموع النهائى</p>
@@ -87,7 +97,9 @@
           {{ cashierStore.orderInfo.order?.tax_fees }} ريال
         </div>
       </div>
-      <p>===============================================================</p>
+      <p class="text-center">
+        =========================================================
+      </p>
     </div>
 
     <p class="d-flex bold justify-space-between w-100">
@@ -95,22 +107,54 @@
       <span>{{ cashierStore.orderInfo.order?.total_amount }} ريال</span>
     </p>
     <p>المجموع يشمل ضريبة القيمة المضافة</p>
-    <p>===============================================================</p>
+    <p class="text-center">
+      =========================================================
+    </p>
     <p class="d-flex bold justify-space-between w-100">
       <span>طريقة الدفع</span>
       <span>{{ cashierStore.orderInfo.order?.payment_type?.name_ar }}</span>
     </p>
-    <p>===============================================================</p>
+    <p class="text-center">
+      =========================================================
+    </p>
     <div class="text-center">
-      <img class="qr" :src="cashierStore.orderInfo?.order?.qr">
+      <!-- <img class="qr" :src="cashierStore.orderInfo?.order?.qr"> -->
+      <!-- <img class="qr" src="http://new-turki-project-api-v2.test/qr/SAO000000044.png"> -->
+      <img class="qr" :src="cashierStore.orderInfo?.order?.qr" alt="QR Code">
     </div>
   </div>
 </template>
 
 <script setup>
 import { useCashierStore } from '@/store/Cashier';
+import { ref } from 'vue';
 
 const cashierStore = useCashierStore()
+const qrBase64 = ref(null) // To store the Base64 QR code
+
+const convertImageUrlToBase64 = async url => {
+  console.log(url)
+  try {
+    const response = await fetch(url) // Fetch image from the provided URL
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`)
+    }
+
+    const blob = await response.blob() // Convert response to a Blob object
+
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader()
+
+      reader.onloadend = () => resolve(reader.result) // Base64 encoded string
+      reader.onerror = error => reject(`Failed to convert image: ${error}`)
+      reader.readAsDataURL(blob) // Start the conversion to Base64
+    })
+  } catch (error) {
+    console.error("Error fetching the image:", error)
+
+    return null
+  }
+}
 
 const ConvertToArabicNumbers = num => {
   const arabicNumbers = "\u0660\u0661\u0662\u0663\u0664\u0665\u0666\u0667\u0668\u0669"
@@ -119,6 +163,18 @@ const ConvertToArabicNumbers = num => {
     return arabicNumbers[d]
   })
 }
+
+// onMounted(async () => {
+//   const qrUrl = cashierStore.orderInfo?.order?.qr // QR URL from your store
+
+//   console.log("qrUrl", qrUrl)
+//   if (qrUrl) qrBase64.value = await convertImageUrlToBase64(qrUrl)
+
+// })
+
+// watch(() => cashierStore.orderInfo, async () => {
+//   if (cashierStore.orderInfo?.order?.qr) qrBase64.value = await convertImageUrlToBase64(cashierStore.orderInfo?.order?.qr).then(res => console.log(res))
+// })
 </script>
 
 <style lang='scss' scoped>
@@ -138,23 +194,26 @@ img {
 
 @page {
   margin: 0;
+  size: auto;
+}
+
+@page {
+  margin: 0;
 
   // size: a5 portrait;
 }
 
 .invoice {
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
   padding: 0;
+  margin: 0;
+
+  /* Ensure full width */
+  block-size: auto;
   direction: rtl;
   font-size: 16px;
-  margin-block: 0;
-  margin-inline: auto;
-  max-inline-size: 70%;
-
-  // page-break-after: avoid;
-  // page-break-inside: avoid;
+  inline-size: 100%;
+  page-break-after: avoid;
+  page-break-inside: avoid;
 }
 
 p {
@@ -221,7 +280,7 @@ p.d-felx {
 }
 
 .bold {
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 700;
 }
 </style>
