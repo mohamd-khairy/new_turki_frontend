@@ -76,11 +76,11 @@
               بيانات العميل
             </h3>
             <VRow>
-              <VCol cols="6" class="d-flex align-xcenter gap-3 text-base py-1">
+              <VCol v-if="orderDetails.order.customer.mobile != '+9660123456789'" cols="6" class="d-flex align-xcenter gap-3 text-base py-1">
                 <h4>اسم العميل: </h4>
                 <h4>{{ orderDetails.order.customer.name }}</h4>
               </VCol>
-              <VCol cols="6" class="d-flex align-center gap-3 text-base py-1">
+              <VCol v-if="orderDetails.order.customer.mobile != '+9660123456789'" cols="6" class="d-flex align-center gap-3 text-base py-1">
                 <h4>رقم الهاتف:</h4>
                 <h4 dir="ltr">
                   {{ orderDetails.order.customer.mobile }}
@@ -242,7 +242,7 @@
         </VRow>
       </div>
       <div class="buttons">
-        <AppButton type="primary" title="طباعة" @click="handlePrint" />
+        <AppButton type="primary" title="طباعة" @click="generatePDF" />
         <AppButton type="close" title="رجوع" @click="$router.push('/cashier/categories')" />
       </div>
     </div>
@@ -252,6 +252,7 @@
 <script setup>
 import CashierInvoice from '@/@core/components/CashierInvoice.vue'
 import { useCashierStore } from '@/store/Cashier'
+import html2pdf from 'html2pdf.js'
 import moment from "moment"
 import { computed, onMounted } from 'vue'
 import { useVueToPrint } from "vue-to-print"
@@ -284,6 +285,30 @@ const { handlePrint } = useVueToPrint({
   removeAfterPrint: true,
 
 })
+
+const generatePDF = () => {
+  const element = document.getElementById('invoice') // Get the HTML element
+
+  element.classList.remove('hide-on-screen')
+
+  html2pdf()
+    .from(element)
+    .set({
+      margin: 5,
+      filename: 'تفاصيل الطلبية.pdf',
+      html2canvas: { scale: 2 },
+      jsPDF: {
+        unit: 'mm',
+        format: [80, 200],
+        orientation: 'portrait',
+      },
+    })
+    .save()
+    .finally(() => {
+      element.classList.add('hide-on-screen')
+    })
+}
+
 
 const isUAEOrder = computed(() => orderDetails.value.order?.selected_address?.country_id == 4)
 
