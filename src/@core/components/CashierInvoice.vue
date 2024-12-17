@@ -20,11 +20,11 @@
     <p class="text-center">
       =========================================================
     </p>
-    <p v-if="orderDetails.order.customer.mobile != '+9660123456789'" class="d-flex  justify-space-between w-100">
+    <p v-if="orderDetails?.order?.customer.mobile != '+9660123456789'" class="d-flex  justify-space-between w-100">
       <span>اسم العميل:</span>
       <span>{{ cashierStore.orderInfo.order?.customer?.name }}</span>
     </p>
-    <p v-if="orderDetails.order.customer.mobile != '+9660123456789'" class="d-flex  justify-space-between w-100">
+    <p v-if="orderDetails?.order?.customer.mobile != '+9660123456789'" class="d-flex  justify-space-between w-100">
       <span>رقم الجوال:</span>
       <span dir="ltr">{{ cashierStore.orderInfo.order?.customer?.mobile }}</span>
     </p>
@@ -114,14 +114,6 @@
       <span>طريقة الدفع</span>
       <span>{{ cashierStore.orderInfo.order?.payment_type?.name_ar }}</span>
     </p>
-    <p class="text-center">
-      =========================================================
-    </p>
-    <div class="text-center">
-      <!-- <img class="qr" :src="cashierStore.orderInfo?.order?.qr"> -->
-      <!-- <img class="qr" src="http://new-turki-project-api-v2.test/qr/SAO000000044.png"> -->
-      <img class="qr" :src="cashierStore.orderInfo?.order?.qr" alt="QR Code">
-    </div>
   </div>
 </template>
 

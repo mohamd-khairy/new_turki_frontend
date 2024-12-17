@@ -7,7 +7,7 @@
         جاري جلب بيانات الفاتورة ...
       </p>
     </div>
-    <div v-else class="">
+    <div v-else>
       <div class="card-wrapper invoice-container">
         <VRow justify="space-between hidden" class="mb-2 pa-0">
           <VCol cols="12" class="py-0">
@@ -46,27 +46,27 @@
             <VRow>
               <VCol cols="6" class="d-flex align-center gap-3 text-base py-1">
                 <h4>رقم الفاتورة:</h4>
-                <h2 v-if="orderDetails.order.payment">
-                  {{ orderDetails.order.payment.order_ref_no }}
+                <h2 v-if="orderDetails?.order?.payment">
+                  {{ orderDetails?.order?.payment.order_ref_no }}
                 </h2>
                 <span v-else>لا يوجد</span>
               </VCol>
               <VCol cols="6" class="d-flex align-center gap-3 text-base py-1">
                 <h4>تاريخ الفاتورة:</h4>
                 <h4>
-                  {{ formatCreatedDate(orderDetails.order.created_at) }}
+                  {{ formatCreatedDate(orderDetails?.order?.created_at) }}
                 </h4>
               </VCol>
               <VCol cols="6" class="d-flex align-center gap-3 text-base py-1">
                 <h4>تاريخ التسليم: </h4>
                 <h4>
-                  {{ formatCreatedDate(orderDetails.order.delivery_date) }}
+                  {{ formatCreatedDate(orderDetails?.order?.delivery_date) }}
                 </h4>
               </VCol>
               <VCol cols="6" class="d-flex align-center gap-3 text-base py-1">
                 <h4>وقت التسليم: </h4>
                 <h4>
-                  {{ orderDetails.order.delivery_period ? orderDetails.order.delivery_period.name_ar : "لا يوجد" }}
+                  {{ orderDetails?.order?.delivery_period ? orderDetails?.order?.delivery_period.name_ar : "لا يوجد" }}
                 </h4>
               </VCol>
             </VRow>
@@ -76,21 +76,21 @@
               بيانات العميل
             </h3>
             <VRow>
-              <VCol v-if="orderDetails.order.customer.mobile != '+9660123456789'" cols="6" class="d-flex align-xcenter gap-3 text-base py-1">
+              <VCol v-if="orderDetails?.order?.customer.mobile != '+9660123456789'" cols="6" class="d-flex align-xcenter gap-3 text-base py-1">
                 <h4>اسم العميل: </h4>
-                <h4>{{ orderDetails.order.customer.name }}</h4>
+                <h4>{{ orderDetails?.order?.customer.name }}</h4>
               </VCol>
-              <VCol v-if="orderDetails.order.customer.mobile != '+9660123456789'" cols="6" class="d-flex align-center gap-3 text-base py-1">
+              <VCol v-if="orderDetails?.order?.customer.mobile != '+9660123456789'" cols="6" class="d-flex align-center gap-3 text-base py-1">
                 <h4>رقم الهاتف:</h4>
                 <h4 dir="ltr">
-                  {{ orderDetails.order.customer.mobile }}
+                  {{ orderDetails?.order?.customer.mobile }}
                 </h4>
               </VCol>
               <VCol cols="6" class="d-flex align-center gap-3 text-base py-1">
                 <h4>طريقة الدفع :</h4>
                 <h4>
-                  {{ orderDetails.order.payment_type ? orderDetails.order.payment_type.name_ar : "لا يوجد" }}
-                  {{ orderDetails.order.using_wallet ? " - المحفظة" : " " }}
+                  {{ orderDetails?.order?.payment_type ? orderDetails?.order?.payment_type.name_ar : "لا يوجد" }}
+                  {{ orderDetails?.order?.using_wallet ? " - المحفظة" : " " }}
                 </h4>
               </VCol>
             </VRow>
@@ -134,7 +134,7 @@
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="product in orderDetails.products" :key="product.id">
+                <tr v-for="product in orderDetails?.products" :key="product.id">
                   <td><small>{{ product.product ? product.product.name_ar : "لا يوجد" }}</small></td>
                   <td>
                     <small>
@@ -176,48 +176,48 @@
               <VCol cols="6" class="d-flex align-center gap-3 text-base py-1">
                 <span> المبلغ المسدد :</span>
                 <span>
-                  {{ ConvertToArabicNumbers(orderDetails.order.paidpayment ? orderDetails.order.paidpayment.price : 0) }} <small>{{ orderCurrency }}</small>
+                  {{ ConvertToArabicNumbers(orderDetails?.order?.paidpayment ? orderDetails?.order?.paidpayment.price : 0) }} <small>{{ orderCurrency }}</small>
                 </span>
               </VCol>
-              <VCol v-if="orderDetails.order.wallet_amount_used > 0" cols="6" class="d-flex align-center gap-3 text-base py-1">
+              <VCol v-if="orderDetails?.order?.wallet_amount_used > 0" cols="6" class="d-flex align-center gap-3 text-base py-1">
                 <span> المبلغ المسدد بالمحفظة :</span>
                 <span>
-                  {{ ConvertToArabicNumbers(orderDetails.order.wallet_amount_used ? orderDetails.order.wallet_amount_used : 0) }} <small>{{ orderCurrency }}</small>
+                  {{ ConvertToArabicNumbers(orderDetails?.order?.wallet_amount_used ? orderDetails?.order?.wallet_amount_used : 0) }} <small>{{ orderCurrency }}</small>
                 </span>
               </VCol>
 
               <VCol cols="6" class="d-flex align-center gap-3 text-base py-1">
                 <span> إجمالي المتبقي : </span>
                 <span>
-                  {{ ConvertToArabicNumbers(orderDetails.order.remain_amount) }}
+                  {{ ConvertToArabicNumbers(orderDetails?.order?.remain_amount) }}
                   <small>{{ orderCurrency }}</small>
                 </span>
               </VCol>
               <VCol cols="6" class="d-flex align-center gap-3 text-base py-1">
                 <span>الخصم :</span>
                 <span>
-                  {{ ConvertToArabicNumbers(orderDetails.order.discount_applied) ?? 0 }}
+                  {{ ConvertToArabicNumbers(orderDetails?.order?.discount_applied) ?? 0 }}
                   <small>{{ orderCurrency }}</small>
                 </span>
               </VCol>
               <VCol cols="12" class="d-flex align-center gap-3 text-base py-1">
                 <span> الإجمالي غير شامل الضريبة بعد الخصم : </span>
                 <span>
-                  {{ ConvertToArabicNumbers(orderDetails.order.total_amount_after_tax) ?? 0 }}
+                  {{ ConvertToArabicNumbers(orderDetails?.order?.total_amount_after_tax) ?? 0 }}
                   <small>{{ orderCurrency }}</small>
                 </span>
               </VCol>
               <VCol cols="6" class="d-flex align-center gap-3 text-base py-1">
                 <span>ضريبة القيمة المضافة : </span>
                 <span>
-                  {{ ConvertToArabicNumbers(orderDetails.order.tax_fees) }}
+                  {{ ConvertToArabicNumbers(orderDetails?.order?.tax_fees) }}
                   <small>{{ orderCurrency }}</small>
                 </span>
               </VCol>
               <VCol cols="6" class="d-flex align-center gap-3 text-base py-1">
                 <span> الإجمالي شامل الضريبة : </span>
                 <span>
-                  {{ ConvertToArabicNumbers(Number(orderDetails.order.order_subtotal)) }}
+                  {{ ConvertToArabicNumbers(Number(orderDetails?.order?.order_subtotal)) }}
                   <small>{{ orderCurrency }}</small>
                 </span>
               </VCol>
@@ -227,7 +227,7 @@
               <VCol cols="12" class="d-flex align-center gap-3 text-base py-1">
                 <span> الإجمالي شامل الضريبة بعد الخصم : </span>
                 <h3>
-                  {{ ConvertToArabicNumbers(parseFloat(orderDetails.order.final_amount)) ?? 0 }}
+                  {{ ConvertToArabicNumbers(parseFloat(orderDetails?.order?.final_amount)) ?? 0 }}
                   <small>{{ orderCurrency }}</small>
                 </h3>
               </VCol>
@@ -255,7 +255,8 @@ import { useCashierStore } from '@/store/Cashier'
 import html2pdf from 'html2pdf.js'
 import moment from "moment"
 import { computed, onMounted } from 'vue'
-import { useVueToPrint } from "vue-to-print"
+
+// import { useVueToPrint } from "vue-to-print"
 
 const orderDetails = ref({})
 const cashierStore = useCashierStore()
@@ -278,13 +279,6 @@ const ConvertToArabicNumbers = num => {
 }
 
 // const printOrder = () => window.print()
-
-const { handlePrint } = useVueToPrint({
-  content: () => orderContainerRef.value,
-  documentTitle: "تفاصيل الطلبية",
-  removeAfterPrint: true,
-
-})
 
 const generatePDF = () => {
   const element = document.getElementById('invoice') // Get the HTML element
@@ -320,6 +314,7 @@ const orderCurrency = computed(() => {
 
 const getOrderDetails = async () => {
   await cashierStore.orderDetails(route.params.id).then(response => {
+    console.log(response)
     orderDetails.value = response?.data
 
   }).catch(error => {

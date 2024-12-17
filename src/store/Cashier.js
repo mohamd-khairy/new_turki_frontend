@@ -129,10 +129,12 @@ export const useCashierStore = defineStore('cashier', {
       }
     },
     async orderDetails(data) {
+      console.log("data",data)
       try {
         const response = await axios.get(`/cashier-order-details/${data}`)
 
         this.orderInfo = response.data.data
+        console.log(this.orderInfo)
 
         return response.data
       } catch (error) {
