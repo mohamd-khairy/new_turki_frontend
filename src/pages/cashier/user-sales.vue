@@ -64,7 +64,7 @@
             <td v-for="paymentType in cashierStore.paymentTypes" :key="paymentType.id" scope="col" class="font-weight-semibold">
               {{ ConvertToArabicNumbers(user[paymentType.name_en]) }}
             </td>
-            <td>{{ user.total }}</td>
+            <td>{{ ConvertToArabicNumbers(user.total) }}</td>
           </tr>
         </template>
       </tbody>
