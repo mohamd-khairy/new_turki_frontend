@@ -1,0 +1,26 @@
+name: Auto Merge Branches
+
+on:
+  push:
+    branches:
+      - dev-working # Replace with the branch you want to monitor
+
+jobs:
+  auto-merge:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v3
+
+    - name: Setup Git User
+      run: |
+        git config --global user.name "mohamed khairy"
+        git config --global user.email "mohamed.khairy.eg@gmail.com"
+
+    - name: Merge Branch
+      run: |
+        git checkout main # Replace with the branch to merge into
+        git merge dev-working --no-ff -m "Auto-merging dev-working into main"
+        git push origin main
+     
