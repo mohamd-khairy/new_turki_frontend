@@ -26,30 +26,30 @@ jobs:
         git merge dev-working --allow-unrelated-histories -m "Auto-merging dev-working into main"
         git push origin main
 
-  web-deploy:
-    name: 🎉 Deploy
-    runs-on: ubuntu-latest
-    steps:
-    - name: 🚚 Get latest code
-      uses: actions/checkout@v4
+#   web-deploy:
+#     name: 🎉 Deploy
+#     runs-on: ubuntu-latest
+#     steps:
+#     - name: 🚚 Get latest code
+#       uses: actions/checkout@v4
 
-    - name: Use Node.js 16
-      uses: actions/setup-node@v2
-      with:
-        node-version: '18'
+#     - name: Use Node.js 16
+#       uses: actions/setup-node@v2
+#       with:
+#         node-version: '18'
 
-    - name: 🔨 Build Project
-      run: |
-        npm install
-        npm run build
+#     - name: 🔨 Build Project
+#       run: |
+#         npm install
+#         npm run build
 
-    - name: 📂 Sync files
-      uses: SamKirkland/FTP-Deploy-Action@v4.3.5
-      with:
-        server: turki.almaraacompany.com
-        username: turki
-        password: ${{ secrets.server_dev_turki_password }}
-        local-dir: ./dist/
-        server-dir: /public_html/dashboard-v2/ # Target directory on the server
-        protocol: ftps
-        port: 21
+#     - name: 📂 Sync files
+#       uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+#       with:
+#         server: turki.almaraacompany.com
+#         username: turki
+#         password: ${{ secrets.server_dev_turki_password }}
+#         local-dir: ./dist/
+#         server-dir: /public_html/dashboard-v2/ # Target directory on the server
+#         protocol: ftps
+#         port: 21
