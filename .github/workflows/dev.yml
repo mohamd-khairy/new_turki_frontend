@@ -21,7 +21,7 @@ jobs:
     - name: Merge Branch
       run: |
         git fetch
-        git checkout -b main origin/main
-        git merge dev-working --branch --allow-unrelated-histories -m "Auto-merging dev-working into main"
+        git checkout main
+        git merge dev-working --allow-unrelated-histories -m "Auto-merging dev-working into main"
         git push origin main
 
