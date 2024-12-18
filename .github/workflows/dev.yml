@@ -21,9 +21,12 @@ jobs:
 
     - name: Merge Branch
       run: |
-        git fetch
-        git checkout origin/main
         git merge dev-working --allow-unrelated-histories -m "Auto-merging dev-working into main"
+        git push origin main
+        git reset --merge || true
+        git checkout --ours .
+        git add .
+        git commit -m "Resolved merge conflicts by keeping feature-branch changes"
         git push origin main
 
 #   web-deploy:
