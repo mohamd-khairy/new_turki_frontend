@@ -421,7 +421,73 @@ const dialogModelValueUpdate = val => {
                 :rules="[requiredValidator]"
                 type="date"
               />
-            </VCol>
+            </VCol> -->
+            <div class="v-col-lg-12 v-col-12">
+              <div
+                class="v-input v-input--horizontal v-input--center-affix v-input--density-compact v-locale--is-rtl v-input--dirty v-text-field"
+              >
+                <!---->
+                <div class="v-input__control">
+                  <div
+                    class="v-field v-field--active v-field--center-affix v-field--dirty v-field--variant-outlined v-theme--light v-locale--is-rtl"
+                  >
+                    <div class="v-field__overlay" />
+                    <div class="v-field__loader">
+                      <div
+                        class="v-progress-linear v-progress-linear--reverse v-theme--light v-locale--is-rtl"
+                        role="progressbar"
+                        aria-hidden="true"
+                        aria-valuemin="0"
+                        aria-valuemax="100"
+                        style="top: 0; left: 50%; height: 0; transform: translateX(-50%);
+
+  --v-progress-linear-height: 2px;"
+                      >
+                        <!---->
+                        <div
+                          class="v-progress-linear__background bg-primary"
+                          style="width: 100%;"
+                        />
+                        <div class="v-progress-linear__indeterminate">
+                          <div class="v-progress-linear__indeterminate long bg-primary" />
+                          <div class="v-progress-linear__indeterminate short bg-primary" />
+                        </div><!---->
+                      </div>
+                    </div><!---->
+                    <div
+                      class="v-field__field"
+                      data-no-activator=""
+                    >
+                      <!----><label
+                               class="v-label v-field-label"
+                               for="input-177"
+                             ><!---->تاريخ الانتهاء</label><!---->
+                      <input
+                        id="expire_at"
+                        v-model="couponData.expire_at"
+                        type="datetime-local"
+                        name="expire_at"
+                        class="v-field__input"
+                      ><!---->
+                    </div>
+                    <!----><!---->
+                    <div class="v-field__outline">
+                      <div class="v-field__outline__start" />
+                      <div class="v-field__outline__notch">
+                        <label
+                          class="v-label v-field-label v-field-label--floating"
+                          aria-hidden="true"
+                          for="input-177"
+                        ><!---->  تاريخ الانتهاء</label>
+                      </div>
+                      <div class="v-field__outline__end" /><!---->
+                    </div>
+                  </div>
+                </div><!----><!---->
+              </div>
+            </div>
+
+
             <VCol
               cols="12"
               lg="6"
