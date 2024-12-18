@@ -13,7 +13,7 @@
     ],
     "compilerOptions": {
         "baseUrl":"",
-        // "baseUrl": "./dashboard/",
+        // "baseUrl": "./dashboard/",//
         // "baseUrl": "./dashboard-v2/",
         // "baseUrl": "./dashboard-v3/",
         "target": "esnext",
