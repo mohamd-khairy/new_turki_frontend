@@ -20,7 +20,7 @@ jobs:
 
     - name: Merge Branch
       run: |
-        git checkout main
+        git checkout origin/main
         git merge dev-working --no-ff -m "Auto-merging dev-working into main"
         git push origin main
 
