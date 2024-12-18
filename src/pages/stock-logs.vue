@@ -323,7 +323,7 @@ const formatDateTime = data => {
               #{{ item.id }}
             </td>
             <td>
-              {{ item.order_product?.product?.name_ar }}
+              {{ item?.product?.name_ar }}
             </td>
             <td>
               {{ item.order_ref_no }}
