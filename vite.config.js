@@ -16,9 +16,9 @@ export default defineConfig({
 
   // base:"/dashboard/",
 
-  base:"/dashboard-v2/",
+  // base:"/dashboard-v2/",
 
-  // base:"/dashboard-v3/",
+  base:"/dashboard-v3/",
   plugins: [
     vue(),
     vueJsx(),
