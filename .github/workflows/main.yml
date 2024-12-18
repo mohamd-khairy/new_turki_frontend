@@ -27,7 +27,7 @@ jobs:
       uses: SamKirkland/FTP-Deploy-Action@v4.3.5
       with:
         server: turki.almaraacompany.com
-        username: turki
+        username: ${{ secrets.server_dev_turki_name }}
         password: ${{ secrets.server_dev_turki_password }}
         local-dir: ./dist/
         server-dir: /public_html/dashboard-v2/ # Target directory on the server
