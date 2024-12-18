@@ -5,11 +5,11 @@ const token = localStorage.getItem("najdToken") || ""
 const axiosIns = axios.create({
 // You can add your headers here
 // ================================
-  baseURL: 'http://new-turki-project-api-v2.test/api/v2',
+  // baseURL: 'http://new-turki-project-api-v2.test/api/v2',
 
   // baseURL: 'https://almaraacompany.com/dashboard/api/v2', // production api
 
-  // baseURL: 'https://turki.almaraacompany.com/admin/api/v2', // test api
+  baseURL: 'https://turki.almaraacompany.com/admin/api/v2', // test api
   headers: {
     Accept: "application/json",
     Authorization: `Bearer ${token}`,
