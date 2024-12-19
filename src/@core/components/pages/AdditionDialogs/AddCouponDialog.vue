@@ -88,7 +88,7 @@ const coupon = reactive({
   category_child_ids: [],
   expire_at: null,
   use_times_per_user: 1,
-  foodics_integrate_id : null,
+  foodics_integrate_id: null,
 })
 
 // Functions
@@ -149,7 +149,7 @@ const dialogModelValueUpdate = val => {
 
 <template>
   <VDialog
-    :width="$vuetify.display.smAndDown ? 'auto' : 650 "
+    :width="$vuetify.display.smAndDown ? 'auto' : 650"
     persistent
     :model-value="props.isAddOpen"
     @update:model-value="dialogModelValueUpdate"
@@ -157,9 +157,7 @@ const dialogModelValueUpdate = val => {
     <!-- Dialog close btn -->
     <DialogCloseBtn @click="dialogModelValueUpdate(false)" />
 
-    <VCard
-      class="pa-sm-9 pa-5"
-    >
+    <VCard class="pa-sm-9 pa-5">
       <!-- 👉 Title -->
       <VCardItem>
         <VCardTitle class="text-h5 d-flex flex-column align-center gap-2 text-center mb-3">
@@ -254,7 +252,7 @@ const dialogModelValueUpdate = val => {
                 min="0"
               />
             </VCol>
-     
+
             <VCol
               cols="12"
               lg="12"
@@ -276,7 +274,6 @@ const dialogModelValueUpdate = val => {
               </div>
             </VCol>
             <VCol
-
               cols="12"
               lg="12"
             >
@@ -399,15 +396,6 @@ const dialogModelValueUpdate = val => {
               lg="6"
             >
               <VSwitch
-                v-model="coupon.is_active"
-                :label="t('forms.is_active')"
-              />
-            </VCol>
-            <VCol
-              cols="12"
-              lg="6"
-            >
-              <VSwitch
                 v-model="coupon.is_for_all"
                 :label="t('forms.is_for_all')"
               />
@@ -458,4 +446,3 @@ const dialogModelValueUpdate = val => {
     </VCard>
   </VDialog>
 </template>
-

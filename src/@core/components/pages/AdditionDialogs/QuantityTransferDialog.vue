@@ -1,11 +1,11 @@
 <script setup>
-import { useSettingsStore } from "@/store/Settings";
-import { useStocksStore } from "@/store/Stocks";
-import { useStoresStore } from "@/store/Stores";
+import { useSettingsStore } from "@/store/Settings"
+import { useStocksStore } from "@/store/Stocks"
+import { useStoresStore } from "@/store/Stores"
 import {
-requiredValidator,
-} from '@validators';
-import { useI18n } from "vue-i18n";
+  requiredValidator,
+} from '@validators'
+import { useI18n } from "vue-i18n"
 
 const props = defineProps({
   isAddOpen: {
@@ -28,6 +28,7 @@ const { t } = useI18n()
 
 const itemData = reactive({
   store_id: null,
+  to_stock_id: null,
   stock_id: null,
   transfer_quantity: null,
   to_quantity: null,
@@ -35,6 +36,7 @@ const itemData = reactive({
 })
 
 const isLoading = ref(false)
+
 const resetForm = () => {
   emit('update:isAddOpen', false)
 }
@@ -64,7 +66,7 @@ const onFormSubmit = async () => {
       } else {
         settingsListStore.alertMessage = "حدث خطأ ما !"
       }
-      
+
       settingsListStore.alertColor = "error"
       settingsListStore.isAlertShow = true
       setTimeout(() => {
@@ -72,7 +74,7 @@ const onFormSubmit = async () => {
         settingsListStore.alertMessage = ""
       }, 2000)
     }).finally(() => {
-        isLoading.value = false
+      isLoading.value = false
     })
   }
   else {
@@ -90,7 +92,6 @@ const onFormSubmit = async () => {
 const dialogModelValueUpdate = val => {
   emit('update:isAddOpen', val)
 }
-
 </script>
 
 <template>
@@ -125,12 +126,12 @@ const dialogModelValueUpdate = val => {
           <VRow>
             <VCol
               cols="12"
-              md="6"
+              md="12"
             >
-              <AutoCompleteDropdown 
+              <AutoCompleteDropdown
                 v-model="itemData.store_id"
-                :apiModel="storesStore"
-                apiSearchMethod="getAll"
+                :api-model="storesStore"
+                api-search-method="getAll"
                 item-title="name"
                 item-value="id"
                 label="المخزن"
@@ -142,17 +143,33 @@ const dialogModelValueUpdate = val => {
               cols="12"
               md="6"
             >
-              <AutoCompleteDropdown 
+              <AutoCompleteDropdown
                 v-model="itemData.stock_id"
-                :apiModel="stocksStore"
-                apiSearchMethod="getAll"
+                :api-model="stocksStore"
+                api-search-method="getAll"
                 item-title="product_name"
                 item-value="id"
-                label="المخزون"
+                label="من مخزون"
                 placeholder="البحث في المخزون"
                 :rules="[requiredValidator]"
               />
             </VCol>
+            <VCol
+              cols="12"
+              md="6"
+            >
+              <AutoCompleteDropdown
+                v-model="itemData.to_stock_id"
+                :api-model="stocksStore"
+                api-search-method="getAll"
+                item-title="product_name"
+                item-value="id"
+                label="الي مخزون"
+                placeholder="البحث في المخزون"
+                :rules="[requiredValidator]"
+              />
+            </VCol>
+
             <VCol
               cols="12"
               md="6"
@@ -215,8 +232,8 @@ const dialogModelValueUpdate = val => {
               <VBtn
                 variant="tonal"
                 color="secondary"
-                @click="resetForm"
                 class="px-8"
+                @click="resetForm"
               >
                 {{ t('buttons.cancel') }}
               </VBtn>
