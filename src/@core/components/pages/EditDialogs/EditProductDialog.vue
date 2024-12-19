@@ -4,7 +4,7 @@ import { useCitiesStore } from "@/store/Cities"
 import { useProductsStore } from "@/store/Products"
 import { useSettingsStore } from "@/store/Settings"
 import {
-requiredValidator,
+  requiredValidator,
 } from '@validators'
 import { useI18n } from "vue-i18n"
 
@@ -185,7 +185,7 @@ const onFormSubmit = async () => {
         const errs = Object.keys(error.response.data.errors)
 
         errs.forEach(err => {
-          settingsListStore.alertMessage = t(`errors.${err}`)
+          settingsListStore.alertMessage = error.response.data.errors[err][0]
         })
       } else {
         settingsListStore.alertMessage = "حدث خطأ ما !"
