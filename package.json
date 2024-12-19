@@ -29,6 +29,7 @@
         "pinia": "^2.0.24",
         "print-js": "^1.6.0",
         "prismjs": "^1.29.0",
+        "qrcode.vue": "^3.6.0",
         "roboto-fontface": "^0.10.0",
         "sass": "^1.56.1",
         "unplugin-vue-define-options": "^0.12.8",

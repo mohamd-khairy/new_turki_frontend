@@ -47,7 +47,7 @@
         =========================================================
       </p>
       <div v-for="product in cashierStore.orderInfo.products" :key="product.id" class="body">
-        <div class="item">
+        <div class="item nowraping">
           <div class="cell text-center">
             {{ product.quantity }}
           </div>
@@ -114,11 +114,17 @@
       <span>طريقة الدفع</span>
       <span>{{ cashierStore.orderInfo.order?.payment_type?.name_ar }}</span>
     </p>
+    <p class="text-center">
+      =========================================================
+    </p>
+    <br>
+    <QrcodeVue :value="cashierStore.orderInfo?.order?.qr_string" :size="170" level="H" render-as="svg" />
   </div>
 </template>
 
 <script setup>
 import { useCashierStore } from '@/store/Cashier';
+import QrcodeVue from 'qrcode.vue';
 import { ref } from 'vue';
 
 const cashierStore = useCashierStore()
@@ -170,12 +176,12 @@ const ConvertToArabicNumbers = num => {
 </script>
 
 <style lang='scss' scoped>
-img {
-  max-block-size: 100px;
-}
-
 .hide-on-screen {
   display: none;
+}
+
+img {
+  max-inline-size: 100px;
 }
 
 @media print {
@@ -203,7 +209,12 @@ img {
   block-size: auto;
   direction: rtl;
   font-size: 16px;
-  inline-size: 100%;
+  inline-size: 95%;
+  page-break-after: avoid;
+  page-break-inside: avoid;
+}
+
+.nowraping {
   page-break-after: avoid;
   page-break-inside: avoid;
 }

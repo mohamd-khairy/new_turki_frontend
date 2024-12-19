@@ -242,7 +242,7 @@
         </VRow>
       </div>
       <div class="buttons">
-        <AppButton type="primary" title="طباعة" @click="generatePDF" />
+        <AppButton type="primary" title="طباعة" @click="printInvoiceWithConfig" />
         <AppButton type="close" title="رجوع" @click="$router.push('/cashier/categories')" />
       </div>
     </div>
@@ -300,6 +300,49 @@ const generatePDF = () => {
     .save()
     .finally(() => {
       element.classList.add('hide-on-screen')
+    })
+}
+
+const printInvoiceWithConfig = () => {
+  const element = document.getElementById('invoice') // Get the HTML element
+
+  element.classList.remove('hide-on-screen') // Temporarily show hidden content
+
+  html2pdf()
+    .from(element)
+    .set({
+      margin: 5,
+      filename: 'تفاصيل الطلبية.pdf', // Filename if downloaded (not used here)
+      html2canvas: { scale: 2 }, // Ensure high-quality rendering
+      jsPDF: {
+        unit: 'mm',
+        format: [80, 200], // Custom size
+        orientation: 'portrait',
+      },
+    })
+    .output('datauristring') // Generate a data URL for the PDF
+    .then(pdfDataUri => {
+      // Open the PDF in a new window for printing
+      const printWindow = window.open('', '_blank')
+
+      printWindow.document.write(`
+        <html>
+          <head>
+            <title>تفاصيل الطلبية</title>
+          </head>
+          <body style="margin: 0; padding: 0;">
+            <iframe
+              src="${pdfDataUri}"
+              style="border: none; width: 100%; height: 100vh;"
+              onload="this.contentWindow.print();"
+            ></iframe>
+          </body>
+        </html>
+      `)
+      printWindow.document.close()
+    })
+    .finally(() => {
+      element.classList.add('hide-on-screen') // Re-hide elements
     })
 }
 
