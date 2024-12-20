@@ -133,7 +133,7 @@ const startEventSource = () => {
 
         refreshOrders('new', message)
 
-        // orders.value.unshift(message)      
+        // orders.value.unshift(message)
       }
     }
 
@@ -291,6 +291,11 @@ const delegateCanUpdateOrderStatus = order => {
 const storeMangerCanUpdateOrderStatus = order => {
   return hasRole('store_manager') && order.sales_representative_id == authUser.value?.id
 }
+
+const openCashierDetails = order => {
+  router.push(`/cashier/order-details/${order.ref_no}`)
+}
+
 
 const printOrderInvoice = async order => {
   if (hasRole(['production_manager'])) {
@@ -1103,7 +1108,7 @@ onMounted(() => {
           :items="orders"
           item-value="id"
           show-select
-          ></v-data-table> 
+          ></v-data-table>
         -->
         <VTable
           height="600px"
@@ -1271,7 +1276,7 @@ onMounted(() => {
                           color="default"
                           size="x-small"
                           :loading="currentPrintedInvoice == order.ref_no"
-                          @click="printOrderInvoice(order)"
+                          @click="openCashierDetails(order)"
                         >
                           <VIcon
                             :size="22"
