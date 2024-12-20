@@ -1,67 +1,130 @@
 <template>
-  <div>
-    <VCard class="mb-5 pa-5">
-      <VRow>
-        <VCol cols="12" class="d-flex align-center gap-3">
-          <div class="icon">
-            <VIcon icon="fluent-mdl2:date-time" color="primary" />
-          </div>
-          <VTextField v-model="filters.start_date" type="date" :label="t('forms.from')" />
-
-          <div class="icon">
-            <VIcon icon="fluent-mdl2:date-time" color="primary" />
-          </div>
-          <VTextField v-model="filters.end_date" type="date" :label="t('forms.to')" />
-
-          <VBtn prepend-icon="healthicons:x" @click.stop="clearFilter">
-            {{ t('Clear_Filter') }}
-          </VBtn>
-        </VCol>
-      </VRow>
-    </VCard>
-  </div>
-
   <VCard :loading="cashierStore.isLoading">
+    <div>
+      <VCard class="mb-5 pa-5">
+        <VRow>
+          <VCol
+            cols="12"
+            class="d-flex align-center gap-3"
+          >
+            <div class="icon">
+              <VIcon
+                icon="fluent-mdl2:date-time"
+                color="primary"
+              />
+            </div>
+            <VTextField
+              v-model="filters.start_date"
+              type="date"
+              :label="t('forms.from')"
+            />
+
+            <div class="icon">
+              <VIcon
+                icon="fluent-mdl2:date-time"
+                color="primary"
+              />
+            </div>
+            <VTextField
+              v-model="filters.end_date"
+              type="date"
+              :label="t('forms.to')"
+            />
+
+            <VBtn
+              prepend-icon="healthicons:x"
+              @click.stop="clearFilter"
+            >
+              {{ t('Clear_Filter') }}
+            </VBtn>
+          </VCol>
+        </VRow>
+      </VCard>
+    </div>
+
     <VCardTitle class="d-flex align-center">
-      <VIcon icon="solar:delivery-broken" size="24" color="primary" />
+      <VIcon
+        icon="solar:delivery-broken"
+        size="24"
+        color="primary"
+      />
       <span class="mx-1">التسويات</span>
     </VCardTitle>
-    <VTable height="600px" fixed-header class="text-no-wrap product-list-table text-center">
+    <VTable
+      height="600px"
+      fixed-header
+      class="text-no-wrap product-list-table text-center"
+    >
       <thead>
         <tr>
-          <th scope="col" class="font-weight-semibold">
+          <th
+            scope="col"
+            class="font-weight-semibold"
+          >
             {{ $t("forms.id") }}
           </th>
-          <th scope="col" class="font-weight-semibold">
+          <th
+            scope="col"
+            class="font-weight-semibold"
+          >
             اسم الموظف
           </th>
-          <th scope="col" class="font-weight-semibold">
+          <th
+            scope="col"
+            class="font-weight-semibold"
+          >
             اسم الفرع
           </th>
-          <th v-for="paymentType in cashierStore.paymentTypes" :key="paymentType.id" scope="col" class="font-weight-semibold">
+          <th
+            v-for="paymentType in cashierStore.paymentTypes"
+            :key="paymentType.id"
+            scope="col"
+            class="font-weight-semibold"
+          >
             {{ locale == 'en' ? paymentType.name_en : paymentType.name_ar }}
           </th>
-          <th scope="col" class="font-weight-semibold">
+          <th
+            scope="col"
+            class="font-weight-semibold"
+          >
             المجموع
           </th>
         </tr>
       </thead>
       <tbody v-if="cashierStore.isLoading">
-        <tr v-for="tableRow in 4" :key="tableRow">
-          <td v-for="tableTD in 4" :key="tableTD">
+        <tr
+          v-for="tableRow in 4"
+          :key="tableRow"
+        >
+          <td
+            v-for="tableTD in 4"
+            :key="tableTD"
+          >
             <div>
-              <VSkeletonLoader type="text" :height="40" :width="100" />
+              <VSkeletonLoader
+                type="text"
+                :height="40"
+                :width="100"
+              />
             </div>
           </td>
         </tr>
       </tbody>
       <tbody v-else>
-        <template v-for="user in cashierStore.usersSales" :key="user.user_id">
+        <template
+          v-for="user in cashierStore.usersSales"
+          :key="user.user_id"
+        >
           <tr>
             <td>{{ user.user_id }}</td>
             <td>{{ user.user_name }}</td>
             <td>{{ user.branch_name }}</td>
-            <td v-for="paymentType in cashierStore.paymentTypes" :key="paymentType.id" scope="col" class="font-weight-semibold">
+            <td
+              v-for="paymentType in cashierStore.paymentTypes"
+              :key="paymentType.id"
+              scope="col"
+              class="font-weight-semibold"
+            >
               {{ ConvertToArabicNumbers(user[paymentType.name_en]) }}
             </td>
             <td>{{ ConvertToArabicNumbers(user.total) }}</td>
@@ -70,7 +133,10 @@
       </tbody>
       <tfoot v-show="!cashierStore.isLoading && cashierStore.usersSales.length == 0">
         <tr>
-          <td colspan="8" class="text-center text-body-1">
+          <td
+            colspan="8"
+            class="text-center text-body-1"
+          >
             لا يوجد بيانات
           </td>
         </tr>
@@ -98,7 +164,7 @@ const isFiltered = ref(false)
 
 const clearFilter = () => {
   filters.start_date = null,
-    filters.end_date = null
+  filters.end_date = null
 }
 
 const ConvertToArabicNumbers = num => {
@@ -116,19 +182,13 @@ const getItems = () => {
   })
 }
 
+onMounted(async () => {
+  await getItems()
+})
+
 
 
 watchEffect(() => {
   getItems()
 })
 </script>
-
-
-<style lang="scss" scoped>
-td,
-th {
-  border: thin solid rgba(var(--v-border-color), var(--v-border-opacity));
-  border-collapse: collapse;
-  text-align: start;
-}
-</style>
