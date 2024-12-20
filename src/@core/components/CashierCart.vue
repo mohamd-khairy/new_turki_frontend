@@ -25,7 +25,7 @@
         </div>
         <div class="cart__result">
           <div v-if="!cashierStore.isCodeSubmitted && !isPayment" class="discount">
-            <VTextField v-model="discountCode.discount_code" label="كود الخصم" />
+            <VTextField ref="promoCode" v-model="discountCode.discount_code" label="كود الخصم" @mouseenter="promoCodeFocus" @mouseleave="isPromoCodeFocused = false" />
             <AppButton type="primary" :is-loading="isDiscountSubmit" title="تطبيق" @click="makeDiscount" />
           </div>
 
@@ -86,6 +86,8 @@ const props = defineProps({
 
 const scanValue = ref('')
 const searchInput = ref(null)
+const promoCode = ref(null)
+const isPromoCodeFocused = ref(false)
 
 
 watch(() => scanValue.value, () => {
@@ -94,12 +96,6 @@ watch(() => scanValue.value, () => {
     scanValue.value = ''
   }
 })
-
-const focusInput = () => {
-  if (showCustomerInfoModal.value) return
-  searchInput.value?.focus()
-}
-
 
 
 const router = useRouter()
@@ -132,12 +128,6 @@ const makeDiscount = async () => {
   isDiscountSubmit.value = true
   await cashierStore.hasCoupon(discountCode)
   isDiscountSubmit.value = false
-
-  // console.log(discountCode.value) 
-}
-
-const removeItem = item => {
-
 }
 
 const removeDiscount = () => {
@@ -189,10 +179,25 @@ const makeOrderAsCustomer = async () => {
   isCustomerLoading.value = false
 }
 
-watch(() => showCustomerInfoModal.value, newValue => {
-  if (newValue) return
-  focusInput()
-})
+const promoCodeFocus = () => {
+  isPromoCodeFocused.value = true
+  promoCode.value.focus()
+}
+
+
+const focusInput = () => {
+  if (showCustomerInfoModal.value || isPromoCodeFocused.value) return
+  searchInput.value.focus()
+}
+
+watch(
+  () => [isPromoCodeFocused.value, showCustomerInfoModal.value],
+  ([newPromoFocused, newShowCustomer]) => {
+    if (!newPromoFocused && !newShowCustomer) focusInput()
+  },
+  { immediate: false },
+)
+
 onMounted(() => {
   focusInput()
 })
