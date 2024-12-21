@@ -1,5 +1,6 @@
 <script setup>
 import { useBranchesStore } from "@/store/Branches";
+import { useCitiesStore } from "@/store/Cities";
 
 const props = defineProps({
   isEditOpen: {
@@ -24,13 +25,22 @@ const { t } = useI18n()
 const branchesListStore = useBranchesStore()
 const settingsListStore = useSettingsStore()
 const isLoading = ref(false)
+const citiesListStore = useCitiesStore()
 
+const cities = reactive([])
+
+onMounted(() => {
+  citiesListStore.fetchCities({ pageSize: -1 }).then(response => {
+    cities.value = response.data.data
+  })
+})
 
 // Variables
 const branchData = reactive({
   id: null,
   name: null,
   address: null,
+  city_id: null,
   mobile: null,
   is_active: null,
 })
@@ -40,6 +50,7 @@ onUpdated(() => {
   branchData.id = props.branch.id
   branchData.name = props.branch.name
   branchData.address = props.branch.address
+  branchData.city_id = props.branch.city_id
   branchData.mobile = props.branch.mobile
   branchData.is_active = props.branch.is_active
 })
@@ -58,6 +69,7 @@ const onFormSubmit = async () => {
     name: branchData.name,
     mobile: branchData.mobile,
     address: branchData.address,
+    city_id: branchData.city_id,
     is_active: branchData.is_active,
   }
 
@@ -150,6 +162,7 @@ const dialogModelValueUpdate = val => {
                 :label="t('forms.name')"
               />
             </VCol>
+
             <VCol
               cols="12"
               lg="12"
@@ -158,6 +171,20 @@ const dialogModelValueUpdate = val => {
               <VTextField
                 v-model="branchData.address"
                 :label="t('forms.address')"
+              />
+            </VCol>
+            <VCol
+              cols="12"
+              lg="12"
+              sm="6"
+            >
+              <VSelect
+                v-model="branchData.city_id"
+                :items="cities.value"
+                :label="t('forms.cities')"
+                item-title="name_ar"
+                item-value="id"
+                :rules="[requiredValidator]"
               />
             </VCol>
 
