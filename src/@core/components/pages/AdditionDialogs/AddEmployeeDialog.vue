@@ -56,7 +56,6 @@ const employee = reactive({
   is_active: false,
   foodics_integrate_id : null,
   branche_id : null,
-  code : null,
 })
 
 const genders = reactive([
@@ -96,7 +95,6 @@ const resetForm = () => {
   employee.is_active = false,
   employee.foodics_integrate_id = null,
   employee.branche_id = null,
-  employee.code = null
 
   emit('update:isAddOpen', false)
 }
@@ -312,32 +310,24 @@ const dialogModelValueUpdate = val => {
             </VCol>
             <VCol
               cols="12"
-              lg="12"
-              sm="6"
-            >
-              <VTextField
-                v-model="employee.code"
-                label="رقم الدخول"
-              />
-            </VCol>
-            <VCol
-              cols="12"
             >
               <VSwitch
                 v-model="employee.is_active"
                 :label="t('forms.is_active')"
               />
             </VCol>
-            <VCol
+            <!--
+              <VCol
               cols="12"
               lg="12"
               sm="6"
-            >
+              >
               <VTextField
-                v-model="employee.foodics_integrate_id"
-                label="foodics_integrate_id"
+              v-model="employee.foodics_integrate_id"
+              label="foodics_integrate_id"
               />
-            </VCol>
+              </VCol>
+            -->
             <VCol
               cols="12"
               class="text-center"
