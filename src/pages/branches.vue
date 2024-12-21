@@ -168,6 +168,12 @@ const formatDateTime = data => {
               scope="col"
               class="font-weight-semibold"
             >
+              {{ t('forms.city') }}
+            </th>
+            <th
+              scope="col"
+              class="font-weight-semibold"
+            >
               {{ t('forms.mobile') }}
             </th>
             <th
@@ -198,6 +204,9 @@ const formatDateTime = data => {
             </td>
             <td>
               {{ branch.address }}
+            </td>
+            <td>
+              {{ branch.city?.name_ar }}
             </td>
             <td>
               {{ branch.mobile }}
