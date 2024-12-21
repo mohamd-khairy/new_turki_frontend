@@ -84,7 +84,6 @@ export const useEmployeesStore = defineStore('EmployeesStore', {
       formData.append("is_active", data.is_active)
       formData.append("foodics_integrate_id", data.foodics_integrate_id)
       formData.append("branch_id", data.branch_id)
-      formData.append("code", data.code)
 
       Object.values(data.roles).map((role, index) => {
         formData.append(`roles[${index}]`, Number.isInteger(role) ? role : role.id)
