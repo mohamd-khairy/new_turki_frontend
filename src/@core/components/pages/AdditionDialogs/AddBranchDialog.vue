@@ -16,26 +16,33 @@ const emit = defineEmits([
 ])
 
 import { useBranchesStore } from "@/store/Branches";
+import { useCitiesStore } from "@/store/Cities";
 import { useSettingsStore } from "@/store/Settings";
 import { useI18n } from "vue-i18n";
 
 const { t } = useI18n()
 const branchesListStore = useBranchesStore()
 const settingsListStore = useSettingsStore()
+const citiesListStore = useCitiesStore()
+
 const countries = reactive([])
 const isLoading = ref(false)
 
 const refForm = ref(null)
+const cities = reactive([])
 
 
 onMounted(() => {
-
+  citiesListStore.fetchCities({ pageSize: -1 }).then(response => {
+    cities.value = response.data.data
+  })
 })
 
 const branch = reactive({
   name: null,
   mobile: null,
   address: null,
+  city_id: null,
   is_active: 0,
 })
 
@@ -43,6 +50,7 @@ const branch = reactive({
 const resetForm = () => {
   branch.name = null,
   branch.address = null,
+  branch.city_id = null,
   branch.mobile = null,
   branch.is_active = false,
   emit('update:isAddOpen', false)
@@ -59,6 +67,7 @@ const onFormSubmit = async () => {
       address: branch.address,
       mobile: branch.mobile,
       is_active: branch.is_active,
+      city_id: branch.city_id,
     }
     branchesListStore.storeBranch(branchDt).then(response => {
       emit('update:isAddOpen', false)
@@ -149,6 +158,7 @@ const dialogModelValueUpdate = val => {
                 :rules="[requiredValidator]"
               />
             </VCol>
+
             <VCol
               cols="12"
               lg="12"
@@ -157,6 +167,21 @@ const dialogModelValueUpdate = val => {
               <VTextField
                 v-model="branch.address"
                 :label="t('forms.address')"
+                :rules="[requiredValidator]"
+              />
+            </VCol>
+
+            <VCol
+              cols="12"
+              lg="12"
+              sm="6"
+            >
+              <VSelect
+                v-model="branch.city_id"
+                :items="cities.value"
+                :label="t('forms.cities')"
+                item-title="name_ar"
+                item-value="id"
                 :rules="[requiredValidator]"
               />
             </VCol>
