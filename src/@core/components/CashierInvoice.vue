@@ -234,14 +234,14 @@ img {
 
   .invoice {
     padding: 0;
-    margin: 0;
+    margin: auto;
 
     /* Ensure full width */
     block-size: auto;
     break-inside: avoid;
     direction: rtl;
     font-size: 16px;
-    inline-size: 95%;
+    max-inline-size: 100%;
     page-break-after: avoid;
     page-break-inside: avoid;
   }
@@ -272,7 +272,7 @@ img {
   break-inside: avoid;
   direction: rtl;
   font-size: 16px;
-  inline-size: 95%;
+  max-inline-size: 100%;
   page-break-after: avoid;
   page-break-inside: avoid;
 }

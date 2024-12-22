@@ -303,7 +303,7 @@ const generatePDF = () => {
       html2canvas: { scale: 2 },
       jsPDF: {
         unit: 'mm',
-        format: [70, 200],
+        format: [88, 200],
         orientation: 'portrait',
       },
     })
