@@ -27,6 +27,7 @@ const isLoading = ref(false)
 const isFiltered = ref(false)
 const cities = ref([])
 const employees = ref([])
+
 const filters = reactive({
   city_id: null,
   user_id: null,
@@ -35,14 +36,14 @@ const filters = reactive({
 
 const getInvoices = () => {
   isLoading.value = true
-  
+
   invoicesStore.getAll({
     ...filters,
     q: searchQuery.value,
     per_page: rowPerPage.value,
     page: currentPage.value,
   }).then(response => {
-    invoiceItems.value = response.data?.data?.data;
+    invoiceItems.value = response.data?.data?.data
     totalPage.value = response.data.data.last_page
     dataFrom.value = response.data.data.from
     dataTo.value = response.data.data.to
@@ -64,12 +65,12 @@ const paginationData = computed(() => {
   return ` عرض من ${ConvertToArabicNumbers(dataFrom.value)} إلي ${ConvertToArabicNumbers(dataTo.value)} من ${ConvertToArabicNumbers(totalItems.value)} الإجمالي `
 })
 
-const openDelete = (store) => {
+const openDelete = store => {
   isDeleteOpen.value = true
   selectedItem.value = store
 }
 
-const openEdit = (item) => {
+const openEdit = item => {
   isEditOpen.value = true
   selectedItem.value = {
     ...item,
@@ -78,15 +79,15 @@ const openEdit = (item) => {
       product_id: stock.product_id,
       product_name: stock.product_name,
       name_ar: stock.product_name,
-      name: stock.store.name,
+      name: sstock.product_name,
       store_id: stock.store.id,
       quantity: stock.quantity,
       price: stock.price,
-    }))
+    })),
   }
 }
 
-const openPayInvoice = (store) => {
+const openPayInvoice = store => {
   isPayInvoice.value = true
   selectedItem.value = store
 }
@@ -94,7 +95,7 @@ const openPayInvoice = (store) => {
 
 const filterItems = () => {
   isFiltered.value = true
-  getInvoices();
+  getInvoices()
 }
 
 const clearFilter = () => {
@@ -102,7 +103,7 @@ const clearFilter = () => {
   filters.user_id = null
   filters.date = null
 
-  getInvoices();
+  getInvoices()
 }
 
 const ConvertToArabicNumbers = num => {
@@ -121,22 +122,22 @@ const formatDateTime = data => {
 }
 
 watch(rowPerPage, () => {
-  getInvoices();
+  getInvoices()
 })
 
 watch(() => currentPage.value, () => {
-  getInvoices();
+  getInvoices()
 })
 
 onMounted(() => {
-  getInvoices();
+  getInvoices()
 
   citiesListStore.fetchCities({ pageSize: -1 }).then(response => {
     cities.value = response.data.data
   })
 
   employeesStore.fetchEmployees({ pageSize: -1 }).then(response => {
-    employees.value = response.data.data?.data;
+    employees.value = response.data.data?.data
   })
 })
 </script>
@@ -251,10 +252,11 @@ onMounted(() => {
     </VCard>
     <VCard :loading="isLoading">
       <VCardTitle class="d-flex align-center gap-2">
-        <VIcon icon="uil:invoice"
+        <VIcon
+          icon="uil:invoice"
           size="24"
           color="primary"
-        ></VIcon>
+        />
         <span class="mx-1">الفواتير</span>
       </VCardTitle>
       <VCardText class="d-flex align-center flex-wrap gap-2 py-4">
@@ -266,172 +268,171 @@ onMounted(() => {
             :items="[5, 10, 20, 30, 50, 100]"
           />
         </div>
-        <!--         👉 Create product :to="{ name: 'apps-product-add' }"-->
+        <!--         👉 Create product :to="{ name: 'apps-product-add' }" -->
         <VBtn
           prepend-icon="tabler-plus"
-          @click="isAddOpen = true"
           :disabled="isLoading"
+          @click="isAddOpen = true"
         >
           إضافة فاتورة
         </VBtn>
 
-        <VSpacer/>
-
-
+        <VSpacer />
       </VCardText>
 
-      <VDivider/>
+      <VDivider />
 
       <VTable class="text-no-wrap product-list-table">
         <thead>
-        <tr>
-          <th
-            scope="col"
-            class="font-weight-semibold"
-          >
-            #
-          </th>
-          <th
-            scope="col"
-            class="font-weight-semibold"
-          >
-            سعر الفاتورة
-          </th>
-          <th
-            scope="col"
-            class="font-weight-semibold"
-          >
-            تاريخ الفاتورة
-          </th>
-          <th
-            scope="col"
-            class="font-weight-semibold"
-          >
-            الضريبة
-          </th>
-          <th
-            scope="col"
-            class="font-weight-semibold"
-          >
-            حالة الدفع
-          </th>
-          <th
-            scope="col"
-            class="font-weight-semibold"
-          >
-            المسئول
-          </th>
-          <th
-            scope="col"
-            class="font-weight-semibold"
-          >
-            المزود
-          </th>
-          <th
-            scope="col"
-            class="font-weight-semibold"
-          >
-            {{ t('forms.actions') }}
-          </th>
-        </tr>
+          <tr>
+            <th
+              scope="col"
+              class="font-weight-semibold"
+            >
+              #
+            </th>
+            <th
+              scope="col"
+              class="font-weight-semibold"
+            >
+              سعر الفاتورة
+            </th>
+            <th
+              scope="col"
+              class="font-weight-semibold"
+            >
+              تاريخ الفاتورة
+            </th>
+            <th
+              scope="col"
+              class="font-weight-semibold"
+            >
+              الضريبة
+            </th>
+            <th
+              scope="col"
+              class="font-weight-semibold"
+            >
+              حالة الدفع
+            </th>
+            <th
+              scope="col"
+              class="font-weight-semibold"
+            >
+              المسئول
+            </th>
+            <th
+              scope="col"
+              class="font-weight-semibold"
+            >
+              المزود
+            </th>
+            <th
+              scope="col"
+              class="font-weight-semibold"
+            >
+              {{ t('forms.actions') }}
+            </th>
+          </tr>
         </thead>
 
         <tbody>
-        <tr
-          v-for="(store, i) in invoiceItems"
-          :key="store.id"
-        >
-          <td>
-            {{ store.id }}
-          </td>
-          <td>
-            {{ store.invoice_price }}
-          </td>
-          <td>
-            {{ store.date }}
-          </td>
-          <td>
-            <span v-if="store.tax">{{ store.tax }}</span>
-            <span v-else>--</span>
-          </td>
-          <td>
-            <VChip
-              :class="{'text-error': store.paid == 0, 'text-success': store.paid == 1}"
-            >
-              {{ store.paid == 1 ? "مدفوع" : "غير مدفوع" }}
-            </VChip>
-          </td>
-          <td>
-            {{ store.user?.username }}
-          </td>
-          <td>
-            {{ store.supplier?.name }}
-          </td>
-          <td class="d-flex align-center gap-2">
-            <div v-if="!store.paid">
-              <VTooltip text="سداد الفاتورة">
-                <template #activator="{ props }">
-                  <VBtn
-                    v-bind="props"
-                    icon
-                    variant="plain"
-                    color="default"
-                    size="x-small"
-                    @click="openPayInvoice(store)"
+          <tr
+            v-for="(store, i) in invoiceItems"
+            :key="store.id"
+          >
+            <td>
+              {{ store.id }}
+            </td>
+            <td>
+              {{ store.invoice_price }}
+            </td>
+            <td>
+              {{ store.date }}
+            </td>
+            <td>
+              <span v-if="store.tax">{{ store.tax }}</span>
+              <span v-else>--</span>
+            </td>
+            <td>
+              <VChip :class="{ 'text-error': store.paid == 0, 'text-success': store.paid == 1 }">
+                {{ store.paid == 1 ? "مدفوع" : "غير مدفوع" }}
+              </VChip>
+            </td>
+            <td>
+              {{ store.user?.username }}
+            </td>
+            <td>
+              {{ store.supplier?.name }}
+            </td>
+            <td class="d-flex align-center gap-2">
+              <div v-if="!store.paid">
+                <VTooltip text="سداد الفاتورة">
+                  <template #activator="{ props }">
+                    <VBtn
+                      v-bind="props"
+                      icon
+                      variant="plain"
+                      color="default"
+                      size="x-small"
+                      @click="openPayInvoice(store)"
                     >
-                    <!-- :loading="currentPaidInvoice == store.id" -->
-                    <VIcon
-                      :size="22"
-                      icon="material-symbols:payments-outline-sharp"
-                    />
-                  </VBtn>
-                </template>
-              </VTooltip>
-            </div>
-            <div v-else class="px-4"></div>
-            <VBtn
-              icon
-              variant="plain"
-              color="default"
-              size="x-small"
-              @click="openEdit(store)"
-            >
-              <VIcon
-                :size="22"
-                icon="tabler-pencil"
+                      <!-- :loading="currentPaidInvoice == store.id" -->
+                      <VIcon
+                        :size="22"
+                        icon="material-symbols:payments-outline-sharp"
+                      />
+                    </VBtn>
+                  </template>
+                </VTooltip>
+              </div>
+              <div
+                v-else
+                class="px-4"
               />
-            </VBtn>
-            <VBtn
-              icon
-              variant="plain"
-              color="default"
-              size="x-small"
-              @click="openDelete(store)"
-            >
-              <VIcon
-                :size="22"
-                icon="tabler-trash"
-              />
-            </VBtn>
-          </td>
-        </tr>
+              <VBtn
+                icon
+                variant="plain"
+                color="default"
+                size="x-small"
+                @click="openEdit(store)"
+              >
+                <VIcon
+                  :size="22"
+                  icon="tabler-pencil"
+                />
+              </VBtn>
+              <VBtn
+                icon
+                variant="plain"
+                color="default"
+                size="x-small"
+                @click="openDelete(store)"
+              >
+                <VIcon
+                  :size="22"
+                  icon="tabler-trash"
+                />
+              </VBtn>
+            </td>
+          </tr>
         </tbody>
 
         <!-- 👉 table footer  -->
         <tfoot v-show="!invoiceItems.length">
-        <tr>
-          <td
-            colspan="8"
-            class="text-center text-body-1"
-          >
-            لا يوجد بيانات
-          </td>
-        </tr>
+          <tr>
+            <td
+              colspan="8"
+              class="text-center text-body-1"
+            >
+              لا يوجد بيانات
+            </td>
+          </tr>
         </tfoot>
       </VTable>
       <!-- !SECTION -->
 
-      <VDivider/>
+      <VDivider />
 
       <!-- SECTION Pagination -->
       <VCardText class="d-flex align-center flex-wrap justify-space-between gap-4 py-3">
@@ -448,23 +449,31 @@ onMounted(() => {
       </VCardText>
     </VCard>
 
-    <AddInvoiceDialog v-if="isAddOpen" 
-    v-model:is-add-open="isAddOpen" 
-    @refreshTable="getInvoices"/>
+    <AddInvoiceDialog
+      v-if="isAddOpen"
+      v-model:is-add-open="isAddOpen"
+      @refreshTable="getInvoices"
+    />
 
-    <EditInvoiceDialog v-if="isEditOpen" 
-    v-model:is-edit-open="isEditOpen" 
-    :item="selectedItem" 
-    @refreshTable="getInvoices"/>
+    <EditInvoiceDialog
+      v-if="isEditOpen"
+      v-model:is-edit-open="isEditOpen"
+      :item="selectedItem"
+      @refreshTable="getInvoices"
+    />
 
-    <DeleteInvoiceDialog v-if="isDeleteOpen" 
-    v-model:is-delete-open="isDeleteOpen" 
-    :item="selectedItem" 
-    @refreshTable="getInvoices"/>
+    <DeleteInvoiceDialog
+      v-if="isDeleteOpen"
+      v-model:is-delete-open="isDeleteOpen"
+      :item="selectedItem"
+      @refreshTable="getInvoices"
+    />
 
-    <PayInvoiceDialog v-if="isPayInvoice" 
-    v-model:is-pay-open="isPayInvoice" 
-    :item="selectedItem" 
-    @refreshTable="getInvoices"/>
+    <PayInvoiceDialog
+      v-if="isPayInvoice"
+      v-model:is-pay-open="isPayInvoice"
+      :item="selectedItem"
+      @refreshTable="getInvoices"
+    />
   </div>
 </template>
