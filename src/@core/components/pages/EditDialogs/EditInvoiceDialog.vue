@@ -340,7 +340,7 @@ onMounted(() => {
                 >
                   <AutoCompleteDropdown
                     v-model="store.product_id"
-                    :value-text="store.name_ar"
+                    :value-text="store.product_name"
                     :api-model="productsStore"
                     api-search-method="fetchProducts"
                     item-title="name_ar"
