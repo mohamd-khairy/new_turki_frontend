@@ -297,19 +297,19 @@ onMounted(() => {
                   المنتجات
                 </h3>
 
-                <!--
-                  <VBtn
+
+                <VBtn
                   class="position-relative"
                   icon
                   size="small"
                   @click="addProductStore"
-                  >
+                >
                   <VIcon
-                  icon="ei:plus"
-                  size="30"
+                    icon="ei:plus"
+                    size="30"
                   />
-                  </VBtn>
-                -->
+                </VBtn>
+                <!---->
               </div>
               <VRow
                 v-for="(store, index) in storesItems"
