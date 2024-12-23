@@ -292,19 +292,18 @@ onMounted(() => {
                   المنتجات
                 </h3>
 
-                <!--
-                  <VBtn
+                <VBtn
                   class="position-relative"
                   icon
                   size="small"
                   @click="addProductStore"
-                  >
+                >
                   <VIcon
-                  icon="ei:plus"
-                  size="30"
+                    icon="ei:plus"
+                    size="30"
                   />
-                  </VBtn>
-                -->
+                </VBtn>
+                <!-- -->
               </div>
               <VRow
                 v-for="(store, index) in storesItems"
@@ -352,29 +351,31 @@ onMounted(() => {
                     :rules="[requiredValidator]"
                     style="background-color: #fff;"
                   />
-                  <VTooltip :text="isAddProduct ? 'اختيار من المنتجات' : 'إضافة منتج جديد'">
+                  <!--
+                    <VTooltip :text="isAddProduct ? 'اختيار من المنتجات' : 'إضافة منتج جديد'">
                     <template #activator="{ props }">
-                      <VBtn
-                        v-bind="props"
-                        flat
-                        class="position-relative"
-                        icon
-                        size="small"
-                        @click="isAddProduct = !isAddProduct"
-                      >
-                        <VIcon
-                          v-if="isAddProduct"
-                          icon="ei:minus"
-                          size="30"
-                        />
-                        <VIcon
-                          v-else
-                          icon="ei:plus"
-                          size="30"
-                        />
-                      </VBtn>
+                    <VBtn
+                    v-bind="props"
+                    flat
+                    class="position-relative"
+                    icon
+                    size="small"
+                    @click="isAddProduct = !isAddProduct"
+                    >
+                    <VIcon
+                    v-if="isAddProduct"
+                    icon="ei:minus"
+                    size="30"
+                    />
+                    <VIcon
+                    v-else
+                    icon="ei:plus"
+                    size="30"
+                    />
+                    </VBtn>
                     </template>
-                  </VTooltip>
+                    </VTooltip>
+                  -->
                 </VCol>
                 <VCol
                   cols="10"
