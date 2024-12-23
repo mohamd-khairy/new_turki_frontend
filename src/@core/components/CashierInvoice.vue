@@ -179,12 +179,16 @@
       <span>طريقة الدفع</span>
       <span>{{ cashierStore.orderInfo.order?.payment_type?.name_ar }}</span>
     </p>
-    <p class="text-center">
+    <p
+      class="text-center"
+    >
       =========================================================
     </p>
-    <p class="d-flex bold justify-space-between w-100">
+    <p
+      class="d-flex bold justify-space-between w-100"
+    >
       <span> الملاحظات: </span>
-      <span>{{ cashierStore.orderInfo.order?.comment }}</span>
+      <span>{{ cashierStore.orderInfo.order?.comment ?? ' لايوجد ' }}</span>
     </p>
     <p class="text-center">
       =========================================================
