@@ -47,6 +47,13 @@
               <VCol cols="6" class="d-flex align-center gap-3 text-base py-1">
                 <h4>رقم الفاتورة:</h4>
                 <h2 v-if="orderDetails?.order?.payment">
+                  {{ orderDetails?.order?.paidpayment?.ref_no }}
+                </h2>
+                <span v-else>لا يوجد</span>
+              </VCol>
+              <VCol cols="6" class="d-flex align-center gap-3 text-base py-1">
+                <h4>رقم الطلب:</h4>
+                <h2 v-if="orderDetails?.order?.payment">
                   {{ orderDetails?.order?.payment.order_ref_no }}
                 </h2>
                 <span v-else>لا يوجد</span>
