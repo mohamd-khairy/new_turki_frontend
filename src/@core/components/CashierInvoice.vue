@@ -16,6 +16,12 @@
         {{ ConvertToArabicNumbers(310841577800003) }}
       </span>
     </h4>
+    <h4 class="d-flex flex-col align-center justify-center gap-3 mb-3 text-base">
+      رقم الفاتوره: {{ ConvertToArabicNumbers(cashierStore.orderInfo.order?.paidpayment?.ref_no) }}
+    </h4>
+
+    <h4> رقم الطلب: {{ ConvertToArabicNumbers(cashierStore.orderInfo.order?.ref_no) }}</h4>
+
     <p v-if="!isVisitor" class="text-center">
       =========================================================
     </p>
