@@ -29,9 +29,24 @@ jobs:
         fi
 
         # Update baseURL to production API
-        sed -i "s|baseURL: 'http://new-turki-project-api-v2.test/api/v2'|baseURL: 'https://almaraacompany.com/dashboard/api/v2'|" $FILE_PATH
+        sed -i "s|baseURL: 'http://new-turki-project-api-v2.test/api/v2'|baseURL: 'https://almaraacompany.com/dashboard-api/api/v2'|" $FILE_PATH
 
         # Confirm the update
         echo "Updated $FILE_PATH:"
         cat $FILE_PATH
 
+    - name: 🔨 Build Project
+      run: |
+        npm install
+        npm run build
+
+    - name: 📂 Sync files
+      uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+      with:
+        server: almaraacompany.com
+        username: ${{ secrets.server_master_turki_name }}
+        password: ${{ secrets.server_master_turki_password }}
+        local-dir: ./dist/
+        server-dir: /public_html/dashboard-v3/ # Target directory on the server
+        protocol: ftps
+        port: 21
