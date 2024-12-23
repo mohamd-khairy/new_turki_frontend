@@ -294,7 +294,7 @@ const storeMangerCanUpdateOrderStatus = order => {
 
 const openCashierDetails = order => {
   // router.push(`/cashier/order-details/${order.ref_no}`)
-  window.open(`/cashier/order-details/${order.ref_no}`)
+  window.open(`cashier/order-details/${order.ref_no}`, '_blank')
 
 }
 
