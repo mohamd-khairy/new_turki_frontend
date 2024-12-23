@@ -185,7 +185,6 @@
       =========================================================
     </p>
     <p
-      v-if="cashierStore.orderInfo.order?.comment"
       class="d-flex bold justify-space-between w-100"
     >
       <span> الملاحظات: </span>
