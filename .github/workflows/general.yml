@@ -1,0 +1,37 @@
+name: Deploy Build Folder to Server
+
+on:
+  push:
+    branches:
+      - dev-working
+
+jobs:
+  web-deploy:
+    name: 🎉 Deploy
+    runs-on: ubuntu-latest
+    steps:
+    - name: 🚚 Get latest code
+      uses: actions/checkout@v4
+
+    - name: Use Node.js 16
+      uses: actions/setup-node@v2
+      with:
+        node-version: '18'
+
+    - name: ✏️ Update axios.js Base URL
+      run: |
+        # Define the file path
+        FILE_PATH="src/plugins/axios.js"
+
+        # Ensure the file exists
+        if [ ! -f "$FILE_PATH" ]; then
+          echo "Error: $FILE_PATH not found!" && exit 1
+        fi
+
+        # Update baseURL to production API
+        sed -i "s|baseURL: 'http://new-turki-project-api-v2.test/api/v2'|baseURL: 'https://almaraacompany.com/dashboard/api/v2'|" $FILE_PATH
+
+        # Confirm the update
+        echo "Updated $FILE_PATH:"
+        cat $FILE_PATH
+
