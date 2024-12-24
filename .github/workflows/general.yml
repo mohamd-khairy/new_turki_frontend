@@ -46,7 +46,7 @@ jobs:
         fi
 
         # Update baseURL in jsconfig.json
-        sed -i "s|baseURL: '""'|baseURL: './dashboard-v3/'|" $FILE_PATH
+        sed -i "s|\"baseURL\": \".*\"|\"baseURL\": \"./dashboard-v3/\"|" $FILE_PATH
 
         # Confirm the update
         echo "Updated $FILE_PATH:"
@@ -63,7 +63,7 @@ jobs:
         fi
 
         # Update base in vite.config.js
-        sed -i "s|base: '""'|base: '/dashboard-v3/'|" $FILE_PATH
+        sed -i "s|\"baseURL\": \".*\"|\"baseURL\": \"/dashboard-v3/\"|" $FILE_PATH
 
         # Confirm the update
         echo "Updated $FILE_PATH:"
