@@ -37,37 +37,37 @@ jobs:
 
     - name: ✏️ Update jsconfig.json Base URL
       run: |
-        # Define the jsconfig.json file path
-        FILE_PATH="jsconfig.json"
+          # Define the jsconfig.json file path
+          JSCONFIG_PATH="jsconfig.json"
 
-        # Ensure the jsconfig.json file exists
-        if [ ! -f "$FILE_PATH" ]; then
-        echo "Error: $FILE_PATH not found!" && exit 1
-        fi
+          # Ensure the jsconfig.json file exists
+          if [ ! -f "$JSCONFIG_PATH" ]; then
+            echo "Error: $JSCONFIG_PATH not found!" && exit 1
+          fi
 
-        # Update baseURL in jsconfig.json
-        sed -i "s|\"baseURL\": \".*\"|\"baseURL\": \"./dashboard-v3/\"|" $FILE_PATH
+          # Update baseUrl in jsconfig.json
+          sed -i "s|\"baseUrl\":\".*\"|\"baseUrl\":\"./dashboard-v3/\"|" $JSCONFIG_PATH
 
-        # Confirm the update
-        echo "Updated $FILE_PATH:"
-        cat $FILE_PATH
+          # Confirm the update
+          echo "Updated $JSCONFIG_PATH:"
+          cat $JSCONFIG_PATH
 
     - name: ✏️ Update vite.config.js Base URL
       run: |
         # Define the vite.config.js file path
-        FILE_PATH="vite.config.js"
+        CONFIG_PATH="vite.config.js"
 
         # Ensure the vite.config.js file exists
-        if [ ! -f "$FILE_PATH" ]; then
-        echo "Error: $FILE_PATH not found!" && exit 1
+        if [ ! -f "$CONFIG_PATH" ]; then
+        echo "Error: $CONFIG_PATH not found!" && exit 1
         fi
 
         # Update base in vite.config.js
-        sed -i "s|\"baseURL\": \".*\"|\"baseURL\": \"/dashboard-v3/\"|" $FILE_PATH
+        sed -i "s|\"baseUrl\":\".*\"|\"baseUrl\":\"/dashboard-v3/\"|" $CONFIG_PATH
 
         # Confirm the update
-        echo "Updated $FILE_PATH:"
-        cat $FILE_PATH
+        echo "Updated $CONFIG_PATH:"
+        cat $CONFIG_PATH
 
     - name: 🔨 Build Project
       run: |
