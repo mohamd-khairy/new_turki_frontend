@@ -63,7 +63,7 @@ jobs:
         fi
 
         # Update base in vite.config.js
-        sed -i "s|\"baseUrl\":\".*\"|\"baseUrl\":\"/dashboard-v3/\"|" $CONFIG_PATH
+        sed -i "s|\"base\":\".*\"|\"base\":\"/dashboard-v3/\"|" $CONFIG_PATH
 
         # Confirm the update
         echo "Updated $CONFIG_PATH:"
