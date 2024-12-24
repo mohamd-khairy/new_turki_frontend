@@ -52,22 +52,23 @@ jobs:
           echo "Updated $JSCONFIG_PATH:"
           cat $JSCONFIG_PATH
 
-    - name: ✏️ Update vite.config.js Base URL
+
+    - name: ✏️ Update Vite Config Base URL
       run: |
-        # Define the vite.config.js file path
-        CONFIG_PATH="vite.config.js"
+          # Define the vite.config.js file path
+          VITE_CONFIG_PATH="vite.config.js"
 
-        # Ensure the vite.config.js file exists
-        if [ ! -f "$CONFIG_PATH" ]; then
-        echo "Error: $CONFIG_PATH not found!" && exit 1
-        fi
+          # Ensure the vite.config.js file exists
+          if [ ! -f "$VITE_CONFIG_PATH" ]; then
+            echo "Error: $VITE_CONFIG_PATH not found!" && exit 1
+          fi
 
-        # Update base in vite.config.js
-        sed -i "s|\"base\":\".*\"|\"base\":\"/dashboard-v3/\"|" $CONFIG_PATH
+          # Update base in vite.config.js
+          sed -i "s|base:\"\"|base:\"/dashboard-v2/\"|" $VITE_CONFIG_PATH
 
-        # Confirm the update
-        echo "Updated $CONFIG_PATH:"
-        cat $CONFIG_PATH
+          # Confirm the update
+          echo "Updated $VITE_CONFIG_PATH:"
+          cat $VITE_CONFIG_PATH
 
     - name: 🔨 Build Project
       run: |
