@@ -292,10 +292,22 @@ const storeMangerCanUpdateOrderStatus = order => {
   return hasRole('store_manager') && order.sales_representative_id == authUser.value?.id
 }
 
-const openCashierDetails = order => {
-  router.push(`/cashier/order-details/${order.ref_no}`)
+const checkCodeStartsWith = ref_no => {
+  return ref_no.startsWith("SA")
 }
 
+
+const openCashierDetails = order => {
+  if (checkCodeStartsWith(order.ref_no)) {
+    window.open(`cashier/order-details/${order.ref_no}`, '_blank')
+  } else {
+    printOrderInvoice(order)
+
+  }
+
+  // router.push(`/cashier/order-details/${order.ref_no}`)
+  // window.open(`cashier/order-details/${order.ref_no}`, '_blank')
+}
 
 const printOrderInvoice = async order => {
   if (hasRole(['production_manager'])) {
