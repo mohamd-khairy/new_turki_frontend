@@ -119,6 +119,9 @@
           <div class="cell description">
             {{ product.product?.name_ar }}
             <div class="addons">
+              <div v-if="product?.size?.name_ar">
+                الحجم: {{ product?.size?.name_ar }}
+              </div>
               <div v-if="product?.cut?.name_ar">
                 التقطيع: {{ product?.cut?.name_ar }}
               </div>
