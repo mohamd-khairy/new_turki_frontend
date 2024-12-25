@@ -1,4 +1,7 @@
+import { useSettingsStore } from "@/store/Settings"
 import axios from 'axios'
+
+const settingsListStore = useSettingsStore()
 
 const token = localStorage.getItem("najdToken") || ""
 
@@ -68,5 +71,6 @@ axiosIns.interceptors.response.use(
     return Promise.reject(error)
   },
 )
+
 
 export default axiosIns
