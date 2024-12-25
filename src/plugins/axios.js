@@ -27,18 +27,16 @@ axiosIns.interceptors.response.use(
     return response
   },
   error => {
-    if (error.response && error.response.status === 400) {
+    if (error.response && error.response.status == 400 && error.response.data?.message) {
 
-      console.log(error.response)
+      settingsListStore.alertMessage = error.response.data.message
 
-      // settingsListStore.alertMessage = error.response.message
-
-      // settingsListStore.alertColor = "error"
-      // settingsListStore.isAlertShow = true
-      // setTimeout(() => {
-      //   settingsListStore.isAlertShow = false
-      //   settingsListStore.alertMessage = ""
-      // }, 2000)
+      settingsListStore.alertColor = "error"
+      settingsListStore.isAlertShow = true
+      setTimeout(() => {
+        settingsListStore.isAlertShow = false
+        settingsListStore.alertMessage = ""
+      }, 2000)
     }
 
     if (error.response && error.response.status === 404 && error.response?.data?.errors) {
