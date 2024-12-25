@@ -27,9 +27,9 @@ axiosIns.interceptors.response.use(
     return response
   },
   error => {
-    if (error.response && error.response.status === 400 && error.response?.data?.message) {
+    if (error.response && error.response.status === 400 && error.response?.message) {
 
-      settingsListStore.alertMessage = error.response.data.message
+      settingsListStore.alertMessage = error.response.message
 
       settingsListStore.alertColor = "error"
       settingsListStore.isAlertShow = true
