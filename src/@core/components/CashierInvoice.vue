@@ -9,7 +9,7 @@
         alt="turki"
       >
       <p class="">
-        الرياض - المملكة العربية السعودية
+        الرياض
       </p>
     </div>
     <p class="text-center">
@@ -206,9 +206,9 @@
 </template>
 
 <script setup>
-import { useCashierStore } from '@/store/Cashier';
-import QrcodeVue from 'qrcode.vue';
-import { computed, ref } from 'vue';
+import { useCashierStore } from '@/store/Cashier'
+import QrcodeVue from 'qrcode.vue'
+import { computed, ref } from 'vue'
 
 
 const isVisitor = computed(() => cashierStore.orderInfo.order?.customer?.mobile === '+9660123456789')
