@@ -60,23 +60,6 @@ const onFormSubmit = async () => {
         settingsListStore.isAlertShow = false
         settingsListStore.alertMessage = ""
       }, 2000)
-    }).catch(error => {
-      if (error.response.data?.errors) {
-        const errs = Object.keys(error.response.data?.errors)
-
-        errs.forEach(err => {
-          settingsListStore.alertMessage = t(`errors.${err}`)
-        })
-      } else {
-        settingsListStore.alertMessage = "حدث خطأ ما !"
-      }
-
-      settingsListStore.alertColor = "error"
-      settingsListStore.isAlertShow = true
-      setTimeout(() => {
-        settingsListStore.isAlertShow = false
-        settingsListStore.alertMessage = ""
-      }, 2000)
     }).finally(() => {
       isLoading.value = false
     })
