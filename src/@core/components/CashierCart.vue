@@ -13,7 +13,7 @@
         <div class="cart__items">
           <div v-for="(item, index) in cashierStore.cart" :key="item.id" class="cart__item">
             <div class="info">
-              {{ parseFloat(item.quantity).toString() }} x {{ item.name }}
+              {{ parseFloat(item.quantity).toFixed(2) }} x {{ item.name }}
             </div>
             <div class="d-flex gap-4 align-center">
               <span class="nowrap">{{ item.total_price.toFixed(2) }} ريال</span>
