@@ -61,8 +61,8 @@ const onFormSubmit = async () => {
         settingsListStore.alertMessage = ""
       }, 2000)
     }).catch(error => {
-      if (error.response.data.errors) {
-        const errs = Object.keys(error.response.data.errors)
+      if (error.response.data?.errors) {
+        const errs = Object.keys(error.response.data?.errors)
 
         errs.forEach(err => {
           settingsListStore.alertMessage = t(`errors.${err}`)
