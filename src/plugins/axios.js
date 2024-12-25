@@ -27,17 +27,17 @@ axiosIns.interceptors.response.use(
     return response
   },
   error => {
-    // if (error.response && error.response.status === 400 && error.response?.message) {
+    if (error.response && error.response.status === 400 && error.response?.message) {
 
-    //   settingsListStore.alertMessage = error.response.message
+      settingsListStore.alertMessage = error.response.message
 
-    //   settingsListStore.alertColor = "error"
-    //   settingsListStore.isAlertShow = true
-    //   setTimeout(() => {
-    //     settingsListStore.isAlertShow = false
-    //     settingsListStore.alertMessage = ""
-    //   }, 2000)
-    // }
+      settingsListStore.alertColor = "error"
+      settingsListStore.isAlertShow = true
+      setTimeout(() => {
+        settingsListStore.isAlertShow = false
+        settingsListStore.alertMessage = ""
+      }, 2000)
+    }
 
     if (error.response && error.response.status === 404 && error.response?.data?.errors) {
 
