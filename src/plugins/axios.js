@@ -27,6 +27,34 @@ axiosIns.interceptors.response.use(
     return response
   },
   error => {
+    if (error.response && error.response.status === 400 && error.response?.data?.message) {
+
+      settingsListStore.alertMessage = error.response.data.message
+
+      settingsListStore.alertColor = "error"
+      settingsListStore.isAlertShow = true
+      setTimeout(() => {
+        settingsListStore.isAlertShow = false
+        settingsListStore.alertMessage = ""
+      }, 2000)
+    }
+
+    if (error.response && error.response.status === 404 && error.response?.data?.errors) {
+
+      const errs = Object.keys(error.response.data.errors)
+
+      errs.forEach(err => {
+        settingsListStore.alertMessage = error.response.data.errors[err][0] ?? "error"
+      })
+
+      settingsListStore.alertColor = "error"
+      settingsListStore.isAlertShow = true
+      setTimeout(() => {
+        settingsListStore.isAlertShow = false
+        settingsListStore.alertMessage = ""
+      }, 2000)
+    }
+
     if (error.response && error.response.status === 401) {
       // localStorage.removeItem("najdToken")
       // localStorage.removeItem("najdUser")
