@@ -242,7 +242,17 @@
                   v-for="product in orderDetails?.products"
                   :key="product.id"
                 >
-                  <td><small>{{ product.product ? product.product.name_ar : "لا يوجد" }}</small></td>
+                  <td>
+                    <small>{{ product.product ? product.product.name_ar : "لا يوجد" }}
+
+                      <VChip
+                        v-if="product.is_refund"
+                        class="text-error"
+                      >
+                        مرتجع
+                      </VChip>
+                    </small>
+                  </td>
                   <td>
                     <small>
                       {{ product.size ? product.size.name_ar : "لا يوجد" }}</small>

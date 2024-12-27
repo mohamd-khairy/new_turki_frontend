@@ -115,9 +115,17 @@
         <div class="item nowraping">
           <div class="cell text-center">
             {{ product.quantity }}
+            <br>
+            <VChip
+              v-if="product.is_refund"
+              class="text-error"
+            >
+              مرتجع
+            </VChip>
           </div>
           <div class="cell description">
             {{ product.product?.name_ar }}
+
             <div class="addons">
               <div v-if="product?.size?.name_ar">
                 الحجم: {{ product?.size?.name_ar }}

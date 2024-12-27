@@ -15,6 +15,9 @@
     </div>
     <div v-else>
       <div class="card-wrapper invoice-container">
+        <h1 class="text-2xl mb-4 font-semibold">
+          من فضلك قم بتحديد المنتجات التي تريد استرجاعها
+        </h1>
         <VRow>
           <VCol>
             <VTable class="mb-4">
