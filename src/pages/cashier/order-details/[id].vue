@@ -509,7 +509,6 @@ const orderCurrency = computed(() => {
 
 const getOrderDetails = async () => {
   await cashierStore.orderDetails(route.params.id).then(response => {
-    console.log(response)
     orderDetails.value = response?.data
 
   }).catch(error => {

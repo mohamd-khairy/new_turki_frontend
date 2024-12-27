@@ -25,6 +25,7 @@
                     class="font-weight-semibold"
                   >
                     <VCheckbox
+                      v-if="needToRefund"
                       v-model="allOrdersSelected"
                       @update:modelValue="selectAllOrders"
                     />
@@ -67,7 +68,17 @@
                   :key="product.id"
                 >
                   <td>
-                    <VCheckbox v-model="product.selected" />
+                    <VCheckbox
+                      v-if="!product.is_refund"
+                      v-model="product.selected"
+                      @click="selectOrders(product)"
+                    />
+                    <VChip
+                      v-else
+                      class="text-error"
+                    >
+                      مرتجع
+                    </VChip>
                   </td>
                   <td><small>{{ product.product ? product.product.name_ar : "لا يوجد" }}</small></td>
                   <td>
@@ -108,6 +119,7 @@
       </div>
       <div class="buttons">
         <AppButton
+          v-if="oneOrderSelected"
           type="primary"
           title="حفظ"
           @click="refundOrder"
@@ -115,7 +127,7 @@
         <AppButton
           type="close"
           title="رجوع"
-          @click="$router.push('/cashier/categories')"
+          @click="$router.push('/cashier/orders')"
         />
       </div>
     </div>
@@ -125,17 +137,20 @@
 <script setup>
 import CashierInvoice from '@/@core/components/CashierInvoice.vue'
 import { useCashierStore } from '@/store/Cashier'
-import moment from "moment"
-import { computed, onMounted } from 'vue'
+import { useSettingsStore } from "@/store/Settings"
+import { useRouter } from 'vue-router'
 
-// import { useVueToPrint } from "vue-to-print"
 
+const router = useRouter()
 const orderDetails = ref({})
 const cashierStore = useCashierStore()
 const route = useRoute()
 const isLoading = ref(true)
 const orderContainerRef = ref(null)
 const allOrdersSelected = ref(false)
+const oneOrderSelected = ref(false)
+const needToRefund = ref(false)
+const settingsListStore = useSettingsStore()
 
 
 const selectAllOrders = selectedAll => {
@@ -146,15 +161,39 @@ const selectAllOrders = selectedAll => {
     return product
   })
 
+  checkSelectedOrder()
 }
 
+const selectOrders = product => {
+  product.selected = !product.selected
 
-
-const formatCreatedDate = createdDate => {
-  const formatedDate = moment(createdDate).format("DD-MM-YYYY")
-
-  return ConvertToArabicNumbers(formatedDate)
+  checkSelectedOrder()
 }
+
+const refundOrder = () => {
+  const selectedProducts = orderDetails.value.products.filter(product => product.selected).map(product => product.id)
+
+  cashierStore.refundOrder(orderDetails.value.order.ref_no, selectedProducts).then(response => {
+    if(response.data){
+
+      settingsListStore.alertMessage = "تم استرجاع الطلب بنجاح"
+      settingsListStore.alertColor = "success"
+      settingsListStore.isAlertShow = true
+      setTimeout(() => {
+        settingsListStore.isAlertShow = false
+        settingsListStore.alertMessage = ""
+      }, 2000)
+
+      // window.location.href = '/cashier/orders'
+      router.push('/cashier/orders')
+
+    }
+  }).catch(error => {
+    console.log(error)
+  })
+
+}
+
 
 const ConvertToArabicNumbers = num => {
   const arabicNumbers = "\u0660\u0661\u0662\u0663\u0664\u0665\u0666\u0667\u0668\u0669"
@@ -164,27 +203,11 @@ const ConvertToArabicNumbers = num => {
   })
 }
 
-const refundOrder = () => {
-  const selectedProducts = orderDetails.value.products.filter(product => product.selected).map(product => product.id)
-
-
-  cashierStore.refundOrder(orderDetails.value.order.ref_no , selectedProducts).then(response => {
-    console.log(response)
-  })
-
-}
-
-
-const orderCurrency = computed(() => {
-  if (orderDetails.value.order?.selected_address?.country_id == 4) return 'درهم'
-
-  return 'ريال'
-})
 
 const getOrderDetails = async () => {
   await cashierStore.orderDetails(route.params.id).then(response => {
-    console.log(response)
     orderDetails.value = response?.data
+    checkCountRefund()
 
   }).catch(error => {
     console.log(error)
@@ -194,7 +217,33 @@ const getOrderDetails = async () => {
   })
 }
 
-onMounted(() => getOrderDetails())
+onMounted(function () {
+  getOrderDetails()
+
+})
+
+const checkSelectedOrder = () => {
+
+  if (orderDetails.value.products.some(product => product.selected)) {
+    oneOrderSelected.value = true
+  }else{
+    oneOrderSelected.value = false
+    allOrdersSelected.value = false
+  }
+
+  if (orderDetails.value.products.every(product => product.selected)) {
+    allOrdersSelected.value = true
+  }
+
+}
+
+const checkCountRefund = () => {
+  orderDetails.value.products.map(product => {
+    if (!product.is_refund) {
+      needToRefund.value = true
+    }
+  })
+}
 </script>
 
 
