@@ -61,8 +61,15 @@
             scope="col"
             class="font-weight-semibold"
           >
+            التاريخ
+          </th>
+          <th
+            scope="col"
+            class="font-weight-semibold"
+          >
             {{ $t("forms.id") }}
           </th>
+
           <th
             scope="col"
             class="font-weight-semibold"
@@ -82,6 +89,12 @@
             class="font-weight-semibold"
           >
             {{ locale == 'en' ? paymentType.name_en : paymentType.name_ar }}
+          </th>
+          <th
+            scope="col"
+            class="font-weight-semibold"
+          >
+            المرتجع
           </th>
           <th
             scope="col"
@@ -116,6 +129,7 @@
           :key="user.user_id"
         >
           <tr>
+            <td>{{ user.date }}</td>
             <td>{{ user.user_id }}</td>
             <td>{{ user.user_name }}</td>
             <td>{{ user.branch_name }}</td>
@@ -127,6 +141,7 @@
             >
               {{ ConvertToArabicNumbers(user[paymentType.name_en]) }}
             </td>
+            <td>{{ ConvertToArabicNumbers(user.refund) }}</td>
             <td>{{ ConvertToArabicNumbers(user.total) }}</td>
           </tr>
         </template>
@@ -147,8 +162,8 @@
 </template>
 
 <script setup>
-import { useCashierStore } from '@/store/Cashier';
-import { useI18n } from 'vue-i18n';
+import { useCashierStore } from '@/store/Cashier'
+import { useI18n } from 'vue-i18n'
 
 const cashierStore = useCashierStore()
 const { t, locale } = useI18n()

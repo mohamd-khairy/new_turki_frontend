@@ -253,6 +253,19 @@ export const useCashierStore = defineStore('cashier', {
       }
     },
 
+    async refundOrder(ref_no,data) {
 
+      try {
+        const response = await axios.post(`/cashier-refund-order/${ref_no}`,{
+          ids: data,
+        })
+
+        return response.data
+      } catch (error) {
+        console.error('Error fetching products:', error)
+
+        return error
+      }
+    },
   },
 })

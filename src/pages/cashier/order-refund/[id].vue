@@ -20,6 +20,15 @@
             <VTable class="mb-4">
               <thead>
                 <tr>
+                  <th
+                    scope="col"
+                    class="font-weight-semibold"
+                  >
+                    <VCheckbox
+                      v-model="allOrdersSelected"
+                      @update:modelValue="selectAllOrders"
+                    />
+                  </th>
                   <th class="text-base">
                     المنتج
                   </th>
@@ -50,9 +59,6 @@
                   <th class="text-base">
                     الاجمالي
                   </th>
-                  <th class="text-base">
-                    الانشظة
-                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -60,6 +66,9 @@
                   v-for="product in orderDetails?.products"
                   :key="product.id"
                 >
+                  <td>
+                    <VCheckbox v-model="product.selected" />
+                  </td>
                   <td><small>{{ product.product ? product.product.name_ar : "لا يوجد" }}</small></td>
                   <td>
                     <small>
@@ -90,25 +99,6 @@
                   <td>
                     <small>
                       {{ product.total_price ? ConvertToArabicNumbers(product.total_price) : "لا يوجد" }}</small>
-                  </td>
-                  <td>
-                    <VTooltip text="ارجاع ">
-                      <template #activator="{ props }">
-                        <VBtn
-                          v-bind="props"
-                          icon
-                          variant="plain"
-                          color="default"
-                          size="x-small"
-                          @click="refund(product)"
-                        >
-                          <VIcon
-                            :size="22"
-                            icon="tabler-remove"
-                          />
-                        </VBtn>
-                      </template>
-                    </VTooltip>
                   </td>
                 </tr>
               </tbody>
@@ -145,6 +135,20 @@ const cashierStore = useCashierStore()
 const route = useRoute()
 const isLoading = ref(true)
 const orderContainerRef = ref(null)
+const allOrdersSelected = ref(false)
+
+
+const selectAllOrders = selectedAll => {
+
+  orderDetails.value.products.value = orderDetails.value.products.map(product => {
+    product.selected = selectedAll
+
+    return product
+  })
+
+}
+
+
 
 const formatCreatedDate = createdDate => {
   const formatedDate = moment(createdDate).format("DD-MM-YYYY")
@@ -160,16 +164,16 @@ const ConvertToArabicNumbers = num => {
   })
 }
 
-const  refundOrder = () => {
-  console.log('here')
+const refundOrder = () => {
+  const selectedProducts = orderDetails.value.products.filter(product => product.selected).map(product => product.id)
+
+
+  cashierStore.refundOrder(orderDetails.value.order.ref_no , selectedProducts).then(response => {
+    console.log(response)
+  })
 
 }
 
-const refund = product => {
-  console.log(product)
-}
-
-const isUAEOrder = computed(() => orderDetails.value.order?.selected_address?.country_id == 4)
 
 const orderCurrency = computed(() => {
   if (orderDetails.value.order?.selected_address?.country_id == 4) return 'درهم'
