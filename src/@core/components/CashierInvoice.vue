@@ -9,7 +9,7 @@
         alt="turki"
       >
       <p class="">
-        الرياض - المملكة العربية السعودية
+        الرياض
       </p>
     </div>
     <p class="text-center">
@@ -119,6 +119,9 @@
           <div class="cell description">
             {{ product.product?.name_ar }}
             <div class="addons">
+              <div v-if="product?.size?.name_ar">
+                الحجم: {{ product?.size?.name_ar }}
+              </div>
               <div v-if="product?.cut?.name_ar">
                 التقطيع: {{ product?.cut?.name_ar }}
               </div>
@@ -206,9 +209,9 @@
 </template>
 
 <script setup>
-import { useCashierStore } from '@/store/Cashier';
-import QrcodeVue from 'qrcode.vue';
-import { computed, ref } from 'vue';
+import { useCashierStore } from '@/store/Cashier'
+import QrcodeVue from 'qrcode.vue'
+import { computed, ref } from 'vue'
 
 
 const isVisitor = computed(() => cashierStore.orderInfo.order?.customer?.mobile === '+9660123456789')
