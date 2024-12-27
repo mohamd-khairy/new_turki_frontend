@@ -177,7 +177,6 @@ const target = (0, path_1.join)(__dirname, 'icons-bundle.js');
                 // Update icon from SVG instance
                 iconSet.fromSVG(name, svg);
             });
-            console.log(`Bundled ${iconSet.count()} icons from ${source.dir}`);
             // Export to JSON
             const content = iconSet.export();
             bundle += `addCollection(${JSON.stringify(content)});\n`;
@@ -185,7 +184,6 @@ const target = (0, path_1.join)(__dirname, 'icons-bundle.js');
     }
     // Save to file
     await fs_1.promises.writeFile(target, bundle, 'utf8');
-    console.log(`Saved ${target} (${bundle.length} bytes)`);
 })().catch(err => {
     console.error(err);
 });

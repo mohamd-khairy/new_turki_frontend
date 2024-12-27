@@ -34,7 +34,6 @@ const filters = reactive({
 })
 
 const searchProducts = e => {
-  console.log('here')
 
   clearTimeout(_timerProductsId.value)
   _timerProductsId.value = setTimeout(() => {

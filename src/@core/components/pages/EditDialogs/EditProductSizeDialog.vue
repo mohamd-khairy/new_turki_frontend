@@ -72,7 +72,6 @@ onUpdated(() => {
   itemData.foodics_integrate_id = props.item.foodics_integrate_id
   itemData.is_available_for_use = props.item.use_again == 1 ? true : false
 
-  console.log(props.item.stores)
   if(props.item.stores && props.item.stores.length) {
     storesItems.value = props.item.stores
 

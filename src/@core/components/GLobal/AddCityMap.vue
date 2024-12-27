@@ -1,5 +1,5 @@
 <script setup>
-import { GoogleMap, Polygon, Marker, MarkerCluster } from "vue3-google-map"
+import { GoogleMap, Marker, Polygon } from "vue3-google-map"
 
 const props = defineProps({
   location: {
@@ -69,7 +69,6 @@ const onMarkerDragged = index => {
 }
 
 const deleteMark = marker => {
-  console.log("Mark => ", marker)
 
   const index = markers.findIndex(item => item.position.lat === marker.position.lat && item.position.lng == marker.position.lng)
 
@@ -86,7 +85,7 @@ onMounted(() => {
   <div class="position-relative">
     <GoogleMap
       api-key="AIzaSyCM2TngqydZtVlZ5hkKjY7x56ut59TTI88"
-      style="width: 100%; height: 500px"
+      style="width: 100%; height: 500px;"
       :center="{lat: center.lat, lng: center.lng }"
       :zoom="12"
       @click="addMarker"
@@ -97,7 +96,7 @@ onMounted(() => {
         :options="marker"
         @click="deleteMark(marker)"
       />
-      <Polygon :options="{path: places, geodesic: true, strokeColor: '#FF0000', strokeOpacity: 1.0, strokeWeight: 2}"/>
+      <Polygon :options="{path: places, geodesic: true, strokeColor: '#FF0000', strokeOpacity: 1.0, strokeWeight: 2}" />
     </GoogleMap>
   </div>
 </template>
@@ -105,18 +104,20 @@ onMounted(() => {
 <style lang="scss" scoped>
 .autocomplete-results {
   position: absolute;
-  top: 45px;
-  left: 0;
-  width: 100%;
-  background: #fff;
   z-index: 99;
-  color: #000;
   padding: 5px;
-  box-shadow: 0 1px 5px 3px rgba(0, 0, 0, 0.12);
+  background: #fff;
+  box-shadow: 0 1px 5px 3px rgba(0, 0, 0, 12%);
+  color: #000;
+  inline-size: 100%;
+  inset-block-start: 45px;
+  inset-inline-start: 0;
 
   div {
-    margin: 2px 0;
     padding: 8px;
+    margin-block: 2px;
+    margin-inline: 0;
+
     //background: #ddd;
     //cursor: pointer;
     transition: 0.5s ease-in-out background;

@@ -69,14 +69,13 @@ const getTodayDate = () => {
   const year = today.getFullYear()
   const month = today.getMonth() + 1 // Months are zero-indexed, so add 1
   const day = today.getDate()
-  
+
   return `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`
 }
 
 onMounted(() => {
   const routeQuery = route.query
 
-  console.log({ routeQuery })
 
   getSuppliers(routeQuery)
 })
@@ -144,7 +143,7 @@ onMounted(() => {
                 <th class="text-base">
                   الرصيد
                 </th>
-              
+
                 <!-- <th class="text-base">تاريخ الإنشاء</th> -->
               </tr>
             </thead>
@@ -168,7 +167,7 @@ onMounted(() => {
                 <td>
                   <small>{{ supplier.balance }}</small>
                 </td>
-               
+
                 <!--
                   <td>
                   <small>{{ ConvertToArabicNumbers(formatDateTime(supplier.created_at).date) }}</small>
@@ -180,9 +179,9 @@ onMounted(() => {
                   colspan="3"
                   class="text-center"
                 >
-                  <small>المجموع</small>  
+                  <small>المجموع</small>
                 </td>
-              
+
                 <td
                   colspan="2"
                   class="text-center"

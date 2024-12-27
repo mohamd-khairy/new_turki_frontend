@@ -227,7 +227,6 @@ const cashierStore = useCashierStore()
 const qrBase64 = ref(null) // To store the Base64 QR code
 
 const convertImageUrlToBase64 = async url => {
-  console.log(url)
   try {
     const response = await fetch(url) // Fetch image from the provided URL
     if (!response.ok) {
@@ -261,7 +260,6 @@ const ConvertToArabicNumbers = num => {
 // onMounted(async () => {
 //   const qrUrl = cashierStore.orderInfo?.order?.qr // QR URL from your store
 
-//   console.log("qrUrl", qrUrl)
 //   if (qrUrl) qrBase64.value = await convertImageUrlToBase64(qrUrl)
 
 // })
