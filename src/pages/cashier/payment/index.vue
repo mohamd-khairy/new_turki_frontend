@@ -76,8 +76,8 @@ const storePaymentTypes = async () => {
   if (code == 200) router.push(`/cashier/order-details/${data.ref_no}`)
 }
 
-const cancelOrder = () => {
-  const { code } = cashierStore.cancelOrder(cashierStore?.order?.ref_no)
+const cancelOrder = async () => {
+  const { code } = await cashierStore.cancelOrder(cashierStore?.order?.ref_no)
   if (code == 200) router.push(`/cashier/categories`)
 
 }
