@@ -129,12 +129,10 @@ export const useCashierStore = defineStore('cashier', {
       }
     },
     async orderDetails(data) {
-      console.log("data",data)
       try {
         const response = await axios.get(`/cashier-order-details/${data}`)
 
         this.orderInfo = response.data.data
-        console.log(this.orderInfo)
 
         return response.data
       } catch (error) {
@@ -161,7 +159,6 @@ export const useCashierStore = defineStore('cashier', {
         const response = await axios.get(`/cashier-orders`, { params })
 
         this.orderList = response.data.data.data
-        console.log(this.orderList)
         this.orderListPaginated['total'] = response.data.data.last_page
 
         return response.data
@@ -241,7 +238,6 @@ export const useCashierStore = defineStore('cashier', {
           total_price: product_quantity * response.data.data.sale_price, // Calculate total price
         }
 
-        console.log(item)
 
         this.addToCart(item)
 
@@ -253,6 +249,19 @@ export const useCashierStore = defineStore('cashier', {
       }
     },
 
+    async refundOrder(ref_no,data) {
 
+      try {
+        const response = await axios.post(`/cashier-refund-order/${ref_no}`,{
+          ids: data,
+        })
+
+        return response.data
+      } catch (error) {
+        console.error('Error fetching products:', error)
+
+        return error
+      }
+    },
   },
 })

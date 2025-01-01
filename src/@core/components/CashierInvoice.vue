@@ -9,7 +9,7 @@
         alt="turki"
       >
       <p class="">
-        الرياض - المملكة العربية السعودية
+        الرياض
       </p>
     </div>
     <p class="text-center">
@@ -115,10 +115,21 @@
         <div class="item nowraping">
           <div class="cell text-center">
             {{ product.quantity }}
+            <br>
+            <VChip
+              v-if="product.is_refund"
+              class="text-error"
+            >
+              مرتجع
+            </VChip>
           </div>
           <div class="cell description">
             {{ product.product?.name_ar }}
+
             <div class="addons">
+              <div v-if="product?.size?.name_ar">
+                الحجم: {{ product?.size?.name_ar }}
+              </div>
               <div v-if="product?.cut?.name_ar">
                 التقطيع: {{ product?.cut?.name_ar }}
               </div>
@@ -206,9 +217,9 @@
 </template>
 
 <script setup>
-import { useCashierStore } from '@/store/Cashier';
-import QrcodeVue from 'qrcode.vue';
-import { computed, ref } from 'vue';
+import { useCashierStore } from '@/store/Cashier'
+import QrcodeVue from 'qrcode.vue'
+import { computed, ref } from 'vue'
 
 
 const isVisitor = computed(() => cashierStore.orderInfo.order?.customer?.mobile === '+9660123456789')
@@ -216,7 +227,6 @@ const cashierStore = useCashierStore()
 const qrBase64 = ref(null) // To store the Base64 QR code
 
 const convertImageUrlToBase64 = async url => {
-  console.log(url)
   try {
     const response = await fetch(url) // Fetch image from the provided URL
     if (!response.ok) {
@@ -250,7 +260,6 @@ const ConvertToArabicNumbers = num => {
 // onMounted(async () => {
 //   const qrUrl = cashierStore.orderInfo?.order?.qr // QR URL from your store
 
-//   console.log("qrUrl", qrUrl)
 //   if (qrUrl) qrBase64.value = await convertImageUrlToBase64(qrUrl)
 
 // })

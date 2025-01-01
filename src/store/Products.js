@@ -118,7 +118,6 @@ export const useProductsStore = defineStore('ProductsStore', {
       }
 
       for (let i = 0; i < data.images.length; i++) {
-        // console.log(`Image[${i}] => `, data.images[i])
         formData.append(`images[${i}]`, data.images[i])
       }
 

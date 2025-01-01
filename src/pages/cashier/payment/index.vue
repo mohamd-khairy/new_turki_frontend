@@ -4,29 +4,61 @@
       <VCol :cols="cashierStore.cart.length > 0 ? 9 : 12">
         <div class="payment-mathods">
           <div class="info">
-            <VTextarea v-model="paymentInfo.comment" rows="3" label="الملاحظات" />
+            <VTextarea
+              v-model="paymentInfo.comment"
+              rows="3"
+              label="الملاحظات"
+            />
             <h2 class="cart">
               طرق الدفع
             </h2>
-            <div v-if="isLoading" class="h-full d-flex align-center justify-center">
+            <div
+              v-if="isLoading"
+              class="h-full d-flex align-center justify-center"
+            >
               <AppLoading />
             </div>
-            <div v-else class="payment-methods-grid">
-              <div v-for="method in paymentMethods" :key="method.id" class="payment-method-item" :class="{ 'selected': paymentInfo?.payment_type_id === method.id }" @click="selectPaymentMethod(method.id)">
+            <div
+              v-else
+              class="payment-methods-grid"
+            >
+              <div
+                v-for="method in paymentMethods"
+                :key="method.id"
+                class="payment-method-item"
+                :class="{ 'selected': paymentInfo?.payment_type_id === method.id }"
+                @click="selectPaymentMethod(method.id)"
+              >
                 <div class="radio-circle">
-                  <div v-if="paymentInfo?.payment_type_id === method.id" class="radio-circle-inner" />
+                  <div
+                    v-if="paymentInfo?.payment_type_id === method.id"
+                    class="radio-circle-inner"
+                  />
                 </div>
                 <span class="payment-method-name">{{ method.name_ar }}</span>
               </div>
             </div>
           </div>
           <div class="buttons">
-            <AppButton type="primary" title="تم الدفع" :disabled="preventPay" :is-loading="cashierStore.isClicked" @click="storePaymentTypes" />
-            <AppButton type="close" title="الغاء" @click="cancelOrder" />
+            <AppButton
+              type="primary"
+              title="تم الدفع"
+              :disabled="preventPay"
+              :is-loading="cashierStore.isClicked"
+              @click="storePaymentTypes"
+            />
+            <AppButton
+              type="close"
+              title="الغاء"
+              @click="cancelOrder"
+            />
           </div>
         </div>
       </VCol>
-      <VCol v-if="cashierStore.cart.length != 0" cols="3">
+      <VCol
+        v-if="cashierStore.cart.length != 0"
+        cols="3"
+      >
         <CashierCart :is-payment="true" />
       </VCol>
     </VRow>
@@ -60,7 +92,6 @@ const preventPay = computed(() => {
 
 })
 
-console.log(preventPay.value)
 
 
 

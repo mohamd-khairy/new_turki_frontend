@@ -1,6 +1,6 @@
 <script setup>
-import { useCategoriesStore } from "@/store/Categories";
-import { useCitiesStore } from "@/store/Cities";
+import { useCategoriesStore } from "@/store/Categories"
+import { useCitiesStore } from "@/store/Cities"
 
 const props = defineProps({
   isEditOpen: {
@@ -18,8 +18,8 @@ const emit = defineEmits([
   'update:isEditOpen',
 ])
 
-import { useSettingsStore } from "@/store/Settings";
-import { useI18n } from "vue-i18n";
+import { useSettingsStore } from "@/store/Settings"
+import { useI18n } from "vue-i18n"
 
 const { t } = useI18n()
 const citiesListStore = useCitiesStore()
@@ -39,9 +39,7 @@ onMounted(() => {
 })
 
 onUpdated(() => {
-  console.log(
-    props.subCategory,
-  )
+
   categoryData.id = props.subCategory.id
   categoryData.type_ar = props.subCategory.type_ar
   categoryData.type_en = props.subCategory.type_en

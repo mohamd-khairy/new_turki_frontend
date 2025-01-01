@@ -1,69 +1,170 @@
 <template>
   <VCard :loading="cashierStore.isLoading">
     <VCardTitle class="d-flex align-center">
-      <VIcon icon="solar:delivery-broken" size="24" color="primary" />
+      <VIcon
+        icon="solar:delivery-broken"
+        size="24"
+        color="primary"
+      />
       <span class="mx-1">{{ t('Orders') }}</span>
     </VCardTitle>
-    <EditCashierStatusDialog v-if="isEditOpen" v-model:is-edit-open="isEditOpen" :item="selectedOrder" :order-statuses="orderStatuses" @refreshTable="getOrders" />
+    <EditCashierStatusDialog
+      v-if="isEditOpen"
+      v-model:is-edit-open="isEditOpen"
+      :item="selectedOrder"
+      :order-statuses="orderStatuses"
+      @refreshTable="getOrders"
+    />
     <div class="">
-      <VTable height="600px" fixed-header class="text-no-wrap product-list-table text-center">
+      <VTable
+        height="600px"
+        fixed-header
+        class="text-no-wrap product-list-table text-center"
+      >
         <thead>
           <tr>
-            <th scope="col" class="font-weight-semibold">
+            <th
+              scope="col"
+              class="font-weight-semibold"
+            >
               {{ t('forms.actions') }}
             </th>
-            <th scope="col" class="font-weight-semibold">
+            <th
+              scope="col"
+              class="font-weight-semibold"
+            >
               {{ t('ref_no') }}
             </th>
-            <th scope="col" class="font-weight-semibold">
+            <th
+              scope="col"
+              class="font-weight-semibold"
+            >
               {{ t('forms.customer_name') }}
             </th>
-            <th scope="col" class="font-weight-semibold">
+            <th
+              scope="col"
+              class="font-weight-semibold"
+            >
               {{ t('customer_mobile') }}
             </th>
-            <th scope="col" class="font-weight-semibold">
+            <th
+              scope="col"
+              class="font-weight-semibold"
+            >
               {{ t('forms.order_state_ar') }} <br>
               <span class="text-primary">( {{ t('forms.click_change_status') }} )</span>
             </th>
-            <th scope="col" class="font-weight-semibold">
+            <th
+              scope="col"
+              class="font-weight-semibold"
+            >
               {{ t('forms.order_payment_status') }}
             </th>
 
-            <th scope="col" class="font-weight-semibold">
+            <th
+              scope="col"
+              class="font-weight-semibold"
+            >
               {{ t('forms.payment_type_name') }}
             </th>
-            <th scope="col" class="font-weight-semibold">
+            <th
+              scope="col"
+              class="font-weight-semibold"
+            >
               مسئول المبيعات
             </th>
-            <th scope="col" class="font-weight-semibold">
+            <th
+              scope="col"
+              class="font-weight-semibold"
+            >
               {{ t('forms.delivery_date') }}
             </th>
 
-            <th scope="col" class="font-weight-semibold">
+            <th
+              scope="col"
+              class="font-weight-semibold"
+            >
               {{ t('forms.total_amount_before_discount') }}
             </th>
-            <th scope="col" class="font-weight-semibold">
+            <th
+              scope="col"
+              class="font-weight-semibold"
+            >
               {{ t('forms.total_amount_after_discount') }}
             </th>
           </tr>
         </thead>
         <tbody v-if="cashierStore.isLoading">
-          <tr v-for="tableRow in 9" :key="tableRow">
-            <td v-for="tableTD in 15" :key="tableTD">
+          <tr
+            v-for="tableRow in 9"
+            :key="tableRow"
+          >
+            <td
+              v-for="tableTD in 15"
+              :key="tableTD"
+            >
               <div>
-                <VSkeletonLoader type="text" :height="40" :width="100" />
+                <VSkeletonLoader
+                  type="text"
+                  :height="40"
+                  :width="100"
+                />
               </div>
             </td>
           </tr>
         </tbody>
 
         <tbody v-else>
-          <tr v-for="order in cashierStore.orderList" :key="order.id">
+          <tr
+            v-for="order in cashierStore.orderList"
+            :key="order.id"
+          >
             <td>
               <VTooltip text="تفاصيل الطلب">
                 <template #activator="{ props }">
-                  <VBtn v-bind="props" icon variant="plain" color="default" size="x-small" @click="openDetails(order)">
-                    <VIcon :size="22" icon="tabler-eye" />
+                  <VBtn
+                    v-bind="props"
+                    icon
+                    variant="plain"
+                    color="default"
+                    size="x-small"
+                    @click="openDetails(order)"
+                  >
+                    <VIcon
+                      :size="22"
+                      icon="tabler-eye"
+                    />
+                  </VBtn>
+                </template>
+              </VTooltip>
+              <VTooltip text="ارجاع الطلب">
+                <template #activator="{ props }">
+                  <VBtn
+                    v-bind="props"
+                    icon
+                    variant="plain"
+                    color="default"
+                    size="x-small"
+                    @click="openRefundDetails(order)"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      width="24"
+                      height="24"
+                      stroke-width="2"
+                    >
+                      <path d="M12 19h-6a3 3 0 0 1 -3 -3v-8a3 3 0 0 1 3 -3h12a3 3 0 0 1 3 3v4.5" />
+                      <path d="M3 10h18" />
+                      <path d="M7 15h.01" />
+                      <path d="M11 15h2" />
+                      <path d="M16 19h6" />
+                      <path d="M19 16l-3 3l3 3" />
+                    </svg>
                   </VBtn>
                 </template>
               </VTooltip>
@@ -83,14 +184,26 @@
                 order.order_state_ar }}
             </td>
             <td>
-              <VChip v-if="order.paid == 1" style="cursor: pointer;" class="text-success">
+              <VChip
+                v-if="order.paid == 1"
+                style="cursor: pointer;"
+                class="text-success"
+              >
                 مدفوع
               </VChip>
 
-              <VChip v-else-if="(order.wallet_amount_used > 0 && order.remain_amount > 0)" style="cursor: pointer;" class="text-warning">
+              <VChip
+                v-else-if="(order.wallet_amount_used > 0 && order.remain_amount > 0)"
+                style="cursor: pointer;"
+                class="text-warning"
+              >
                 مدفوع جزئياً
               </VChip>
-              <VChip v-else-if="order.paid == 0" style="cursor: pointer;" class="text-error">
+              <VChip
+                v-else-if="order.paid == 0"
+                style="cursor: pointer;"
+                class="text-error"
+              >
                 غير مدفوع
               </VChip>
             </td>
@@ -126,7 +239,10 @@
         </tbody>
         <tfoot v-show="!cashierStore.isLoading && cashierStore.orderList.length == 0">
           <tr>
-            <td colspan="8" class="text-center text-body-1">
+            <td
+              colspan="8"
+              class="text-center text-body-1"
+            >
               لا يوجد بيانات
             </td>
           </tr>
@@ -137,7 +253,12 @@
       <VCardText class="d-flex align-center flex-wrap justify-space-between gap-4 py-3">
         <span class="text-sm text-disabled">{{ paginationData }}</span>
 
-        <VPagination v-model="currentPage" size="small" :total-visible="5" :length="cashierStore.orderListPaginated?.total" />
+        <VPagination
+          v-model="currentPage"
+          size="small"
+          :total-visible="5"
+          :length="cashierStore.orderListPaginated?.total"
+        />
       </VCardText>
     </div>
   </VCard>
@@ -202,6 +323,9 @@ const openDetails = order => {
   router.push(`/cashier/order-details/${order.ref_no}`)
 }
 
+const openRefundDetails = order => {
+  router.push(`/cashier/order-refund/${order.ref_no}`)
+}
 
 onMounted(async () => {
   ordersListStore.fetchOrderStatus().then(response => {

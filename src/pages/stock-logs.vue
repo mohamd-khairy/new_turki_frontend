@@ -1,9 +1,9 @@
 <script setup>
-import { useProductsStore } from "@/store/Products";
-import { useSettingsStore } from "@/store/Settings";
+import { useProductsStore } from "@/store/Products"
+import { useSettingsStore } from "@/store/Settings"
 
-import moment from "moment";
-import { useI18n } from "vue-i18n";
+import moment from "moment"
+import { useI18n } from "vue-i18n"
 
 const { t } = useI18n()
 
@@ -33,7 +33,6 @@ const filters = reactive({
 })
 
 const searchProducts = e => {
-  console.log('here')
 
   clearTimeout(_timerProductsId.value)
   _timerProductsId.value = setTimeout(() => {

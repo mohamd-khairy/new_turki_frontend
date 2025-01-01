@@ -181,7 +181,6 @@ const onFormSubmit = async () => {
 }
 
 const getProductData = ev => {
-  console.log({ ev })
   isQuantityOpen.value = true
   selectedProduct.value = ev
 
@@ -189,7 +188,6 @@ const getProductData = ev => {
   let indexToRemove = -1
 
   itemData.products.some((obj, index) => {
-    console.log({ obj })
     if (obj.product_id === targetId) {
       indexToRemove = index
       savedProduct.quantity = obj.quantity

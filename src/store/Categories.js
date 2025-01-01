@@ -61,7 +61,6 @@ export const useCategoriesStore = defineStore('CategoriesStore', {
     editSubCategory(data) {
       const formData = new FormData()
 
-      console.log("Sub => ", data)
 
       let cty_ids = " "
       Object.values(data.city_ids).map(ctid => {
