@@ -82,13 +82,14 @@
                       :disabled="isLoading"
                     />
 
-                    <div class="icon">
+                    <!--
+                      <div class="icon">
                       <VIcon
-                        icon="solar:city-broken"
-                        color="primary"
+                      icon="solar:city-broken"
+                      color="primary"
                       />
-                    </div>
-                    <VSelect
+                      </div>
+                      <VSelect
                       v-model="filters.city_ids"
                       :items="cities"
                       :label="t('forms.cities')"
@@ -96,7 +97,8 @@
                       item-value="id"
                       multiple
                       :disabled="isLoading"
-                    />
+                      />
+                    -->
                   </VCol>
                 </VRow>
               </VCol>
