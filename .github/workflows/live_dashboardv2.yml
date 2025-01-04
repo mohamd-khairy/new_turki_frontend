@@ -3,7 +3,8 @@ name: Deploy Build Folder to Server
 on:
   push:
     branches:
-      - dev-working
+      # - dev-working
+      - live
 
 jobs:
   web-deploy:
