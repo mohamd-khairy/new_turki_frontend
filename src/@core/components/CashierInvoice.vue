@@ -1,97 +1,74 @@
 <template>
-  <div
-    id="invoice"
-    class="text-center invoice hide-on-screen"
-  >
+  <div id="invoice" class="text-center invoice hide-on-screen">
     <div class="text-center">
-      <img
-        src="@/assets/images/logo.png"
-        alt="turki"
-      >
+      <img src="@/assets/images/logo.png" alt="turki">
       <p class="">
         الرياض
       </p>
     </div>
+    <div class="table">
+      <p class="text-center">
+        =========================================================
+      </p>
+    </div>
     <p class="text-center">
-      =========================================================
+      الفاتورة الضريبة المبسطة
     </p>
-    <p>الفاتورة الضريبة المبسطة</p>
     <h4 class="d-flex align-center justify-center gap-3 mb-3 text-base">
-      <span>رقم السجل الضريبي: </span>
-      <span>
+      <div>رقم السجل الضريبي: </div>
+      <div>
         {{ ConvertToArabicNumbers(310841577800003) }}
-      </span>
+      </div>
     </h4>
-    <!--
-      <h4 class="d-flex flex-col align-center justify-center gap-3 mb-3 text-base">
-      رقم الفاتوره: {{ ConvertToArabicNumbers(cashierStore.orderInfo.order?.paidpayment?.ref_no) }}
-      </h4>
-    -->
-
-    <h3> رقم الطلب: {{ ConvertToArabicNumbers(cashierStore.orderInfo.order?.ref_no) }}</h3>
-
-    <p
-      v-if="!isVisitor"
-      class="text-center"
-    >
-      =========================================================
-    </p>
-    <p
-      v-if="!isVisitor"
-      class="d-flex  justify-space-between w-100"
-    >
+    <h4 class="d-flex align-center justify-center gap-3 mb-3 text-base">
+      <div>رقم الطلب:</div>
+      <div>
+        {{ ConvertToArabicNumbers(cashierStore.orderInfo.order?.ref_no) }}
+      </div>
+    </h4>
+    <div v-if="!isVisitor" class="table">
+      <p class="text-center">
+        =========================================================
+      </p>
+    </div>
+    <p v-if="!isVisitor" class="d-flex  justify-space-between w-100">
       <span>اسم العميل:</span>
       <span>{{ cashierStore.orderInfo.order?.customer?.name }}</span>
     </p>
-    <p
-      v-if="!isVisitor"
-      class="d-flex  justify-space-between w-100"
-    >
+    <p v-if="!isVisitor" class="d-flex  justify-space-between w-100">
       <span>رقم الجوال:</span>
       <span dir="ltr">{{ cashierStore.orderInfo.order?.customer?.mobile }}</span>
     </p>
 
-    <p
-      v-if="(cashierStore.orderInfo.order?.selected_address || cashierStore.orderInfo.order?.customer?.default_addresses) && orderDetails?.order?.customer.mobile != '+9660123456789'"
-      class="d-flex  justify-space-between w-100"
-    >
+    <p v-if="(cashierStore.orderInfo.order?.selected_address || cashierStore.orderInfo.order?.customer?.default_addresses) && orderDetails?.order?.customer.mobile != '+9660123456789'" class="d-flex  justify-space-between w-100">
       <span>المدينة:</span>
       <span>{{ cashierStore.orderInfo.order.selected_address?.city?.name_ar ??
         cashierStore.orderInfo.order.customer?.default_addresses?.city?.name_ar }}</span>
     </p>
-    <p
-      v-if="(cashierStore.orderInfo.order?.selected_address || cashierStore.orderInfo.order?.customer?.default_addresses) && orderDetails?.order?.customer.mobile != '+9660123456789'"
-      class="d-flex  justify-space-between w-100"
-    >
+    <p v-if="(cashierStore.orderInfo.order?.selected_address || cashierStore.orderInfo.order?.customer?.default_addresses) && orderDetails?.order?.customer.mobile != '+9660123456789'" class="d-flex  justify-space-between w-100">
       <span>العنوان:</span>
       <span>{{ cashierStore.orderInfo.order.selected_address?.address ??
         cashierStore.orderInfo.order.customer?.default_addresses?.address }}</span>
     </p>
 
-    <p
-      v-if="cashierStore.orderInfo.order?.delivery_date"
-      class="text-center"
-    >
-      =========================================================
-    </p>
-    <p
-      v-if="cashierStore.orderInfo.order?.delivery_date"
-      class="d-flex  justify-space-between w-100"
-    >
+    <div v-if="cashierStore.orderInfo.order?.delivery_date" class="table">
+      <p class="text-center">
+        =========================================================
+      </p>
+    </div>
+    <p v-if="cashierStore.orderInfo.order?.delivery_date" class="d-flex  justify-space-between w-100">
       <span> تاريخ التسليم:</span>
       <span>{{ cashierStore.orderInfo.order?.delivery_date }}</span>
     </p>
-    <p
-      v-if="cashierStore.orderInfo.order?.delivery_period?.name_ar"
-      class="d-flex  justify-space-between w-100"
-    >
+    <p v-if="cashierStore.orderInfo.order?.delivery_period?.name_ar" class="d-flex  justify-space-between w-100">
       <span> وقت التسليم:</span>
       <span dir="ltr">{{ cashierStore.orderInfo.order?.delivery_period?.name_ar }}</span>
     </p>
-
-    <p class="text-center">
-      =========================================================
-    </p>
+    <div class="table">
+      <p class="text-center">
+        =========================================================
+      </p>
+    </div>
     <div class="table">
       <div class="head">
         <div class="cell text-center">
@@ -104,22 +81,17 @@
           السعر
         </div>
       </div>
-      <p class="text-center">
-        =========================================================
-      </p>
-      <div
-        v-for="product in cashierStore.orderInfo.products"
-        :key="product.id"
-        class="body"
-      >
+      <div class="table">
+        <p class="text-center">
+          =========================================================
+        </p>
+      </div>
+      <div v-for="product in cashierStore.orderInfo.products" :key="product.id" class="body">
         <div class="item nowraping">
           <div class="cell text-center">
             {{ product.quantity }}
             <br>
-            <VChip
-              v-if="product.is_refund"
-              class="text-error"
-            >
+            <VChip v-if="product.is_refund" class="text-error">
               مرتجع
             </VChip>
           </div>
@@ -154,12 +126,14 @@
           </div>
         </div>
       </div>
-      <p class="text-center">
-        =========================================================
-      </p>
+      <div class="table">
+        <p class="text-center">
+          =========================================================
+        </p>
+      </div>
       <div class="head">
         <div class="cell description">
-          <p>المجموع الفرعي</p>
+          المجموع الفرعي
         </div>
         <div class="cell price">
           {{ cashierStore.orderInfo.order?.total_amount_after_tax }} ريال
@@ -167,51 +141,54 @@
       </div>
       <div class="head">
         <div class="cell description">
-          <p>الضريبة 15%</p>
+          الضريبة 15%
         </div>
         <div class="cell price">
           {{ cashierStore.orderInfo.order?.tax_fees }} ريال
         </div>
       </div>
+      <div class="table">
+        <p class="text-center">
+          =========================================================
+        </p>
+      </div>
+    </div>
+
+    <div class="d-flex bold justify-space-between w-100">
+      <div>الاجمالي:</div>
+      <div>{{ cashierStore.orderInfo.order?.total_amount }} ريال</div>
+    </div>
+    <p class="text-center">
+      المجموع يشمل ضريبة القيمة المضافة
+    </p>
+    <div class="table">
       <p class="text-center">
         =========================================================
       </p>
     </div>
-
-    <p class="d-flex bold justify-space-between w-100">
-      <span>الاجمالي:</span>
-      <span>{{ cashierStore.orderInfo.order?.total_amount }} ريال</span>
-    </p>
-    <p>المجموع يشمل ضريبة القيمة المضافة</p>
-    <p class="text-center">
-      =========================================================
-    </p>
     <p class="d-flex bold justify-space-between w-100">
       <span>طريقة الدفع</span>
       <span>{{ cashierStore.orderInfo.order?.payment_type?.name_ar }}</span>
     </p>
-    <p
-      class="text-center"
-    >
-      =========================================================
-    </p>
-    <p
-      class="d-flex bold justify-space-between w-100"
-    >
+
+    <div class="table">
+      <p class="text-center">
+        =========================================================
+      </p>
+    </div>
+    <p class="d-flex bold justify-space-between w-100">
       <span> الملاحظات: </span>
       <span>{{ cashierStore.orderInfo.order?.comment ?? ' لايوجد ' }}</span>
     </p>
-    <p class="text-center">
-      =========================================================
-    </p>
+
+    <div class="table">
+      <p class="text-center">
+        =========================================================
+      </p>
+    </div>
     <br>
-    <div class="nowraping">
-      <QrcodeVue
-        :value="cashierStore.orderInfo?.order?.qr_string"
-        :size="170"
-        level="H"
-        render-as="svg"
-      />
+    <div class="nowraping text-center">
+      <QrcodeVue :value="cashierStore.orderInfo?.order?.qr_string" :size="170" level="H" render-as="svg" />
     </div>
   </div>
 </template>

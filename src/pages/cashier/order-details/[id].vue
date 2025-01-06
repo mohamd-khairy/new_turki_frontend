@@ -379,8 +379,96 @@ function printContent(el) {
       <head>
         <title>Print</title>
         <style>
-          /* Add any custom styles here if needed */
-          body { margin: 0; padding: 20px; }
+          @media print {
+            * { font-family: 'Cairo', sans-serif; margin-bottom: 0 }
+            @page { size: 80mm 200mm;, scale: 2}
+            .hide-on-screen { display: none; }
+            .bold { font-weight: bold; }
+            img { max-inline-size: 100px;}
+            .d-flex { display: flex; flex-direction: row; justify-content: space-between; }
+            .justify-center { justify-content: center; }
+            .justify-space-between { justify-content: space-between; }
+            .align-center { align-items: center; }
+            .nowraping, .item { page-break-inside: avoid;}
+            body {
+              
+              padding: 20px;
+              direction: rtl;
+              font-size: 18px;
+            }
+
+
+            .text-center { text-align: center; }
+            .invoice {
+                padding: 0;
+                margin: 0;
+                block-size: auto;
+                break-inside: avoid;
+                direction: rtl;
+                font-size: 16px;
+                max-inline-size: 100%;
+                page-break-after: avoid;
+                page-break-inside: avoid;
+              }
+                .item *,
+.head {
+  font-size: 14px;
+}
+
+.nowraping,
+svg,
+p,
+.item {
+  break-inside: avoid;
+  page-break-after: avoid;
+  page-break-inside: avoid;
+}
+
+p {
+  margin-block-end: 0;
+}
+  p.d-felx {
+  justify-content: space-between;
+  inline-size: 100%;
+}
+
+.bold {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.qr {
+  inline-size: 80%;
+  max-block-size: unset;
+  max-inline-size: 200px;
+}
+            .table {
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              inline-size: 100%;
+            }
+            .table .flex-1 {flex: 1;}
+            .table .head, .table .body {
+              display: flex;
+              gap: 1rem;
+              inline-size: 100%;
+            }
+            .table .head .cell, .table .body .cell { min-inline-size: 50px;}
+            .table .head .cell.description, .table .body .cell.description {
+              flex: 1;
+              text-align: start;
+            }
+            .table .head .cell.price, .table .body .cell.price {inline-size: 100px;}
+            .table .head .cell .addons, .table .body .cell .addons { margin-inline-start: 5px;}
+            .table .body {
+              flex-direction: column;
+              gap: 0.5rem;
+            }
+            .table .item {display: flex;}
+            .table .body {margin-block-end: 10px;}
+            
+          }
         </style>
       </head>
       <body>${content}</body>
