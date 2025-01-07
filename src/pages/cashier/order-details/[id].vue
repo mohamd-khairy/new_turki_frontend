@@ -505,23 +505,14 @@ async function printByPrinter(el) {
 
   // Printer IP and port
   const printerIP = "192.168.100.17" // Replace with your printer's IP
-  const ports = [9100, 515, 631, 80] // Common printer ports
+  const port = 9100 // Common printer ports
   // Convert ESC/POS commands to binary data
   const data = new Blob([content], { type: "application/octet-stream" })
 
-  for (const port of ports) {
-    const response = await fetch(`http://${printerIP}:${port}`, {
-      method: "POST",
-      body: data,
-    })
-
-    if (response.ok) {
-      alert(`Print job sent successfully to port ${port}!`)
-      success = true
-      break
-    }
-
-  }
+  const response = await fetch(`http://${printerIP}:${port}`, {
+    method: "POST",
+    body: data,
+  })
 
 }
 
