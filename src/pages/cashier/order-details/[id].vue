@@ -501,18 +501,26 @@ const printInvoiceWithConfig = () => {
 
 async function printByPrinter(el) {
 
-  var content = document.getElementById(el).innerHTML
+  const printData = `
+        \x1B\x40        // Initialize printer
+        \x1B\x61\x01    // Center align
+        Test Receipt\n
+        Thank you for shopping!\n
+        \x1D\x56\x01    // Cut paper
+      `
 
-  // Printer IP and port
-  const printerIP = "192.168.100.17" // Replace with your printer's IP
-  const port = 9100 // Common printer ports
-  // Convert ESC/POS commands to binary data
-  const data = new Blob([content], { type: "application/octet-stream" })
+  // try {
+  const response = await cashierStore.print(printData)
 
-  const response = await fetch(`http://${printerIP}:${port}`, {
-    method: "POST",
-    body: data,
-  })
+
+  console.log(response.data)
+  alert("Print job sent successfully!")
+
+  // } catch (error) {
+  //   console.error("Error sending print job:", error)
+  //   alert("Failed to send print job.")
+  // }
+
 
 }
 
