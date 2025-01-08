@@ -311,6 +311,8 @@
     "is_by_city": "حسب المدينة",
     "is_by_customer": "حسب العملاء",
     "is_by_product": "حسب المنتج",
+    "sizes": "الحجم",
+    "is_by_size": "حسب الحجم",
     "is_by_country": "حسب الدولة",
     "is_by_category": "حسب الفئة",
     "is_by_subcategory": "حسب الفئة الفرعية",

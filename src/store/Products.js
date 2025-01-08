@@ -13,6 +13,9 @@ export const useProductsStore = defineStore('ProductsStore', {
     fetchProduct(id) {
       return axios.get(`products/${id}`)
     },
+    fetchSizes(params) {
+      return axios.get(`product-sizes`, { params })
+    },
 
     addNewProduct(data){
       return axios.post(`orders/add-order-product`, data)

@@ -35,6 +35,7 @@ const employeesListStore = useEmployeesStore()
 const settingsListStore = useSettingsStore()
 
 const products = reactive([])
+const sizes = reactive([])
 const countries = reactive([])
 const cities = reactive([])
 const categories = reactive([])
@@ -59,6 +60,11 @@ onMounted(() => {
   productsListStore.fetchProductsAll({}).then(response => {
     products.value = response.data.data
   })
+
+  productsListStore.fetchSizes({}).then(response => {
+    sizes.value = response.data.data
+  })
+
   employeesListStore.fetchCustomers({ pageSize: -1 }).then(response => {
     customers.value = response.data.data
   })
@@ -69,6 +75,7 @@ const coupon = reactive({
   name: null,
   code: null,
   product_ids: [],
+  size_ids: [],
   discount_amount_percent: 0,
   min_applied_amount: 0,
   max_discount: 0,
@@ -286,6 +293,26 @@ const dialogModelValueUpdate = val => {
                   v-model="coupon.product_ids"
                   :items="products.value"
                   :label="t('forms.products')"
+                  item-title="name_ar"
+                  item-value="id"
+                  multiple
+                  :rules="[requiredValidator]"
+                />
+              </div>
+            </VCol>
+            <VCol
+              cols="12"
+              lg="12"
+            >
+              <VSwitch
+                v-model="coupon.is_by_size"
+                :label="t('forms.is_by_size')"
+              />
+              <div v-if="coupon.is_by_size">
+                <VSelect
+                  v-model="coupon.size_ids"
+                  :items="sizes.value"
+                  :label="t('forms.sizes')"
                   item-title="name_ar"
                   item-value="id"
                   multiple

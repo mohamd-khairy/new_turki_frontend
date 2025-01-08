@@ -37,6 +37,7 @@ const employeesListStore = useEmployeesStore()
 const settingsListStore = useSettingsStore()
 
 const products = reactive([])
+const sizes = reactive([])
 const countries = reactive([])
 const cities = reactive([])
 const categories = reactive([])
@@ -60,6 +61,9 @@ onMounted(() => {
   productsListStore.fetchProductsAll().then(response => {
     products.value = response.data.data
   })
+  productsListStore.fetchSizes().then(response => {
+    sizes.value = response.data.data
+  })
   employeesListStore.fetchCustomers({ pageSize: -1 }).then(response => {
     customers.value = response.data.data.data
   })
@@ -69,12 +73,14 @@ onUpdated(() => {
   couponData.id = props.coupon.id
   couponData.name = props.coupon.name
   couponData.code = props.coupon.code
+  couponData.size_ids = props.coupon.size_ids
   couponData.product_ids = props.coupon.product_ids
   couponData.discount_amount_percent = props.coupon.discount_amount_percent
   couponData.min_applied_amount = props.coupon.min_applied_amount
   couponData.max_discount = props.coupon.max_discount
   couponData.is_for_all = props.coupon.is_for_all == 0 ? false : true
   couponData.is_by_city = props.coupon.is_by_city == 0 ? false : true
+  couponData.is_by_size = props.coupon.is_by_size == 0 ? false : true
   couponData.is_by_product = props.coupon.is_by_product == 0 ? false : true
   couponData.is_by_country = props.coupon.is_by_country == 0 ? false : true
   couponData.is_by_category = props.coupon.is_by_category == 0 ? false : true
@@ -97,6 +103,7 @@ const couponData = reactive({
   id: null,
   name: null,
   code: null,
+  size_ids: [],
   product_ids: [],
   discount_amount_percent: 0,
   min_applied_amount: 0,
@@ -104,6 +111,7 @@ const couponData = reactive({
   is_for_all: 0,
   is_by_city: 0,
   is_by_product: 0,
+  is_by_size: 0,
   is_by_country: 0,
   is_by_category: 0,
   is_by_subcategory: 0,
@@ -329,6 +337,26 @@ const dialogModelValueUpdate = val => {
               lg="12"
             >
               <VSwitch
+                v-model="couponData.is_by_size"
+                :label="t('forms.is_by_size')"
+              />
+              <div v-if="couponData.is_by_size">
+                <VSelect
+                  v-model="couponData.size_ids"
+                  :items="sizes.value"
+                  :label="t('forms.sizes')"
+                  item-title="name_ar"
+                  item-value="id"
+                  multiple
+                  :rules="[requiredValidator]"
+                />
+              </div>
+            </VCol>
+            <VCol
+              cols="12"
+              lg="12"
+            >
+              <VSwitch
                 v-model="couponData.is_by_country"
                 :label="t('forms.is_by_country')"
               />
@@ -421,12 +449,11 @@ const dialogModelValueUpdate = val => {
                 :rules="[requiredValidator]"
                 type="date"
               />
-            </VCol> -->
+            </VCol>
             <div class="v-col-lg-12 v-col-12">
               <div
                 class="v-input v-input--horizontal v-input--center-affix v-input--density-compact v-locale--is-rtl v-input--dirty v-text-field"
               >
-                <!---->
                 <div class="v-input__control">
                   <div
                     class="v-field v-field--active v-field--center-affix v-field--dirty v-field--variant-outlined v-theme--light v-locale--is-rtl"
@@ -443,7 +470,6 @@ const dialogModelValueUpdate = val => {
 
   --v-progress-linear-height: 2px;"
                       >
-                        <!---->
                         <div
                           class="v-progress-linear__background bg-primary"
                           style="width: 100%;"
@@ -451,39 +477,11 @@ const dialogModelValueUpdate = val => {
                         <div class="v-progress-linear__indeterminate">
                           <div class="v-progress-linear__indeterminate long bg-primary" />
                           <div class="v-progress-linear__indeterminate short bg-primary" />
-                        </div><!---->
+                        </div>
                       </div>
-                    </div><!---->
-                    <div
-                      class="v-field__field"
-                      data-no-activator=""
-                    >
-                      <!----><label
-                               class="v-label v-field-label"
-                               for="input-177"
-                             ><!---->تاريخ الانتهاء</label><!---->
-                      <input
-                        id="expire_at"
-                        v-model="couponData.expire_at"
-                        type="datetime-local"
-                        name="expire_at"
-                        class="v-field__input"
-                      ><!---->
-                    </div>
-                    <!----><!---->
-                    <div class="v-field__outline">
-                      <div class="v-field__outline__start" />
-                      <div class="v-field__outline__notch">
-                        <label
-                          class="v-label v-field-label v-field-label--floating"
-                          aria-hidden="true"
-                          for="input-177"
-                        ><!---->  تاريخ الانتهاء</label>
-                      </div>
-                      <div class="v-field__outline__end" /><!---->
                     </div>
                   </div>
-                </div><!----><!---->
+                </div>
               </div>
             </div>
 
