@@ -275,12 +275,11 @@
             </VCol>
           </VRow>
         </div>
-        <div class="buttons d-flex ga-3">
+        <div c|lass="buttons d-flex ga-3">
+          test1
           <AppButton type="primary" title="طباعة" @click="printInvoiceWithConfig" />
           <AppButton type="primary" title="طباعة بموبايل" @click="printContent('invoice')" />
           <AppButton type="primary" title="طباعة علي الطابعة" @click="printByPrinter('invoice')" />
-
-          سشيشس
           <AppButton type="close" title="رجوع" @click="$router.push('/cashier/categories')" />
         </div>
       </div>
@@ -406,7 +405,6 @@ function printContent(el) {
           @page { size: 80mm 200mm; scale: 2;margin: 0;}
           @media print {
           * { font-family: 'Cairo', sans-serif; margin-bottom: 0 }
-          @page { size: 80mm 200mm;, scale: 2}
           .hide-on-screen { display: none; }
           .bold { font-weight: bold; }
           img { max-inline-size: 100px;}
