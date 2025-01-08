@@ -263,5 +263,20 @@ export const useCashierStore = defineStore('cashier', {
         return error
       }
     },
+
+    async print(data) {
+
+      try {
+        const response = await axios.post(`/print`,{
+          data: data,
+        })
+
+        return response.data
+      } catch (error) {
+        console.error('Error fetching products:', error)
+
+        return error
+      }
+    },
   },
 })
