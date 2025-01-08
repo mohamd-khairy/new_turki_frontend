@@ -209,7 +209,7 @@
                   <span>
                     {{ ConvertToArabicNumbers(orderDetails?.order?.paidpayment ? orderDetails?.order?.paidpayment.price
                       :
-                    0) }} <small>{{ orderCurrency }}</small>
+                      0) }} <small>{{ orderCurrency }}</small>
                   </span>
                 </VCol>
                 <VCol v-if="orderDetails?.order?.wallet_amount_used > 0" cols="6" class="d-flex align-center gap-3 text-base py-1">
@@ -403,41 +403,37 @@ function printContent(el) {
         <style>
           @page { size: 80mm 200mm; scale: 2;margin: 0;}
           @media print {
-            * { font-family: 'Cairo', sans-serif; margin-bottom: 0 }
-            @page { size: 80mm 200mm;, scale: 2}
-            .hide-on-screen { display: none; }
-            .bold { font-weight: bold; }
-            img { max-inline-size: 100px;}
-            .d-flex { display: flex; flex-direction: row; justify-content: space-between; }
-            .justify-center { justify-content: center; }
-            .justify-space-between { justify-content: space-between; }
-            .align-center { align-items: center; }
-            .nowraping, .item { page-break-inside: avoid;}
-            body {
-              
-              padding: 20px;
-              direction: rtl;
-              font-size: 18px;
-            }
-
-
-            .text-center { text-align: center; }
-            .invoice {
-                padding: 0;
-                margin: 0;
-                block-size: auto;
-                break-inside: avoid;
-                direction: rtl;
-                font-size: 16px;
-                max-inline-size: 100%;
-                page-break-after: avoid;
-                page-break-inside: avoid;
-              }
-                .item *,
-.head {
-  font-size: 14px;
-}
-
+          * { font-family: 'Cairo', sans-serif; margin-bottom: 0 }
+          @page { size: 80mm 200mm;, scale: 2}
+          .hide-on-screen { display: none; }
+          .bold { font-weight: bold; }
+          img { max-inline-size: 100px;}
+          .d-flex { display: flex; flex-direction: row; justify-content: space-between; }
+          .justify-center { justify-content: center; }
+          .justify-space-between { justify-content: space-between; }
+          .align-center { align-items: center; }
+          .nowraping, .item { page-break-inside: avoid;}
+          body {
+            padding: 20px;
+            direction: rtl;
+            font-size: 18px;
+          }
+          .text-center { text-align: center; }
+          .invoice {
+            padding: 0;
+            margin: 0;
+            block-size: auto;
+            break-inside: avoid;
+            direction: rtl;
+            font-size: 16px;
+            max-inline-size: 100%;
+            page-break-after: avoid;
+            page-break-inside: avoid;
+          }
+          .item *,
+          .head {
+            font-size: 14px;
+          }
           .nowraping,
           svg,
           p,
@@ -460,37 +456,36 @@ function printContent(el) {
             font-weight: 700;
           }
 
-.qr {
-  inline-size: 80%;
-  max-block-size: unset;
-  max-inline-size: 200px;
-}
-            .table {
-              display: flex;
-              flex-direction: column;
-              align-items: center;
-              inline-size: 100%;
-            }
-            .table .flex-1 {flex: 1;}
-            .table .head, .table .body {
-              display: flex;
-              gap: 1rem;
-              inline-size: 100%;
-            }
-            .table .head .cell, .table .body .cell { min-inline-size: 50px;}
-            .table .head .cell.description, .table .body .cell.description {
-              flex: 1;
-              text-align: start;
-            }
-            .table .head .cell.price, .table .body .cell.price {inline-size: 100px;}
-            .table .head .cell .addons, .table .body .cell .addons { margin-inline-start: 5px;}
-            .table .body {
-              flex-direction: column;
-              gap: 0.5rem;
-            }
-            .table .item {display: flex;}
-            .table .body {margin-block-end: 10px;}
-            
+          .qr {
+            inline-size: 80%;
+            max-block-size: unset;
+            max-inline-size: 200px;
+          }
+          .table {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            inline-size: 100%;
+          }
+          .table .flex-1 {flex: 1;}
+          .table .head, .table .body {
+            display: flex;
+            gap: 1rem;
+            inline-size: 100%;
+          }
+          .table .head .cell, .table .body .cell { min-inline-size: 50px;}
+          .table .head .cell.description, .table .body .cell.description {
+            flex: 1;
+            text-align: start;
+          }
+          .table .head .cell.price, .table .body .cell.price {inline-size: 100px;}
+          .table .head .cell .addons, .table .body .cell .addons { margin-inline-start: 5px;}
+          .table .body {
+            flex-direction: column;
+            gap: 0.5rem;
+          }
+          .table .item {display: flex;}
+          .table .body {margin-block-end: 10px;}
           }
         </style>
       </head>
