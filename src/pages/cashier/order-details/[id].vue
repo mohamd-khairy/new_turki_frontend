@@ -399,7 +399,7 @@ function printContent(el) {
     <html>
       <head>
         <title>Print</title>
-        <meta name="viewport" content="width=80mm, initial-scale=1">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <style>
           @page { size: 80mm 200mm; scale: 2;margin: 0;}
           @media print {
@@ -414,21 +414,17 @@ function printContent(el) {
           .align-center { align-items: center; }
           .nowraping, .item { page-break-inside: avoid;}
           body {
-            padding: 20px;
-            direction: rtl;
-            font-size: 18px;
+            margin: 0;
+            padding: 10px; 
+            font-family: 'Cairo', sans-serif;
+            direction: rtl; 
+            font-size: 14px;
           }
           .text-center { text-align: center; }
           .invoice {
-            padding: 0;
-            margin: 0;
-            block-size: auto;
-            break-inside: avoid;
-            direction: rtl;
-            font-size: 16px;
-            max-inline-size: 100%;
-            page-break-after: avoid;
             page-break-inside: avoid;
+            page-break-after: auto;
+            max-width: 100%;
           }
           .item *,
           .head {
@@ -442,7 +438,6 @@ function printContent(el) {
             page-break-after: avoid;
             page-break-inside: avoid;
           }
-
           p {
             margin-block-end: 0;
           }
