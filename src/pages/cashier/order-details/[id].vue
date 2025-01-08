@@ -279,7 +279,6 @@
           <AppButton type="primary" title="طباعة" @click="printInvoiceWithConfig" />
           <AppButton type="primary" title="طباعة بموبايل" @click="printContent('invoice')" />
           <AppButton type="primary" title="طباعة علي الطابعة" @click="printByPrinter('invoice')" />
-          s
           <AppButton type="close" title="رجوع" @click="$router.push('/cashier/categories')" />
         </div>
       </div>
