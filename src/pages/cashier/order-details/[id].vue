@@ -406,6 +406,10 @@ const printContent = el => {
         direction: rtl;
         padding: 0 1rem;
         }
+        .logo {
+          -webkit-filter: grayscale(100%);
+          filter: grayscale(100%);
+        }
       }
     </style>
   </head>

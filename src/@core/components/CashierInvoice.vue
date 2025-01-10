@@ -1,7 +1,7 @@
 <template>
   <div id="invoice" class="text-center invoice hide-on-screen">
     <div class="text-center">
-      <img src="@/assets/images/logo.png" alt="turki">
+      <img class="logo" src="@/assets/images/logo.png" alt="turki">
       <p class="">
         الرياض
       </p>
