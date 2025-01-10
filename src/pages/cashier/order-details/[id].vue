@@ -276,7 +276,6 @@
           </VRow>
         </div>
         <div class="buttons d-flex ga-3">
-          test1
           <AppButton type="primary" title="طباعة" @click="printInvoiceWithConfig" />
           <AppButton type="primary" title="طباعة بموبايل" @click="printContent('invoice')" />
           <AppButton type="primary" title="طباعة علي الطابعة" @click="printByPrinter('invoice')" />
@@ -401,6 +400,13 @@ const printContent = el => {
 <html>
   <head>
     ${stylesHtml}
+    <style>
+      @media print {
+        body {
+        padding: 0 1rem;
+        }
+      }
+    </style>
   </head>
   <body>
     ${prtHtml}
