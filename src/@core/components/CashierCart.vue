@@ -1,35 +1,79 @@
 <template>
   <div class="screen-layout">
-    <VCard v-if="!isPayment" class="mb-5 pa-5">
+    <VCard
+      v-if="!isPayment"
+      class="mb-5 pa-5"
+    >
       <VRow justify="space-between">
         <VCol cols="12">
-          <VTextField ref="searchInput" v-model="scanValue" label="مسح الكود" class="search-wrap" @blur="focusInput" />
+          <VTextField
+            ref="searchInput"
+            v-model="scanValue"
+            label="مسح الكود"
+            class="search-wrap"
+            :readonly="isReadonly"
+            @click="enableKeyboard"
+          />
         </VCol>
       </VRow>
     </VCard>
 
-    <VCard class="cart-wrap" :class="isPayment ? 'screen-layout' : ''">
+    <VCard
+      class="cart-wrap"
+      :class="isPayment ? 'screen-layout' : ''"
+    >
       <div class="cart">
         <div class="cart__items">
-          <div v-for="(item, index) in cashierStore.cart" :key="item.id" class="cart__item">
+          <div
+            v-for="(item, index) in cashierStore.cart"
+            :key="item.id"
+            class="cart__item"
+          >
             <div class="info">
               {{ parseFloat(item.quantity).toFixed(2) }} x {{ item.name }}
             </div>
             <div class="d-flex gap-4 align-center">
               <span class="nowrap">{{ item.total_price.toFixed(2) }} ريال</span>
-              <VBtn icon variant="text" color="default" class="ms-n3" size="small" @click="cashierStore.removeItem(index)">
-                <VIcon icon="tabler-x" size="20" />
+              <VBtn
+                icon
+                variant="text"
+                color="default"
+                class="ms-n3"
+                size="small"
+                @click="cashierStore.removeItem(index)"
+              >
+                <VIcon
+                  icon="tabler-x"
+                  size="20"
+                />
               </VBtn>
             </div>
           </div>
         </div>
         <div class="cart__result">
-          <div v-if="!cashierStore.isCodeSubmitted && !isPayment" class="discount">
-            <VTextField ref="promoCode" v-model="discountCode.discount_code" label="كود الخصم" @mouseenter="promoCodeFocus" @mouseleave="isPromoCodeFocused = false" />
-            <AppButton type="primary" :is-loading="isDiscountSubmit" title="تطبيق" @click="makeDiscount" />
+          <div
+            v-if="!cashierStore.isCodeSubmitted && !isPayment"
+            class="discount"
+          >
+            <VTextField
+              ref="promoCode"
+              v-model="discountCode.discount_code"
+              label="كود الخصم"
+              @mouseenter="promoCodeFocus"
+              @mouseleave="isPromoCodeFocused = false"
+            />
+            <AppButton
+              type="primary"
+              :is-loading="isDiscountSubmit"
+              title="تطبيق"
+              @click="makeDiscount"
+            />
           </div>
 
-          <div v-if="cashierStore.isCodeSubmitted" class="discount">
+          <div
+            v-if="cashierStore.isCodeSubmitted"
+            class="discount"
+          >
             <div class="discount__info">
               <div class="">
                 <span>السعر قبل الخصم</span>
@@ -43,28 +87,66 @@
             <!-- <AppButton type="primary icon-only" title="x" @click="removeDiscount" /> -->
           </div>
 
-          <button v-if="cashierStore.cart.length != 0 && !isPayment" class="total" @click="addCustomerInfo">
+          <button
+            v-if="cashierStore.cart.length != 0 && !isPayment"
+            class="total"
+            @click="addCustomerInfo"
+          >
             <p>الاجمالي</p>
             <p>{{ totalPriceAfterDiscount.toFixed(2) }} ريال</p>
           </button>
 
-          <div v-else class="total">
+          <div
+            v-else
+            class="total"
+          >
             <p>الاجمالي</p>
             <p>{{ totalPriceAfterDiscount.toFixed(2) }} ريال</p>
           </div>
         </div>
       </div>
-      <Modal v-model="showCustomerInfoModal" width="600px" :custom-action="true">
+      <Modal
+        v-model="showCustomerInfoModal"
+        width="600px"
+        :custom-action="true"
+      >
         <template #content>
           <VRow>
-            <VCol cols="12" md="12">
-              <VTextField v-model="client.customer_mobile" dirty name="mobile" type="number" suffix="+966" label="رقم الجوال" placeholder="202 555 0111" class="mb-5" />
+            <VCol
+              cols="12"
+              md="12"
+            >
+              <VTextField
+                v-model="client.customer_mobile"
+                dirty
+                name="mobile"
+                type="number"
+                suffix="+966"
+                label="رقم الجوال"
+                placeholder="202 555 0111"
+                class="mb-5"
+              />
             </VCol>
           </VRow>
           <div class="buttons">
-            <AppButton type="primary" title="أضافة" :disabled="preventMakeOrder" :is-loading="isLoading" @click="makeOrder" />
-            <AppButton type="close" title="الغاء" @click="resetModal" />
-            <AppButton type="primary" title="زائر" :is-loading="isCustomerLoading" @click="makeOrderAsCustomer" />
+            <AppButton
+              type="primary"
+              title="أضافة"
+              :disabled="preventMakeOrder"
+              :is-loading="isLoading"
+              @click="makeOrder"
+            />
+            <AppButton
+              type="close"
+              title="الغاء"
+              @click="resetModal"
+            />
+            <AppButton
+              type="primary"
+              title="زائر"
+              :is-loading="isCustomerLoading"
+              @click="makeOrderAsCustomer"
+            />
           </div>
         </template>
       </Modal>
@@ -73,9 +155,9 @@
 </template>
 
 <script setup>
-import { useCashierStore } from '@/store/Cashier';
-import { computed, onMounted, reactive, ref, watch } from 'vue';
-import { useRouter } from 'vue-router';
+import { useCashierStore } from '@/store/Cashier'
+import { computed, onMounted, reactive, ref, watch } from 'vue'
+import { useRouter } from 'vue-router'
 
 const props = defineProps({
   isPayment: {
@@ -88,6 +170,7 @@ const scanValue = ref('')
 const searchInput = ref(null)
 const promoCode = ref(null)
 const isPromoCodeFocused = ref(false)
+const isReadonly = ref(true)// Control readonly state
 
 
 watch(() => scanValue.value, () => {
@@ -96,6 +179,11 @@ watch(() => scanValue.value, () => {
     scanValue.value = ''
   }
 })
+
+
+const enableKeyboard = () => {
+  isReadonly.value = false // Remove readonly to allow keyboard interaction
+}
 
 
 const router = useRouter()
@@ -302,7 +390,7 @@ onMounted(() => {
   &__info {
     flex: 1;
 
-    > div {
+    >div {
       display: flex;
       justify-content: space-between;
       color: rgba(var(--v-theme-primary), 1);
