@@ -407,7 +407,7 @@
           <AppButton
             type="primary"
             title="طباعة بموبايل"
-            @click="printContent('invoice')"
+            @click="printInvoiceForThermalPrinter"
           />
           <AppButton
             type="primary"
@@ -453,6 +453,49 @@ const ConvertToArabicNumbers = num => {
 }
 
 // const printOrder = () => window.print()
+
+const printInvoiceForThermalPrinter = () => {
+  const element = document.getElementById('invoice') // Get the HTML element
+
+  element.classList.remove('hide-on-screen') // Temporarily show hidden content
+
+  // Calculate the content height dynamically
+  const elementWidth = 80 // Width in mm (for 80mm printer)
+  const contentHeight = element.offsetHeight * (25.4 / 96) // Convert px to mm (1 inch = 25.4mm, screen DPI = 96)
+
+  html2pdf()
+    .from(element)
+    .set({
+      margin: 5, // Adjust margins as needed
+      filename: 'OrderDetails.pdf', // Filename if downloaded
+      html2canvas: {
+        scale: 2, // High-quality rendering
+        useCORS: true, // Allow cross-origin resources
+      },
+      jsPDF: {
+        unit: 'mm',
+        format: [elementWidth, contentHeight], // Set custom paper size for the thermal printer
+        orientation: 'portrait', // Thermal printers generally use portrait orientation
+      },
+    })
+    .output('blob') // Generate a Blob object for the PDF
+    .then(pdfBlob => {
+      // Create a Blob URL for the PDF
+      const pdfBlobUrl = URL.createObjectURL(pdfBlob)
+
+      // Open the PDF in a new browser tab
+      window.open(pdfBlobUrl, '_blank')
+
+      // Optional: Clean up the Blob URL after use
+      setTimeout(() => {
+        URL.revokeObjectURL(pdfBlobUrl) // Free up memory
+      }, 60000) // Revoke URL after 60 seconds
+    })
+    .finally(() => {
+      element.classList.add('hide-on-screen') // Re-hide elements
+    })
+}
+
 
 const openPdfInNewTab = () => {
   const element = document.getElementById('invoice') // Get the HTML element
