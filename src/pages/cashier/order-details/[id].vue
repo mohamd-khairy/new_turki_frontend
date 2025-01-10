@@ -403,6 +403,7 @@ const printContent = el => {
     <style>
       @media print {
         body {
+        direction: rtl;
         padding: 0 1rem;
         }
       }
