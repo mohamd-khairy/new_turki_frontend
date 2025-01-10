@@ -417,6 +417,11 @@ const printContent = el => {
   WinPrint.document.close()
   WinPrint.focus()
   WinPrint.print()
+  WinPrint.addEventListener('afterprint', function () {
+    if (WinPrint && WinPrint.close) {
+      WinPrint.close()
+    }
+  })
 
   // WinPrint.close()
 }
