@@ -2,76 +2,134 @@
   <div>
     <CashierInvoice ref="orderContainerRef" />
     <div id="orderDetials">
-      <div v-if="isLoading" class="loader_wrap">
-        <img src="@/assets/images/logo.png" alt="turki">
+      <div
+        v-if="isLoading"
+        class="loader_wrap"
+      >
+        <img
+          src="@/assets/images/logo.png"
+          alt="turki"
+        >
         <p class="text-2xl">
           جاري جلب بيانات الفاتورة ...
         </p>
       </div>
       <div v-else>
         <div class="card-wrapper invoice-container">
-          <VRow justify="space-between hidden" class="mb-2 pa-0">
-            <VCol cols="12" class="py-0">
+          <VRow
+            justify="space-between hidden"
+            class="mb-2 pa-0"
+          >
+            <VCol
+              cols="12"
+              class="py-0"
+            >
               <div class="d-flex justify-space-between align-center">
                 <div>
-                  <h2 v-if="isUAEOrder" class="mb-2" style="font-size: 1.4rem;">
+                  <h2
+                    v-if="isUAEOrder"
+                    class="mb-2"
+                    style="font-size: 1.4rem;"
+                  >
                     شركة خيرات المرعى لتجارة اللحوم الطازجة ش.ذ.م.م
                   </h2>
-                  <h2 v-else class="mb-2" style="font-size: 1.4rem;">
+                  <h2
+                    v-else
+                    class="mb-2"
+                    style="font-size: 1.4rem;"
+                  >
                     شركة المرعى للتجارة (تركي للذبائح)
                   </h2>
-                  <h4 v-if="isUAEOrder" class="d-flex align-center gap-3 mb-3 text-base" />
-                  <h4 v-else class="d-flex align-center gap-3 mb-3 text-base">
+                  <h4
+                    v-if="isUAEOrder"
+                    class="d-flex align-center gap-3 mb-3 text-base"
+                  />
+                  <h4
+                    v-else
+                    class="d-flex align-center gap-3 mb-3 text-base"
+                  >
                     <span>رقم السجل الضريبي: </span>
                     <span>
                       {{ ConvertToArabicNumbers(310841577800003) }}
                     </span>
                   </h4>
-                  <h4 v-if="isUAEOrder" class="d-flex align-center gap-3 mb-2 text-base" />
-                  <h4 v-else class="d-flex align-center gap-3 mb-2 text-base">
+                  <h4
+                    v-if="isUAEOrder"
+                    class="d-flex align-center gap-3 mb-2 text-base"
+                  />
+                  <h4
+                    v-else
+                    class="d-flex align-center gap-3 mb-2 text-base"
+                  >
                     <span>سجل تجاري: </span>
                     <span>
                       {{ ConvertToArabicNumbers(1010476540) }}
                     </span>
                   </h4>
                 </div>
-                <img src="/src/assets/images/logo.png" alt="تركي للذبائح" width="200" class="turki_logo">
+                <img
+                  src="/src/assets/images/logo.png"
+                  alt="تركي للذبائح"
+                  width="200"
+                  class="turki_logo"
+                >
               </div>
             </VCol>
           </VRow>
-          <VRow justify="space-between" class="mb-3">
+          <VRow
+            justify="space-between"
+            class="mb-3"
+          >
             <VCol cols="12">
-              <h3 class="pa-2 mb-4" style="background-color: #ddd;font-size: 0.8rem;">
+              <h3
+                class="pa-2 mb-4"
+                style="background-color: #ddd;font-size: 0.8rem;"
+              >
                 بيانات الفاتورة
               </h3>
               <VRow>
-                <VCol cols="6" class="d-flex align-center gap-3 text-base py-1">
+                <VCol
+                  cols="6"
+                  class="d-flex align-center gap-3 text-base py-1"
+                >
                   <h4>رقم الفاتورة:</h4>
                   <h2 v-if="orderDetails?.order?.payment">
                     {{ orderDetails?.order?.paidpayment?.ref_no }}
                   </h2>
                   <span v-else>لا يوجد</span>
                 </VCol>
-                <VCol cols="6" class="d-flex align-center gap-3 text-base py-1">
+                <VCol
+                  cols="6"
+                  class="d-flex align-center gap-3 text-base py-1"
+                >
                   <h4>رقم الطلب:</h4>
                   <h2 v-if="orderDetails?.order?.payment">
                     {{ orderDetails?.order?.payment.order_ref_no }}
                   </h2>
                   <span v-else>لا يوجد</span>
                 </VCol>
-                <VCol cols="6" class="d-flex align-center gap-3 text-base py-1">
+                <VCol
+                  cols="6"
+                  class="d-flex align-center gap-3 text-base py-1"
+                >
                   <h4>تاريخ الفاتورة:</h4>
                   <h4>
                     {{ formatCreatedDate(orderDetails?.order?.created_at) }}
                   </h4>
                 </VCol>
-                <VCol cols="6" class="d-flex align-center gap-3 text-base py-1">
+                <VCol
+                  cols="6"
+                  class="d-flex align-center gap-3 text-base py-1"
+                >
                   <h4>تاريخ التسليم: </h4>
                   <h4>
                     {{ formatCreatedDate(orderDetails?.order?.delivery_date) }}
                   </h4>
                 </VCol>
-                <VCol cols="6" class="d-flex align-center gap-3 text-base py-1">
+                <VCol
+                  cols="6"
+                  class="d-flex align-center gap-3 text-base py-1"
+                >
                   <h4>وقت التسليم: </h4>
                   <h4>
                     {{ orderDetails?.order?.delivery_period ? orderDetails?.order?.delivery_period.name_ar : "لا يوجد"
@@ -80,36 +138,61 @@
                 </VCol>
               </VRow>
             </VCol>
-            <VCol cols="12" class="mb-3">
-              <h3 class="pa-2 mb-4" style="background-color: #ddd;font-size: 0.8rem;">
+            <VCol
+              cols="12"
+              class="mb-3"
+            >
+              <h3
+                class="pa-2 mb-4"
+                style="background-color: #ddd;font-size: 0.8rem;"
+              >
                 بيانات العميل
               </h3>
               <VRow>
-                <VCol v-if="orderDetails?.order?.customer.mobile != '+9660123456789'" cols="6" class="d-flex align-xcenter gap-3 text-base py-1">
+                <VCol
+                  v-if="orderDetails?.order?.customer.mobile != '+9660123456789'"
+                  cols="6"
+                  class="d-flex align-xcenter gap-3 text-base py-1"
+                >
                   <h4>اسم العميل: </h4>
                   <h4>{{ orderDetails?.order?.customer.name }}</h4>
                 </VCol>
-                <VCol v-if="orderDetails?.order?.customer.mobile != '+9660123456789'" cols="6" class="d-flex align-center gap-3 text-base py-1">
+                <VCol
+                  v-if="orderDetails?.order?.customer.mobile != '+9660123456789'"
+                  cols="6"
+                  class="d-flex align-center gap-3 text-base py-1"
+                >
                   <h4>رقم الهاتف:</h4>
                   <h4 dir="ltr">
                     {{ orderDetails?.order?.customer.mobile }}
                   </h4>
                 </VCol>
-                <VCol v-if="(orderDetails?.order?.selected_address || orderDetails?.order?.customer?.default_addresses) && orderDetails?.order?.customer.mobile != '+9660123456789'" cols="6" class="d-flex align-xcenter gap-3 text-base py-1">
+                <VCol
+                  v-if="(orderDetails?.order?.selected_address || orderDetails?.order?.customer?.default_addresses) && orderDetails?.order?.customer.mobile != '+9660123456789'"
+                  cols="6"
+                  class="d-flex align-xcenter gap-3 text-base py-1"
+                >
                   <h4> المدينة: </h4>
                   <h4>
                     {{ orderDetails?.order?.selected_address?.city?.name_ar ??
                       orderDetails?.order?.customer?.default_addresses?.city?.name_ar }}
                   </h4>
                 </VCol>
-                <VCol v-if="(orderDetails?.order?.selected_address || orderDetails?.order?.customer?.default_addresses) && orderDetails?.order?.customer.mobile != '+9660123456789'" cols="6" class="d-flex align-center gap-3 text-base py-1">
+                <VCol
+                  v-if="(orderDetails?.order?.selected_address || orderDetails?.order?.customer?.default_addresses) && orderDetails?.order?.customer.mobile != '+9660123456789'"
+                  cols="6"
+                  class="d-flex align-center gap-3 text-base py-1"
+                >
                   <h4> العنوان:</h4>
                   <h4 dir="ltr">
                     {{ orderDetails?.order?.selected_address?.address ??
                       orderDetails?.order?.customer?.default_addresses?.address }}
                   </h4>
                 </VCol>
-                <VCol cols="6" class="d-flex align-center gap-3 text-base py-1">
+                <VCol
+                  cols="6"
+                  class="d-flex align-center gap-3 text-base py-1"
+                >
                   <h4>طريقة الدفع :</h4>
                   <h4>
                     {{ orderDetails?.order?.payment_type ? orderDetails?.order?.payment_type.name_ar : "لا يوجد" }}
@@ -157,11 +240,17 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="product in orderDetails?.products" :key="product.id">
+                  <tr
+                    v-for="product in orderDetails?.products"
+                    :key="product.id"
+                  >
                     <td>
                       <small>{{ product.product ? product.product.name_ar : "لا يوجد" }}
 
-                        <VChip v-if="product.is_refund" class="text-error">
+                        <VChip
+                          v-if="product.is_refund"
+                          class="text-error"
+                        >
                           مرتجع
                         </VChip>
                       </small>
@@ -199,12 +288,18 @@
                   </tr>
                 </tbody>
               </VTable>
-              <h3 class="d-flex align-center justify-space-between pa-2 mb-3" style="background-color: #ddd;font-size: 0.8rem;">
+              <h3
+                class="d-flex align-center justify-space-between pa-2 mb-3"
+                style="background-color: #ddd;font-size: 0.8rem;"
+              >
                 <span class="text-base">بيانات الدفع</span>
                 <small class="text-base">جميع الأسعار تشمل الضريبة</small>
               </h3>
               <VRow class="mb-4">
-                <VCol cols="6" class="d-flex align-center gap-3 text-base py-1">
+                <VCol
+                  cols="6"
+                  class="d-flex align-center gap-3 text-base py-1"
+                >
                   <span> المبلغ المسدد :</span>
                   <span>
                     {{ ConvertToArabicNumbers(orderDetails?.order?.paidpayment ? orderDetails?.order?.paidpayment.price
@@ -212,7 +307,11 @@
                       0) }} <small>{{ orderCurrency }}</small>
                   </span>
                 </VCol>
-                <VCol v-if="orderDetails?.order?.wallet_amount_used > 0" cols="6" class="d-flex align-center gap-3 text-base py-1">
+                <VCol
+                  v-if="orderDetails?.order?.wallet_amount_used > 0"
+                  cols="6"
+                  class="d-flex align-center gap-3 text-base py-1"
+                >
                   <span> المبلغ المسدد بالمحفظة :</span>
                   <span>
                     {{ ConvertToArabicNumbers(orderDetails?.order?.wallet_amount_used ?
@@ -220,45 +319,66 @@
                   </span>
                 </VCol>
 
-                <VCol cols="6" class="d-flex align-center gap-3 text-base py-1">
+                <VCol
+                  cols="6"
+                  class="d-flex align-center gap-3 text-base py-1"
+                >
                   <span> إجمالي المتبقي : </span>
                   <span>
                     {{ ConvertToArabicNumbers(orderDetails?.order?.remain_amount) }}
                     <small>{{ orderCurrency }}</small>
                   </span>
                 </VCol>
-                <VCol cols="6" class="d-flex align-center gap-3 text-base py-1">
+                <VCol
+                  cols="6"
+                  class="d-flex align-center gap-3 text-base py-1"
+                >
                   <span>الخصم :</span>
                   <span>
                     {{ ConvertToArabicNumbers(orderDetails?.order?.discount_applied) ?? 0 }}
                     <small>{{ orderCurrency }}</small>
                   </span>
                 </VCol>
-                <VCol cols="12" class="d-flex align-center gap-3 text-base py-1">
+                <VCol
+                  cols="12"
+                  class="d-flex align-center gap-3 text-base py-1"
+                >
                   <span> الإجمالي غير شامل الضريبة بعد الخصم : </span>
                   <span>
                     {{ ConvertToArabicNumbers(orderDetails?.order?.total_amount_after_tax) ?? 0 }}
                     <small>{{ orderCurrency }}</small>
                   </span>
                 </VCol>
-                <VCol cols="6" class="d-flex align-center gap-3 text-base py-1">
+                <VCol
+                  cols="6"
+                  class="d-flex align-center gap-3 text-base py-1"
+                >
                   <span>ضريبة القيمة المضافة : </span>
                   <span>
                     {{ ConvertToArabicNumbers(orderDetails?.order?.tax_fees) }}
                     <small>{{ orderCurrency }}</small>
                   </span>
                 </VCol>
-                <VCol cols="6" class="d-flex align-center gap-3 text-base py-1">
+                <VCol
+                  cols="6"
+                  class="d-flex align-center gap-3 text-base py-1"
+                >
                   <span> الإجمالي شامل الضريبة : </span>
                   <span>
                     {{ ConvertToArabicNumbers(Number(orderDetails?.order?.order_subtotal)) }}
                     <small>{{ orderCurrency }}</small>
                   </span>
                 </VCol>
-                <VCol cols="12" class="pt-3">
+                <VCol
+                  cols="12"
+                  class="pt-3"
+                >
                   <hr>
                 </VCol>
-                <VCol cols="12" class="d-flex align-center gap-3 text-base py-1">
+                <VCol
+                  cols="12"
+                  class="d-flex align-center gap-3 text-base py-1"
+                >
                   <span> الإجمالي شامل الضريبة بعد الخصم : </span>
                   <h3>
                     {{ ConvertToArabicNumbers(parseFloat(orderDetails?.order?.final_amount)) ?? 0 }}
@@ -266,7 +386,10 @@
                   </h3>
                 </VCol>
               </VRow>
-              <h3 class="d-flex align-center justify-space-between pa-2 mb-1 text-base" style="background-color: #ddd;">
+              <h3
+                class="d-flex align-center justify-space-between pa-2 mb-1 text-base"
+                style="background-color: #ddd;"
+              >
                 ملاحظات
               </h3>
               <p class="text-base">
@@ -276,10 +399,26 @@
           </VRow>
         </div>
         <div class="buttons d-flex ga-3">
-          <AppButton type="primary" title="طباعة" @click="printInvoiceWithConfig" />
-          <AppButton type="primary" title="طباعة بموبايل" @click="printContent('invoice')" />
-          <AppButton type="primary" title="طباعة علي الطابعة" @click="printByPrinter('invoice')" />
-          <AppButton type="close" title="رجوع" @click="$router.push('/cashier/categories')" />
+          <AppButton
+            type="primary"
+            title="طباعة"
+            @click="printInvoiceDirectly"
+          />
+          <AppButton
+            type="primary"
+            title="طباعة بموبايل"
+            @click="printContent('invoice')"
+          />
+          <AppButton
+            type="primary"
+            title="طباعة علي الطابعة"
+            @click="printByPrinter('invoice')"
+          />
+          <AppButton
+            type="close"
+            title="رجوع"
+            @click="$router.push('/cashier/categories')"
+          />
         </div>
       </div>
     </div>
@@ -314,6 +453,57 @@ const ConvertToArabicNumbers = num => {
 }
 
 // const printOrder = () => window.print()
+
+const printInvoiceDirectly = () => {
+  const element = document.getElementById('invoice') // Get the HTML element
+
+  element.classList.remove('hide-on-screen') // Temporarily show hidden content
+
+  html2pdf()
+    .from(element)
+    .set({
+      margin: 5,
+      filename: 'تفاصيل الطلبية.pdf', // Filename if downloaded (not used here)
+      html2canvas: { scale: 2 }, // Ensure high-quality rendering
+      jsPDF: {
+        unit: 'mm',
+        format: [80, 200], // Custom size
+        orientation: 'portrait',
+      },
+    })
+    .output('blob') // Generate a Blob object for the PDF
+    .then(pdfBlob => {
+      // Create a Blob URL for the PDF
+      const pdfBlobUrl = URL.createObjectURL(pdfBlob)
+
+      // Create a hidden iframe for printing
+      const printIframe = document.createElement('iframe')
+
+      printIframe.style.position = 'absolute'
+      printIframe.style.top = '-1000px' // Move iframe out of view
+      printIframe.style.left = '-1000px'
+      document.body.appendChild(printIframe)
+
+      // Load the PDF into the iframe
+      printIframe.src = pdfBlobUrl
+
+      // Wait for the iframe to load, then trigger print
+      printIframe.onload = () => {
+        printIframe.contentWindow.print()
+
+        // Clean up after printing
+        // setTimeout(() => {
+        //   document.body.removeChild(printIframe)
+        //   URL.revokeObjectURL(pdfBlobUrl) // Free up memory
+        // }, 1000) // Allow time for the print dialog
+      }
+    })
+    .finally(() => {
+      element.classList.add('hide-on-screen') // Re-hide elements
+    })
+}
+
+
 
 const printInvoiceWithConfig = () => {
   const element = document.getElementById('invoice') // Get the HTML element
@@ -462,9 +652,9 @@ const printContent = el => {
 //           .nowraping, .item { page-break-inside: avoid;}
 //           body {
 //             margin: 0;
-//             padding: 10px; 
+//             padding: 10px;
 //             font-family: 'Cairo', sans-serif;
-//             direction: rtl; 
+//             direction: rtl;
 //             font-size: 14px;
 //           }
 //           .text-center { text-align: center; }
