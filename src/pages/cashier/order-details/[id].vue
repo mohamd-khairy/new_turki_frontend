@@ -402,7 +402,7 @@
           <AppButton
             type="primary"
             title="طباعة"
-            @click="printInvoiceDirectly"
+            @click="openPdfInNewTab"
           />
           <AppButton
             type="primary"
@@ -454,7 +454,7 @@ const ConvertToArabicNumbers = num => {
 
 // const printOrder = () => window.print()
 
-const printInvoiceDirectly = () => {
+const openPdfInNewTab = () => {
   const element = document.getElementById('invoice') // Get the HTML element
 
   element.classList.remove('hide-on-screen') // Temporarily show hidden content
@@ -463,7 +463,7 @@ const printInvoiceDirectly = () => {
     .from(element)
     .set({
       margin: 5,
-      filename: 'تفاصيل الطلبية.pdf', // Filename if downloaded (not used here)
+      filename: 'تفاصيل الطلبية.pdf', // Filename if downloaded
       html2canvas: { scale: 2 }, // Ensure high-quality rendering
       jsPDF: {
         unit: 'mm',
@@ -476,32 +476,114 @@ const printInvoiceDirectly = () => {
       // Create a Blob URL for the PDF
       const pdfBlobUrl = URL.createObjectURL(pdfBlob)
 
-      // Create a hidden iframe for printing
-      const printIframe = document.createElement('iframe')
+      // Open the PDF in a new browser tab
+      window.open(pdfBlobUrl, '_blank')
 
-      printIframe.style.position = 'absolute'
-      printIframe.style.top = '-1000px' // Move iframe out of view
-      printIframe.style.left = '-1000px'
-      document.body.appendChild(printIframe)
-
-      // Load the PDF into the iframe
-      printIframe.src = pdfBlobUrl
-
-      // Wait for the iframe to load, then trigger print
-      printIframe.onload = () => {
-        printIframe.contentWindow.print()
-
-        // Clean up after printing
-        // setTimeout(() => {
-        //   document.body.removeChild(printIframe)
-        //   URL.revokeObjectURL(pdfBlobUrl) // Free up memory
-        // }, 1000) // Allow time for the print dialog
-      }
+      // Optional: Clean up the Blob URL after use
+      setTimeout(() => {
+        URL.revokeObjectURL(pdfBlobUrl) // Free up memory
+      }, 60000) // Revoke URL after 60 seconds
     })
     .finally(() => {
       element.classList.add('hide-on-screen') // Re-hide elements
     })
 }
+
+
+const printInvoiceDirectly = () => {
+  const element = document.getElementById('invoice')
+
+  element.classList.remove('hide-on-screen')
+
+  html2pdf()
+    .from(element)
+    .set({
+      margin: 5,
+      filename: 'تفاصيل الطلبية.pdf',
+      html2canvas: { scale: 2 },
+      jsPDF: {
+        unit: 'mm',
+        format: [80, 200],
+        orientation: 'portrait',
+      },
+    })
+    .output('blob')
+    .then(pdfBlob => {
+      const pdfBlobUrl = URL.createObjectURL(pdfBlob)
+
+      const printIframe = document.createElement('iframe')
+
+      printIframe.style.position = 'absolute'
+      printIframe.style.top = '-1000px'
+      printIframe.style.left = '-1000px'
+      document.body.appendChild(printIframe)
+
+      printIframe.onload = () => {
+        setTimeout(() => {
+          printIframe.contentWindow.print()
+          setTimeout(() => {
+            document.body.removeChild(printIframe)
+            URL.revokeObjectURL(pdfBlobUrl)
+          }, 5000) // Clean up after printing
+        }, 1500) // Ensure the iframe is fully loaded
+      }
+
+      printIframe.src = pdfBlobUrl
+    })
+    .finally(() => {
+      element.classList.add('hide-on-screen')
+    })
+}
+
+
+// const printInvoiceDirectly = () => {
+//   const element = document.getElementById('invoice') // Get the HTML element
+
+//   element.classList.remove('hide-on-screen') // Temporarily show hidden content
+
+//   html2pdf()
+//     .from(element)
+//     .set({
+//       margin: 5,
+//       filename: 'تفاصيل الطلبية.pdf', // Filename if downloaded (not used here)
+//       html2canvas: { scale: 2 }, // Ensure high-quality rendering
+//       jsPDF: {
+//         unit: 'mm',
+//         format: [80, 200], // Custom size
+//         orientation: 'portrait',
+//       },
+//     })
+//     .output('blob') // Generate a Blob object for the PDF
+//     .then(pdfBlob => {
+//       // Create a Blob URL for the PDF
+//       const pdfBlobUrl = URL.createObjectURL(pdfBlob)
+
+//       // Create a hidden iframe for printing
+//       const printIframe = document.createElement('iframe')
+
+//       printIframe.style.position = 'absolute'
+//       printIframe.style.top = '-1000px' // Move iframe out of view
+//       printIframe.style.left = '-1000px'
+//       document.body.appendChild(printIframe)
+
+//       // Load the PDF into the iframe
+//       printIframe.src = pdfBlobUrl
+
+//       // Wait for the iframe to load, then trigger print
+//       printIframe.onload = () => {
+//         printIframe.contentWindow.print()
+
+//         // Clean up after printing
+//         // setTimeout(() => {
+//         //   document.body.removeChild(printIframe)
+//         //   URL.revokeObjectURL(pdfBlobUrl) // Free up memory
+//         // }, 1000) // Allow time for the print dialog
+//       }
+//     })
+//     .finally(() => {
+//       element.classList.add('hide-on-screen') // Re-hide elements
+//     })
+// }
 
 
 
