@@ -412,7 +412,7 @@
           <AppButton
             type="primary"
             title="طباعة علي الطابعة"
-            @click="generateAndPrintPdf"
+            @click="printInvoiceDirect"
           />
           <AppButton
             type="close"
@@ -482,6 +482,8 @@ const printPdfDirectly = pdfBlob => {
 const generateAndPrintPdf = () => {
   const element = document.getElementById('invoice') // Your HTML content
 
+  element.classList.remove('hide-on-screen') // Temporarily show hidden content
+
   html2pdf()
     .from(element)
     .set({
@@ -494,8 +496,62 @@ const generateAndPrintPdf = () => {
     .then(pdfBlob => {
       printPdfDirectly(pdfBlob) // Call the direct print function
     })
+    .finally(() => {
+      element.classList.add('hide-on-screen') // Re-hide elements
+    })
 }
 
+const printInvoiceDirect = () => {
+  const element = document.getElementById('invoice') // Get the HTML element
+
+  element.classList.remove('hide-on-screen') // Temporarily show hidden content
+
+  // Calculate the content height dynamically
+  const elementWidth = 80 // Width in mm (for 80mm printer)
+  const contentHeight = element.offsetHeight * (25.4 / 96) // Convert px to mm (1 inch = 25.4mm, screen DPI = 96)
+
+  html2pdf()
+    .from(element)
+    .set({
+      margin: 5, // Adjust margins as needed
+      filename: 'OrderDetails.pdf', // Filename if downloaded
+      html2canvas: {
+        scale: 2, // High-quality rendering
+        useCORS: true, // Allow cross-origin resources
+      },
+      jsPDF: {
+        unit: 'mm',
+        format: [elementWidth, contentHeight], // Set custom paper size for the thermal printer
+        orientation: 'portrait', // Thermal printers generally use portrait orientation
+      },
+    })
+    .output('blob') // Generate a Blob object for the PDF
+    .then(pdfBlob => {
+      const pdfBlobUrl = URL.createObjectURL(pdfBlob)
+
+      const printIframe = document.createElement('iframe')
+
+      printIframe.style.position = 'absolute'
+      printIframe.style.top = '-1000px'
+      printIframe.style.left = '-1000px'
+      document.body.appendChild(printIframe)
+
+      printIframe.onload = () => {
+        setTimeout(() => {
+          printIframe.contentWindow.print()
+          setTimeout(() => {
+            document.body.removeChild(printIframe)
+            URL.revokeObjectURL(pdfBlobUrl)
+          }, 200) // Clean up after printing
+        }, 1500) // Ensure the iframe is fully loaded
+      }
+
+      printIframe.src = pdfBlobUrl
+    })
+    .finally(() => {
+      element.classList.add('hide-on-screen') // Re-hide elements
+    })
+}
 
 
 const printInvoiceForThermalPrinter = () => {
