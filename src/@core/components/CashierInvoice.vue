@@ -1,7 +1,14 @@
 <template>
-  <div id="invoice" class="text-center invoice hide-on-screen">
+  <div
+    id="invoice"
+    class="text-center invoice hide-on-screen"
+  >
     <div class="text-center">
-      <img class="logo" src="@/assets/images/logo.png" alt="turki">
+      <img
+        class="logo"
+        src="@/assets/images/logo.png"
+        alt="turki"
+      >
       <p class="">
         الرياض
       </p>
@@ -26,41 +33,65 @@
         {{ cashierStore.orderInfo.order?.ref_no }}
       </div>
     </h4>
-    <div v-if="!isVisitor" class="table">
+    <div
+      v-if="!isVisitor"
+      class="table"
+    >
       <p class="text-center">
         =========================================================
       </p>
     </div>
-    <p v-if="!isVisitor" class="d-flex  justify-space-between w-100">
+    <p
+      v-if="!isVisitor"
+      class="d-flex  justify-space-between w-100"
+    >
       <span>اسم العميل:</span>
       <span>{{ cashierStore.orderInfo.order?.customer?.name }}</span>
     </p>
-    <p v-if="!isVisitor" class="d-flex  justify-space-between w-100">
+    <p
+      v-if="!isVisitor"
+      class="d-flex  justify-space-between w-100"
+    >
       <span>رقم الجوال:</span>
       <span dir="ltr">{{ cashierStore.orderInfo.order?.customer?.mobile }}</span>
     </p>
 
-    <p v-if="(cashierStore.orderInfo.order?.selected_address || cashierStore.orderInfo.order?.customer?.default_addresses) && orderDetails?.order?.customer.mobile != '+9660123456789'" class="d-flex  justify-space-between w-100">
+    <p
+      v-if="(cashierStore.orderInfo.order?.selected_address || cashierStore.orderInfo.order?.customer?.default_addresses) && orderDetails?.order?.customer.mobile != '+9660123456789'"
+      class="d-flex  justify-space-between w-100"
+    >
       <span>المدينة:</span>
       <span>{{ cashierStore.orderInfo.order.selected_address?.city?.name_ar ??
         cashierStore.orderInfo.order.customer?.default_addresses?.city?.name_ar }}</span>
     </p>
-    <p v-if="(cashierStore.orderInfo.order?.selected_address || cashierStore.orderInfo.order?.customer?.default_addresses) && orderDetails?.order?.customer.mobile != '+9660123456789'" class="d-flex  justify-space-between w-100">
+    <p
+      v-if="(cashierStore.orderInfo.order?.selected_address || cashierStore.orderInfo.order?.customer?.default_addresses) && orderDetails?.order?.customer.mobile != '+9660123456789'"
+      class="d-flex  justify-space-between w-100"
+    >
       <span>العنوان:</span>
       <span>{{ cashierStore.orderInfo.order.selected_address?.address ??
         cashierStore.orderInfo.order.customer?.default_addresses?.address }}</span>
     </p>
 
-    <div v-if="cashierStore.orderInfo.order?.delivery_date" class="table">
+    <div
+      v-if="cashierStore.orderInfo.order?.delivery_date"
+      class="table"
+    >
       <p class="text-center">
         =========================================================
       </p>
     </div>
-    <p v-if="cashierStore.orderInfo.order?.delivery_date" class="d-flex  justify-space-between w-100">
+    <p
+      v-if="cashierStore.orderInfo.order?.delivery_date"
+      class="d-flex  justify-space-between w-100"
+    >
       <span> تاريخ التسليم:</span>
       <span>{{ cashierStore.orderInfo.order?.delivery_date }}</span>
     </p>
-    <p v-if="cashierStore.orderInfo.order?.delivery_period?.name_ar" class="d-flex  justify-space-between w-100">
+    <p
+      v-if="cashierStore.orderInfo.order?.delivery_period?.name_ar"
+      class="d-flex  justify-space-between w-100"
+    >
       <span> وقت التسليم:</span>
       <span dir="ltr">{{ cashierStore.orderInfo.order?.delivery_period?.name_ar }}</span>
     </p>
@@ -86,12 +117,19 @@
           =========================================================
         </p>
       </div>
-      <div v-for="product in cashierStore.orderInfo.products" :key="product.id" class="body">
+      <div
+        v-for="product in cashierStore.orderInfo.products"
+        :key="product.id"
+        class="body"
+      >
         <div class="item nowraping">
           <div class="cell text-center">
             {{ product.quantity }}
             <br>
-            <VChip v-if="product.is_refund" class="text-error">
+            <VChip
+              v-if="product.is_refund"
+              class="text-error"
+            >
               مرتجع
             </VChip>
           </div>
@@ -196,7 +234,12 @@
     </div>
     <br>
     <div class="nowraping text-center">
-      <QrcodeVue :value="cashierStore.orderInfo?.order?.qr_string" :size="170" level="H" render-as="svg" />
+      <QrcodeVue
+        :value="cashierStore.orderInfo?.order?.qr_string"
+        :size="170"
+        level="H"
+        render-as="svg"
+      />
     </div>
   </div>
 </template>
@@ -264,6 +307,15 @@ img {
 }
 
 @media print {
+  body {
+    padding-block: 0;
+    padding-inline: 1rem;
+  }
+
+  .logo {
+    filter: grayscale(100%);
+  }
+
   .hide-on-screen {
     display: flex;
   }
@@ -285,17 +337,18 @@ img {
   }
 
   .invoice {
+    overflow: hidden;
     padding: 0;
     margin: auto;
 
     /* Ensure full width */
     block-size: auto;
-    break-inside: avoid;
+    break-inside: avoid !important;
     direction: rtl;
     font-size: 16px;
     max-inline-size: 100%;
-    page-break-after: avoid;
-    page-break-inside: avoid;
+    page-break-after: avoid !important;
+    page-break-inside: avoid !important;
   }
 }
 

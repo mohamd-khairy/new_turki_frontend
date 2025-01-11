@@ -412,7 +412,7 @@
           <AppButton
             type="primary"
             title="طباعة علي الطابعة"
-            @click="printByPrinter('invoice')"
+            @click="printInvoiceDirectly"
           />
           <AppButton
             type="close"
@@ -452,7 +452,51 @@ const ConvertToArabicNumbers = num => {
   })
 }
 
-// const printOrder = () => window.print()
+const printPdfDirectly = pdfBlob => {
+  // Create a Blob URL for the PDF
+  const pdfBlobUrl = URL.createObjectURL(pdfBlob)
+
+  // Create a hidden iframe
+  const printIframe = document.createElement('iframe')
+
+  printIframe.style.position = 'absolute'
+  printIframe.style.top = '-1000px' // Hide the iframe off-screen
+  printIframe.style.left = '-1000px'
+  printIframe.src = pdfBlobUrl
+
+  // Append iframe to the document
+  document.body.appendChild(printIframe)
+
+  // Wait for the iframe to load the PDF, then trigger print
+  printIframe.onload = () => {
+    printIframe.contentWindow.print()
+
+    // Cleanup after printing
+    setTimeout(() => {
+      document.body.removeChild(printIframe) // Remove iframe
+      URL.revokeObjectURL(pdfBlobUrl) // Free up memory
+    }, 1000) // Allow time for the print dialog to appear
+  }
+}
+
+const generateAndPrintPdf = () => {
+  const element = document.getElementById('invoice') // Your HTML content
+
+  html2pdf()
+    .from(element)
+    .set({
+      margin: 5,
+      filename: 'Invoice.pdf',
+      html2canvas: { scale: 2 },
+      jsPDF: { unit: 'mm', format: [80, 200], orientation: 'portrait' }, // Custom size for thermal printer
+    })
+    .output('blob') // Generate the PDF as a Blob object
+    .then(pdfBlob => {
+      printPdfDirectly(pdfBlob) // Call the direct print function
+    })
+}
+
+
 
 const printInvoiceForThermalPrinter = () => {
   const element = document.getElementById('invoice') // Get the HTML element
@@ -567,7 +611,7 @@ const printInvoiceDirectly = () => {
           setTimeout(() => {
             document.body.removeChild(printIframe)
             URL.revokeObjectURL(pdfBlobUrl)
-          }, 5000) // Clean up after printing
+          }, 500) // Clean up after printing
         }, 1500) // Ensure the iframe is fully loaded
       }
 
