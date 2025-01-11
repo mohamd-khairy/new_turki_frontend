@@ -412,7 +412,7 @@
           <AppButton
             type="primary"
             title="طباعة علي الطابعة"
-            @click="printInvoiceDirectly"
+            @click="generateAndPrintPdf"
           />
           <AppButton
             type="close"
@@ -475,7 +475,7 @@ const printPdfDirectly = pdfBlob => {
     setTimeout(() => {
       document.body.removeChild(printIframe) // Remove iframe
       URL.revokeObjectURL(pdfBlobUrl) // Free up memory
-    }, 1000) // Allow time for the print dialog to appear
+    }, 100) // Allow time for the print dialog to appear
   }
 }
 
