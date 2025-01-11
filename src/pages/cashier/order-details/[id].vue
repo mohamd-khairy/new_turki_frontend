@@ -412,7 +412,7 @@
           <AppButton
             type="primary"
             title="طباعة علي الطابعة"
-            @click="printInvoiceDirect"
+            @click="generateAndPrintPdf"
           />
           <AppButton
             type="close"
@@ -494,7 +494,45 @@ const generateAndPrintPdf = () => {
     })
     .output('blob') // Generate the PDF as a Blob object
     .then(pdfBlob => {
-      printPdfDirectly(pdfBlob) // Call the direct print function
+      // Create a Blob URL for the PDF
+      const pdfBlobUrl = URL.createObjectURL(pdfBlob)
+
+      // Check if a printer is available (via kiosk mode or default print behavior)
+      const isKioskPrintingAvailable = 'kioskMode' in window.navigator // Hypothetical check for kiosk mode
+
+
+      // if (isKioskPrintingAvailable) {
+      // Automatically print in kiosk mode
+      const printIframe = document.createElement('iframe')
+
+      printIframe.style.position = 'absolute'
+      printIframe.style.top = '-1000px'
+      printIframe.style.left = '-1000px'
+      printIframe.src = pdfBlobUrl
+      document.body.appendChild(printIframe)
+
+      printIframe.onload = () => {
+        printIframe.contentWindow.print()
+
+        setTimeout(() => {
+          // document.body.removeChild(printIframe)
+          URL.revokeObjectURL(pdfBlobUrl)
+        }, 500) // Clean up
+      }
+
+      // } else {
+      //   // Save as PDF if kiosk printing is unavailable
+      //   const link = document.createElement('a')
+
+      //   link.href = pdfBlobUrl
+      //   link.download = 'Document.pdf'
+      //   document.body.appendChild(link)
+      //   link.click()
+      //   document.body.removeChild(link)
+      //   URL.revokeObjectURL(pdfBlobUrl) // Free up memory
+      // }
+
+
     })
     .finally(() => {
       element.classList.add('hide-on-screen') // Re-hide elements
@@ -773,22 +811,24 @@ const printInvoiceWithConfig = () => {
     })
 }
 
-async function printByPrinter(el) {
+async function printByPrinter() {
 
-  const printData = `
-        \x1B\x40        // Initialize printer
-        \x1B\x61\x01    // Center align
-        Test Receipt\n
-        Thank you for shopping!\n
-        \x1D\x56\x01    // Cut paper
-      `
+  window.print()
 
-  // try {
-  const response = await cashierStore.print(printData)
+  // const printData = `
+  //       \x1B\x40        // Initialize printer
+  //       \x1B\x61\x01    // Center align
+  //       Test Receipt\n
+  //       Thank you for shopping!\n
+  //       \x1D\x56\x01    // Cut paper
+  //     `
+
+  // // try {
+  // const response = await cashierStore.print(printData)
 
 
-  console.log(response.data)
-  alert("Print job sent successfully!")
+  // console.log(response.data)
+  // alert("Print job sent successfully!")
 
   // } catch (error) {
   //   console.error("Error sending print job:", error)
