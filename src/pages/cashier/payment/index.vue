@@ -2,7 +2,7 @@
   <div>
     <VRow>
       <VCol :cols="cashierStore.cart.length > 0 ? 9 : 12">
-        <div class="payment-mathods">
+        <div class="payment-methods">
           <div class="info">
             <VTextarea
               v-model="paymentInfo.comment"
@@ -39,19 +39,25 @@
               </div>
             </div>
           </div>
-          <div class="buttons">
-            <AppButton
-              type="primary"
-              title="تم الدفع"
-              :disabled="preventPay"
-              :is-loading="cashierStore.isClicked"
-              @click="storePaymentTypes"
-            />
-            <AppButton
-              type="close"
-              title="الغاء"
-              @click="cancelOrder"
-            />
+
+          <!-- Total Section and Buttons -->
+          <div class="total-section">
+            <div class="buttons">
+              <AppButton
+                class="pay"
+                type="primary"
+                title="تم الدفع"
+                :disabled="!paymentInfo.payment_type_id"
+                :is-loading="cashierStore.isClicked"
+                @click="storePaymentTypes"
+              />
+              <AppButton
+                class="cancel"
+                type="close"
+                title="إلغاء"
+                @click="cancelOrder"
+              />
+            </div>
           </div>
         </div>
       </VCol>
@@ -64,6 +70,7 @@
     </VRow>
   </div>
 </template>
+
 
 <script setup>
 import AppButton from '@/@core/components/AppButton.vue'
@@ -128,62 +135,138 @@ onMounted(async () => {
 </script>
 
 <style lang="scss" scoped>
-.payment-mathods {
+.cart {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-block: 1rem;
+}
+
+.payment-methods {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  block-size: 80vh;
-  gap: 1rem;
+  justify-content: space-between; /* Push the buttons to the bottom */
+  padding: 2rem;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  block-size: 80vh; /* Full height */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 10%);
+  gap: 1.5rem;
 }
 
 .button {
   display: flex;
   justify-content: flex-end;
+  gap: 0.5rem;
+
+  >button {
+    border: none;
+    border-radius: 8px;
+    background-color: rgba(var(--v-theme-primary), 1);
+    color: #fff;
+    cursor: pointer;
+    padding-block: 0.5rem;
+    padding-inline: 1rem;
+    transition: background-color 0.3s ease;
+
+    &:hover {
+      background-color: rgba(var(--v-theme-primary), 0.8);
+    }
+  }
 }
 
-.goBack,
-.payment-methods-grid,
-.info {
-  display: flex;
-  flex-direction: column;
+.payment-methods-grid {
+  display: grid;
   gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+
+  /* Responsive grid */
 }
 
 .payment-method-item {
   display: flex;
-  flex: 1;
   align-items: center;
+  padding: 1rem;
+  border-radius: 8px;
   background-color: #fff;
-  border-inline-start: 5px solid rgba(var(--v-theme-primary), 1);
+  border-inline-start: 5px solid rgba(var(--v-theme-primary), 0.6);
   cursor: pointer;
-  gap: 0.5rem;
-  min-block-size: 60px;
-  padding-block: 0.75rem;
-  padding-inline: 1rem;
   transition: all 0.3s ease;
+
+  &:hover {
+    background-color: rgba(var(--v-theme-primary), 0.1);
+  }
 
   &.selected {
     background-color: rgba(var(--v-theme-primary), 1);
+    border-inline-start-color: rgba(var(--v-theme-primary), 1);
     color: #fff;
+  }
+
+  .radio-circle {
+    flex-shrink: 0;
+    border: 2px solid rgba(var(--v-theme-primary), 1);
+    border-radius: 50%;
+    block-size: 24px;
+    inline-size: 24px;
+    margin-inline-end: 1rem;
+
+    &.selected {
+      border-color: #fff;
+      background-color: rgba(var(--v-theme-primary), 1);
+    }
+  }
+
+  .payment-method-name {
+    flex: 1;
+    font-size: 1rem;
+    font-weight: 500;
   }
 }
 
 .buttons {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 1rem;
+  align-items: center; /* Align buttons vertically */
+  justify-content: space-between; /* Place buttons side-by-side with space between */
+  gap: 1rem; /* Add spacing between the buttons */
+  margin-block-start: auto; /* Push buttons to the bottom of the container */
+}
 
-  > button {
-    flex: 1;
-    border-radius: 8px;
-    background-color: #fff;
-    block-size: 50px;
+.buttons > button {
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  padding-block: 0.75rem;
+  padding-inline: 1.5rem;
+  transition: background-color 0.3s ease;
 
-    &.pay {
-      background-color: rgba(var(--v-theme-primary), 1);
-      color: #fff;
+  &.cancel {
+    border: 1px solid #ddd;
+    background-color: #f5f5f5;
+    color: #333;
+
+    &:hover {
+      background-color: #eaeaea;
     }
   }
+
+  &.pay {
+    border: none;
+    background-color: rgba(var(--v-theme-primary), 1);
+    color: #fff;
+
+    &:hover {
+      background-color: rgba(var(--v-theme-primary), 0.8);
+    }
+  }
+}
+
+.total-section {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin-block-end: 1rem; /* Add spacing between total and buttons */
 }
 </style>

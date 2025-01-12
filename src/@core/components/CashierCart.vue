@@ -274,8 +274,8 @@ const promoCodeFocus = () => {
 
 
 const focusInput = () => {
-  if (showCustomerInfoModal.value || isPromoCodeFocused.value) return
-  searchInput.value.focus()
+  if (showCustomerInfoModal.value || isPromoCodeFocused.value)
+    return searchInput.value.focus()
 }
 
 watch(
