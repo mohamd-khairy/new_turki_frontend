@@ -107,7 +107,7 @@
               />
             </VCol>
             <VCol
-              v-if="selectedProduct?.properties?.length > 0"
+              v-if="selectedProduct?.preparations?.length > 0"
               cols="12"
               md="12"
               class="d-flex gap-9"
