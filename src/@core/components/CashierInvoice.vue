@@ -202,7 +202,7 @@
 
     <div class="d-flex bold justify-space-between w-100">
       <div>الاجمالي:</div>
-      <div>{{ cashierStore.orderInfo.order?.total_amount }} ريال</div>
+      <div>{{ cashierStore.orderInfo.order?.total_amount_after_discount }} ريال</div>
     </div>
     <p class="text-center">
       المجموع يشمل ضريبة القيمة المضافة
