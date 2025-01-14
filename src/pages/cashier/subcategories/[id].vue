@@ -27,7 +27,7 @@
       >
         <VCol
           cols="4"
-          lg="2"
+          lg="3"
           md="3"
           sm="6"
         >
@@ -42,7 +42,7 @@
           v-for="subCategory in subCategories"
           :key="subCategory.id"
           cols="4"
-          lg="2"
+          lg="3"
           md="3"
           sm="6"
         >
@@ -77,7 +77,7 @@ const searchQuery = ref('')
 const subCategories = ref([])
 
 // Placeholder image URL for fallback
-const placeholderImage = 'https://via.placeholder.com/350x150'
+const placeholderImage = 'https://media.istockphoto.com/id/1409329028/vector/no-picture-available-placeholder-thumbnail-icon-illustration-design.jpg?s=612x612&w=0&k=20&c=_zOuJu755g2eEUioiOUdz_mHKJQJn-tDgIAhQzyeKUQ='
 
 // Access cashier store
 const cashierStore = useCashierStore()
