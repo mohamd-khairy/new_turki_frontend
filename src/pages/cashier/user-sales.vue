@@ -63,12 +63,14 @@
           >
             التاريخ
           </th>
-          <th
+          <!--
+            <th
             scope="col"
             class="font-weight-semibold"
-          >
+            >
             {{ $t("forms.id") }}
-          </th>
+            </th>
+          -->
 
           <th
             scope="col"
@@ -130,7 +132,7 @@
         >
           <tr>
             <td>{{ user.date }}</td>
-            <td>{{ user.user_id }}</td>
+            <!-- <td>{{ user.user_id }}</td> -->
             <td>{{ user.user_name }}</td>
             <td>{{ user.branch_name }}</td>
             <td

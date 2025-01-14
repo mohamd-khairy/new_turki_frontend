@@ -18,7 +18,46 @@
           <div class="py-4 px-2">
             <VRow>
               <VCol
-                cols="6"
+                cols="3"
+                class="d-flex align-center gap-3"
+              >
+                <div class="icon">
+                  <VIcon
+                    icon="material-symbols:globe"
+                    color="primary"
+                  />
+                </div>
+                <VSelect
+                  v-model="filters.country_ids"
+                  :items="countries"
+                  :label="t('forms.countries')"
+                  item-title="name_ar"
+                  item-value="id"
+                  :disabled="isLoading"
+                />
+
+                <!--
+                  <div class="icon">
+                  <VIcon
+                  icon="solar:city-broken"
+                  color="primary"
+                  />
+                  </div>
+                  <VSelect
+                  v-model="filters.city_ids"
+                  :items="cities"
+                  :label="t('forms.cities')"
+                  item-title="name_ar"
+                  item-value="id"
+                  multiple
+                  :disabled="isLoading"
+                  />
+                -->
+              </VCol>
+
+
+              <VCol
+                cols="3"
                 class="d-flex align-center gap-3"
               >
                 <div class="icon">
@@ -56,92 +95,7 @@
                   @update:menu="updateCutomersMenu"
                 />
               </VCol>
-              <VCol
-                cols="12"
-                lg="6"
-                md="12"
-                sm="12"
-              >
-                <VRow>
-                  <VCol
-                    cols="12"
-                    class="d-flex align-center gap-3"
-                  >
-                    <div class="icon">
-                      <VIcon
-                        icon="material-symbols:globe"
-                        color="primary"
-                      />
-                    </div>
-                    <VSelect
-                      v-model="filters.country_ids"
-                      :items="countries"
-                      :label="t('forms.countries')"
-                      item-title="name_ar"
-                      item-value="id"
-                      :disabled="isLoading"
-                    />
 
-                    <!--
-                      <div class="icon">
-                      <VIcon
-                      icon="solar:city-broken"
-                      color="primary"
-                      />
-                      </div>
-                      <VSelect
-                      v-model="filters.city_ids"
-                      :items="cities"
-                      :label="t('forms.cities')"
-                      item-title="name_ar"
-                      item-value="id"
-                      multiple
-                      :disabled="isLoading"
-                      />
-                    -->
-                  </VCol>
-                </VRow>
-              </VCol>
-
-              <VCol
-                cols="12"
-                lg="6"
-                md="12"
-                sm="12"
-              >
-                <VRow>
-                  <VCol
-                    cols="12"
-                    class="d-flex align-center gap-3"
-                  >
-                    <div class="icon">
-                      <VIcon
-                        icon="fluent-mdl2:date-time"
-                        color="primary"
-                      />
-                    </div>
-                    <VTextField
-                      v-model="filters.date_from"
-                      type="date"
-                      :label="t('forms.from')"
-                      :disabled="isLoading"
-                    />
-
-                    <div class="icon">
-                      <VIcon
-                        icon="fluent-mdl2:date-time"
-                        color="primary"
-                      />
-                    </div>
-                    <VTextField
-                      v-model="filters.date_to"
-                      type="date"
-                      :label="t('forms.to')"
-                      :disabled="isLoading"
-                    />
-                  </VCol>
-                </VRow>
-              </VCol>
 
               <VCol
                 cols="12"
@@ -191,6 +145,48 @@
 
               <VCol
                 cols="12"
+                lg="6"
+                md="12"
+                sm="12"
+              >
+                <VRow>
+                  <VCol
+                    cols="12"
+                    class="d-flex align-center gap-3"
+                  >
+                    <div class="icon">
+                      <VIcon
+                        icon="fluent-mdl2:date-time"
+                        color="primary"
+                      />
+                    </div>
+                    <VTextField
+                      v-model="filters.date_from"
+                      type="date"
+                      :label="t('forms.from')"
+                      :disabled="isLoading"
+                    />
+
+                    <div class="icon">
+                      <VIcon
+                        icon="fluent-mdl2:date-time"
+                        color="primary"
+                      />
+                    </div>
+                    <VTextField
+                      v-model="filters.date_to"
+                      type="date"
+                      :label="t('forms.to')"
+                      :disabled="isLoading"
+                    />
+                  </VCol>
+                </VRow>
+              </VCol>
+
+
+
+              <VCol
+                cols="12"
                 class="d-flex align-center gap-3"
               >
                 <VBtn
@@ -234,7 +230,16 @@
           color="primary"
         />
         <span class="mx-1">{{ t('Orders') }}</span>
+        <div style="min-width: 10rem;">
+          <VSelect
+            v-model="rowPerPage"
+            variant="outlined"
+            :items="[5, 10, 20, 30, 50, 100, 200, 300, 500, 700, 1000]"
+            :disabled="isLoading"
+          />
+        </div>
       </VCardTitle>
+
       <EditCashierStatusDialog
         v-if="isEditOpen"
         v-model:is-edit-open="isEditOpen"
@@ -287,26 +292,6 @@
               >
                 {{ t('forms.order_payment_status') }}
               </th>
-
-              <th
-                scope="col"
-                class="font-weight-semibold"
-              >
-                {{ t('forms.payment_type_name') }}
-              </th>
-              <th
-                scope="col"
-                class="font-weight-semibold"
-              >
-                مسئول المبيعات
-              </th>
-              <th
-                scope="col"
-                class="font-weight-semibold"
-              >
-                {{ t('forms.delivery_date') }}
-              </th>
-
               <th
                 scope="col"
                 class="font-weight-semibold"
@@ -318,6 +303,24 @@
                 class="font-weight-semibold"
               >
                 {{ t('forms.total_amount_after_discount') }}
+              </th>
+              <th
+                scope="col"
+                class="font-weight-semibold"
+              >
+                {{ t('forms.delivery_date') }}
+              </th>
+              <th
+                scope="col"
+                class="font-weight-semibold"
+              >
+                {{ t('forms.payment_type_name') }}
+              </th>
+              <th
+                scope="col"
+                class="font-weight-semibold"
+              >
+                مسئول المبيعات
               </th>
             </tr>
           </thead>
@@ -407,8 +410,12 @@
                   order.customer_mobile }}
               </td>
               <td @click="openEdit(order)">
-                {{
-                  order.order_state_ar }}
+                <VChip
+                  style="cursor: pointer;"
+                  :class="getOrderStatusColorClass(order.order_state_id)"
+                >
+                  {{ order.order_state_ar }}
+                </VChip>
               </td>
               <td>
                 <VChip
@@ -434,20 +441,12 @@
                   غير مدفوع
                 </VChip>
               </td>
+
               <td>
-                {{ order.payment_type_name }}
-                {{ order.payment_type_id != 8 && order.wallet_amount_used > 0 ? "+ المحفظة (" + order.wallet_amount_used
-                  + ")" :
-                  "" }}
-              </td>
-              <td>
-                <span v-if="order.sales_officer_name">
-                  {{ order.sales_officer_name }}
+                <span v-if="order.total_amount_before_discount">
+                  {{ ConvertToArabicNumbers(order.total_amount_before_discount) }}
                 </span>
                 <span v-else>--</span>
-              </td>
-              <td>
-                {{ ConvertToArabicNumbers(formatDateTime(order.delivery_date).date) }}
               </td>
               <td>
                 <span v-if="order.total_amount_after_discount">
@@ -457,8 +456,17 @@
               </td>
 
               <td>
-                <span v-if="order.total_amount_before_discount">
-                  {{ ConvertToArabicNumbers(order.total_amount_before_discount) }}
+                {{ formatDateTime(order.delivery_date).date }}
+              </td>
+              <td>
+                {{ order.payment_type_name }}
+                {{ order.payment_type_id != 8 && order.wallet_amount_used > 0 ? "+ المحفظة (" + order.wallet_amount_used
+                  + ")" :
+                  "" }}
+              </td>
+              <td>
+                <span v-if="order.sales_officer_name">
+                  {{ order.sales_officer_name }}
                 </span>
                 <span v-else>--</span>
               </td>
@@ -522,6 +530,8 @@ const ordersListStore = useOrdersStore()
 const isFiltered = ref(true)
 const paymentTypes = ref([])
 const allOrderStatuses = ref([])
+const rowPerPage = ref(10)
+const totalOrders = ref(0)
 
 const today = new Date()
 const threeWeeksFromToday = new Date(today)
@@ -530,16 +540,25 @@ threeWeeksFromToday.setDate(today.getDate() + 21)
 
 const lastDayOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0)
 const formattedToday = today.toISOString().split('T')[0]
+const yesterday = new Date(today)
+
+yesterday.setDate(today.getDate() - 1)
+
+const formattedYesterday = yesterday.toISOString().split('T')[0]
 const formattedThreeWeeksFromToday = threeWeeksFromToday.toISOString().split('T')[0]
 const formattedLastDay = lastDayOfMonth.toISOString().split('T')[0]
+
+watch(rowPerPage, () => {
+  getOrders()
+})
 
 const filters = reactive({
   ref_no: null,
   city_ids: [],
-  country_ids: [],
+  country_ids: 1,
   order_state_ids: [],
-  date_from: null,// formattedToday,
-  date_to: null,// formattedThreeWeeksFromToday,
+  date_from: formattedYesterday,
+  date_to: formattedThreeWeeksFromToday,
   customer_id: null,
   payment_type_ids: [],
 })
@@ -552,6 +571,36 @@ const updateCutomersMenu = status => {
   isCustomersMenuOpen.value = status
 }
 
+const getOrderStatusColorClass = orderStatusCode => {
+  if ([204, 209, 4001, 300].includes(orderStatusCode)) {
+    return 'text-warning'
+  }
+
+  if ([207, 206, 208, 4000].includes(orderStatusCode)) {
+    return 'text-error'
+  }
+
+  // order confirmed
+  if (orderStatusCode == 201) {
+    return 'text-success'
+  }
+
+  // delivered
+  if (orderStatusCode == 203) {
+    return 'text-delivered'
+  }
+
+  if (orderStatusCode == 205) {
+    return 'text-secondary'
+  }
+
+  // pending
+  if (orderStatusCode == 202) {
+    return 'text-pending'
+  }
+
+  return ''
+}
 
 const searchCustomer = e => {
   clearTimeout(_timerId.value)
@@ -630,7 +679,10 @@ const formatDateTime = data => {
 }
 
 const getOrders = async () => {
-  cashierStore.ordersList({ page: currentPage.value , ...filters,
+  cashierStore.ordersList({
+    page: currentPage.value,
+    per_page: rowPerPage.value,
+    ...filters,
   })
 }
 
@@ -666,3 +718,13 @@ watch(() => currentPage.value, () => {
   getOrders()
 })
 </script>
+
+<style>
+.text-delivered {
+  color: #00bcd4;
+}
+
+.text-pending {
+  color: #5c6bc0;
+}
+</style>

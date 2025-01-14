@@ -89,27 +89,27 @@
               </h3>
               <VRow>
                 <VCol
-                  cols="6"
+                  v-if="orderDetails?.order?.payment"
+                  cols="4"
                   class="d-flex align-center gap-3 text-base py-1"
                 >
                   <h4>رقم الفاتورة:</h4>
-                  <h2 v-if="orderDetails?.order?.payment">
+                  <h2>
                     {{ orderDetails?.order?.paidpayment?.ref_no }}
                   </h2>
-                  <span v-else>لا يوجد</span>
                 </VCol>
                 <VCol
-                  cols="6"
+                  cols="4"
                   class="d-flex align-center gap-3 text-base py-1"
                 >
                   <h4>رقم الطلب:</h4>
-                  <h2 v-if="orderDetails?.order?.payment">
-                    {{ orderDetails?.order?.payment.order_ref_no }}
+                  <h2 v-if="orderDetails?.order?.ref_no">
+                    {{ orderDetails?.order?.ref_no }}
                   </h2>
                   <span v-else>لا يوجد</span>
                 </VCol>
                 <VCol
-                  cols="6"
+                  cols="4"
                   class="d-flex align-center gap-3 text-base py-1"
                 >
                   <h4>تاريخ الفاتورة:</h4>
@@ -118,7 +118,7 @@
                   </h4>
                 </VCol>
                 <VCol
-                  cols="6"
+                  cols="4"
                   class="d-flex align-center gap-3 text-base py-1"
                 >
                   <h4>تاريخ التسليم: </h4>
@@ -127,7 +127,8 @@
                   </h4>
                 </VCol>
                 <VCol
-                  cols="6"
+                  v-if="orderDetails?.order?.delivery_period"
+                  cols="4"
                   class="d-flex align-center gap-3 text-base py-1"
                 >
                   <h4>وقت التسليم: </h4>
@@ -293,11 +294,10 @@
                 style="background-color: #ddd;font-size: 0.8rem;"
               >
                 <span class="text-base">بيانات الدفع</span>
-                <small class="text-base">جميع الأسعار تشمل الضريبة</small>
               </h3>
               <VRow class="mb-4">
                 <VCol
-                  cols="6"
+                  cols="4"
                   class="d-flex align-center gap-3 text-base py-1"
                 >
                   <span> المبلغ المسدد :</span>
@@ -309,7 +309,7 @@
                 </VCol>
                 <VCol
                   v-if="orderDetails?.order?.wallet_amount_used > 0"
-                  cols="6"
+                  cols="4"
                   class="d-flex align-center gap-3 text-base py-1"
                 >
                   <span> المبلغ المسدد بالمحفظة :</span>
@@ -320,7 +320,7 @@
                 </VCol>
 
                 <VCol
-                  cols="6"
+                  cols="4"
                   class="d-flex align-center gap-3 text-base py-1"
                 >
                   <span> إجمالي المتبقي : </span>
@@ -330,7 +330,7 @@
                   </span>
                 </VCol>
                 <VCol
-                  cols="6"
+                  cols="4"
                   class="d-flex align-center gap-3 text-base py-1"
                 >
                   <span>الخصم :</span>
@@ -341,16 +341,12 @@
                 </VCol>
                 <VCol
                   cols="12"
-                  class="d-flex align-center gap-3 text-base py-1"
+                  class="pt-3"
                 >
-                  <span> الإجمالي غير شامل الضريبة بعد الخصم : </span>
-                  <span>
-                    {{ ConvertToArabicNumbers(orderDetails?.order?.total_amount_after_tax) ?? 0 }}
-                    <small>{{ orderCurrency }}</small>
-                  </span>
+                  <hr>
                 </VCol>
                 <VCol
-                  cols="6"
+                  cols="4"
                   class="d-flex align-center gap-3 text-base py-1"
                 >
                   <span>ضريبة القيمة المضافة : </span>
@@ -360,23 +356,17 @@
                   </span>
                 </VCol>
                 <VCol
-                  cols="6"
+                  cols="4"
                   class="d-flex align-center gap-3 text-base py-1"
                 >
-                  <span> الإجمالي شامل الضريبة : </span>
-                  <span>
-                    {{ ConvertToArabicNumbers(Number(orderDetails?.order?.order_subtotal)) }}
+                  <span> الإجمالي غير شامل الضريبة بعد الخصم : </span>
+                  <h3>
+                    {{ ConvertToArabicNumbers(parseFloat(orderDetails?.order?.total_amount_after_tax)) ?? 0 }}
                     <small>{{ orderCurrency }}</small>
-                  </span>
+                  </h3>
                 </VCol>
                 <VCol
-                  cols="12"
-                  class="pt-3"
-                >
-                  <hr>
-                </VCol>
-                <VCol
-                  cols="12"
+                  cols="4"
                   class="d-flex align-center gap-3 text-base py-1"
                 >
                   <span> الإجمالي شامل الضريبة بعد الخصم : </span>
