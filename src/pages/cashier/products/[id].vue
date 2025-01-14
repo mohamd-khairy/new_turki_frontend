@@ -42,7 +42,7 @@
           v-for="product in products"
           :key="product.id"
           cols="4"
-          lg="2"
+          lg="3"
           md="3"
           sm="6"
         >

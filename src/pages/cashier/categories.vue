@@ -4,20 +4,46 @@
     <VCard class="mb-5 pa-5">
       <VRow justify="space-between">
         <VCol cols="12">
-          <VTextField v-model="searchQuery" label="بحث" class="search-wrap" prepend-inner-icon="iconamoon:search-thin" />
+          <VTextField
+            v-model="searchQuery"
+            label="بحث"
+            class="search-wrap"
+            prepend-inner-icon="iconamoon:search-thin"
+          />
         </VCol>
       </VRow>
     </VCard>
 
     <!-- Categories Card -->
     <VCard class="pa-5">
-      <div v-if="isLoading" class="h-full d-flex align-center justify-center">
+      <div
+        v-if="isLoading"
+        class="h-full d-flex align-center justify-center"
+      >
         <AppLoading />
       </div>
-      <VRow v-else justify="flex-start">
-        <VCol v-for="category in categories" :key="category.id" cols="4" lg="2" md="3" sm="6">
-          <RouterLink :to="`/cashier/subcategories/${category.id}`" class="item">
-            <img :src="category.image_url" :alt="category.type_ar" :placeholder="placeholderImage" @error="handleImageError">
+      <VRow
+        v-else
+        justify="flex-start"
+      >
+        <VCol
+          v-for="category in categories"
+          :key="category.id"
+          cols="4"
+          lg="3"
+          md="3"
+          sm="6"
+        >
+          <RouterLink
+            :to="`/cashier/subcategories/${category.id}`"
+            class="item"
+          >
+            <img
+              :src="category.image_url"
+              :alt="category.type_ar"
+              :placeholder="placeholderImage"
+              @error="handleImageError"
+            >
             <p>{{ category.type_ar }}</p>
           </RouterLink>
         </VCol>
@@ -27,10 +53,10 @@
 </template>
 
 <script setup>
-import AppLoading from '@/@core/components/AppLoading.vue';
-import { useCashierStore } from '@/store/Cashier';
-import { onMounted, ref, watch } from 'vue';
-import CashierLayout from './cashierLayout.vue';
+import AppLoading from '@/@core/components/AppLoading.vue'
+import { useCashierStore } from '@/store/Cashier'
+import { onMounted, ref, watch } from 'vue'
+import CashierLayout from './cashierLayout.vue'
 
 // Create reactive reference for search query and categories
 const searchQuery = ref('')

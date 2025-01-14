@@ -397,7 +397,7 @@
           <AppButton
             type="close"
             title="رجوع"
-            @click="$router.push('/cashier/categories')"
+            @click="$router.push('/cashier/orders')"
           />
         </div>
       </div>
