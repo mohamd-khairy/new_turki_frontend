@@ -280,6 +280,7 @@ const selectProduct = product => {
 const getItems = async () => {
   let payload = {
     id: id.value,
+    search: searchQuery.value,
   }
 
   try {
@@ -296,25 +297,28 @@ onMounted(async () => await getItems())
 
 const handleImageError = event => event.target.src = placeholderImage
 
-const getProduct = async (search = '') => {
-  let payload = {
-    search,
-  }
-  try {
-    isLoading.value = true
-    subCategories.value = await cashierStore.searchProducts(payload)
-  } catch (error) {
-    console.error('Failed to load products:', error)
-  } finally {
-    isLoading.value = false
+
+// Debounced version of getItems
+
+
+function debounce(func, wait) {
+  let timeout
+
+  return function (...args) {
+    clearTimeout(timeout)
+    timeout = setTimeout(() => func.apply(this, args), wait)
   }
 }
 
+
+const debouncedGetItems = debounce(async () => {
+  await getItems()
+}, 800) // 300ms delay
+
 watch(
   () => searchQuery.value,
-  async newSearch => {
-    if (!newSearch) getItems()
-    else getProduct(newSearch)
+  async () => {
+    debouncedGetItems()
   },
 )
 </script>

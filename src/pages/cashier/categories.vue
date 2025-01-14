@@ -73,9 +73,9 @@ const isLoading = ref(false)
 
 
 
-const getItems = async search => {
+const getItems = async () => {
   let payload = {
-    search: search,
+    search: searchQuery.value,
   }
   try {
     isLoading.value = true
@@ -96,10 +96,26 @@ const handleImageError = event => {
   event.target.src = placeholderImage
 }
 
+function debounce(func, wait) {
+  let timeout
 
-watch(() => searchQuery.value, async () => {
-  getItems(searchQuery.value)
-})
+  return function (...args) {
+    clearTimeout(timeout)
+    timeout = setTimeout(() => func.apply(this, args), wait)
+  }
+}
+
+
+const debouncedGetItems = debounce(async () => {
+  await getItems()
+}, 800) // 300ms delay
+
+watch(
+  () => searchQuery.value,
+  async () => {
+    debouncedGetItems()
+  },
+)
 </script>
 
 <style lang="scss" scoped>
