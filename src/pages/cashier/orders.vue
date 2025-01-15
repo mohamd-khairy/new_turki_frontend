@@ -19,6 +19,7 @@
             <VRow>
               <VCol
                 cols="3"
+                sm="12"
                 class="d-flex align-center gap-3"
               >
                 <div class="icon">
@@ -35,29 +36,12 @@
                   item-value="id"
                   :disabled="isLoading"
                 />
-
-                <!--
-                  <div class="icon">
-                  <VIcon
-                  icon="solar:city-broken"
-                  color="primary"
-                  />
-                  </div>
-                  <VSelect
-                  v-model="filters.city_ids"
-                  :items="cities"
-                  :label="t('forms.cities')"
-                  item-title="name_ar"
-                  item-value="id"
-                  multiple
-                  :disabled="isLoading"
-                  />
-                -->
               </VCol>
 
 
               <VCol
                 cols="3"
+                sm="12"
                 class="d-flex align-center gap-3"
               >
                 <div class="icon">
@@ -74,6 +58,7 @@
               </VCol>
               <VCol
                 cols="6"
+                sm="12"
                 class="d-flex align-center gap-3"
               >
                 <div class="icon">
@@ -106,6 +91,7 @@
                 <VRow>
                   <VCol
                     cols="12"
+                    sm="12"
                     class="d-flex align-center gap-3"
                   >
                     <div class="icon">
@@ -152,6 +138,7 @@
                 <VRow>
                   <VCol
                     cols="12"
+                    sm="12"
                     class="d-flex align-center gap-3"
                   >
                     <div class="icon">
