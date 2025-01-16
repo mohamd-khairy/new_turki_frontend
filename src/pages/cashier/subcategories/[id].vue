@@ -1,18 +1,5 @@
 <template>
   <CashierLayout>
-    <VCard class="mb-5 pa-5">
-      <VRow justify="space-between">
-        <VCol cols="12">
-          <VTextField
-            v-model="searchQuery"
-            label="بحث"
-            class="search-wrap"
-            prepend-inner-icon="iconamoon:search-thin"
-          />
-        </VCol>
-      </VRow>
-    </VCard>
-
     <!-- Categories Card -->
     <VCard class="pa-5">
       <div
@@ -73,7 +60,6 @@ import CashierLayout from '../cashierLayout.vue'
 const router = useRouter()
 
 // Create reactive reference for search query and subCategories
-const searchQuery = ref('')
 const subCategories = ref([])
 
 // Placeholder image URL for fallback
@@ -87,7 +73,6 @@ const id = ref(router.currentRoute.value.params.id)
 const getItems = async () => {
   let payload = {
     id: id.value,
-    search: searchQuery.value,
   }
   try {
     isLoading.value = true
@@ -103,28 +88,6 @@ const getItems = async () => {
 onMounted(async () => await getItems())
 
 const handleImageError = event => event.target.src = placeholderImage
-
-
-function debounce(func, wait) {
-  let timeout
-
-  return function (...args) {
-    clearTimeout(timeout)
-    timeout = setTimeout(() => func.apply(this, args), wait)
-  }
-}
-
-
-const debouncedGetItems = debounce(async () => {
-  await getItems()
-}, 800) // 300ms delay
-
-watch(
-  () => searchQuery.value,
-  async () => {
-    debouncedGetItems()
-  },
-)
 </script>
 
 <style lang="scss" scoped>

@@ -1,18 +1,5 @@
 <template>
   <CashierLayout>
-    <VCard class="mb-5 pa-5">
-      <VRow justify="space-between">
-        <VCol cols="12">
-          <VTextField
-            v-model="searchQuery"
-            label="بحث"
-            class="search-wrap"
-            prepend-inner-icon="iconamoon:search-thin"
-          />
-        </VCol>
-      </VRow>
-    </VCard>
-
     <!-- Categories Card -->
     <VCard class="pa-5">
       <div
@@ -187,7 +174,7 @@
 import Calculation from '@/@core/components/Calculation.vue'
 import Modal from '@/@core/components/Modal.vue'
 import { useCashierStore } from '@/store/Cashier'
-import { onMounted, reactive, ref, toRaw, watch } from 'vue'
+import { onMounted, reactive, ref, toRaw } from 'vue'
 import { useRouter } from 'vue-router'
 import CashierLayout from '../cashierLayout.vue'
 
@@ -196,7 +183,6 @@ const cashierStore = useCashierStore()
 const isLoading = ref(false)
 const quantity = ref('')
 const selectedProduct = ref({})
-const searchQuery = ref('')
 const products = ref([])
 const showAddingPropertiesModal = ref(false)
 const showAddingModal = ref(false)
@@ -280,7 +266,6 @@ const selectProduct = product => {
 const getItems = async () => {
   let payload = {
     id: id.value,
-    search: searchQuery.value,
   }
 
   try {
@@ -296,31 +281,6 @@ const getItems = async () => {
 onMounted(async () => await getItems())
 
 const handleImageError = event => event.target.src = placeholderImage
-
-
-// Debounced version of getItems
-
-
-function debounce(func, wait) {
-  let timeout
-
-  return function (...args) {
-    clearTimeout(timeout)
-    timeout = setTimeout(() => func.apply(this, args), wait)
-  }
-}
-
-
-const debouncedGetItems = debounce(async () => {
-  await getItems()
-}, 800) // 300ms delay
-
-watch(
-  () => searchQuery.value,
-  async () => {
-    debouncedGetItems()
-  },
-)
 </script>
 
 <style lang="scss" scoped>

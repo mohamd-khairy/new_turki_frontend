@@ -7,6 +7,7 @@ export {}
 
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
+    '[id]': typeof import('./src/@core/components/[id].vue')['default']
     AddBankDialog: typeof import('./src/@core/components/pages/AdditionDialogs/AddBankDialog.vue')['default']
     AddBannerDialog: typeof import('./src/@core/components/pages/AdditionDialogs/AddBannerDialog.vue')['default']
     AddBranchDialog: typeof import('./src/@core/components/pages/AdditionDialogs/AddBranchDialog.vue')['default']
@@ -62,6 +63,7 @@ declare module '@vue/runtime-core' {
     CardStatisticsVerticalSimple: typeof import('./src/@core/components/CardStatisticsVerticalSimple.vue')['default']
     CashierCart: typeof import('./src/@core/components/CashierCart.vue')['default']
     CashierInvoice: typeof import('./src/@core/components/CashierInvoice.vue')['default']
+    CashierProducts: typeof import('./src/@core/components/CashierProducts.vue')['default']
     ConfirmDialog: typeof import('./src/@core/components/ConfirmDialog.vue')['default']
     CustomizerSection: typeof import('./src/@core/components/CustomizerSection.vue')['default']
     DashboardOrdersTable: typeof import('./src/@core/components/pages/DashboardOrdersTable.vue')['default']

@@ -1,18 +1,20 @@
 <template>
   <CashierLayout>
     <!-- Search Card -->
-    <VCard class="mb-5 pa-5">
+    <!--
+      <VCard class="mb-5 pa-5">
       <VRow justify="space-between">
-        <VCol cols="12">
-          <VTextField
-            v-model="searchQuery"
-            label="بحث"
-            class="search-wrap"
-            prepend-inner-icon="iconamoon:search-thin"
-          />
-        </VCol>
+      <VCol cols="12">
+      <VTextField
+      v-model="searchQuery"
+      label="بحث"
+      class="search-wrap"
+      prepend-inner-icon="iconamoon:search-thin"
+      />
+      </VCol>
       </VRow>
-    </VCard>
+      </VCard>
+    -->
 
     <!-- Categories Card -->
     <VCard class="pa-5">
