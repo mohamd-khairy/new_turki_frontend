@@ -191,12 +191,12 @@
                   </h4>
                 </VCol>
                 <VCol
-                  cols="6"
+                  cols="12"
                   class="d-flex align-center gap-3 text-base py-1"
                 >
                   <h4>طريقة الدفع :</h4>
                   <h4>
-                    {{ orderDetails?.order?.payment_type ? orderDetails?.order?.payment_type.name_ar : "لا يوجد" }}
+                    {{ orderDetails?.paid_payment_types ? orderDetails?.paid_payment_types : (rderDetails?.order?.payment_type.name_ar ?? "لا يوجد") }}
                     {{ orderDetails?.order?.using_wallet ? " - المحفظة" : " " }}
                   </h4>
                 </VCol>

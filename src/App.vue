@@ -5,6 +5,7 @@ import { hexToRgb } from '@layouts/utils'
 import { useTheme } from 'vuetify'
 
 const authStore = useAuthStore()
+
 const {
   syncInitialLoaderTheme,
   syncVuetifyThemeWithTheme: syncConfigThemeWithVuetifyTheme,
@@ -19,9 +20,10 @@ syncConfigThemeWithVuetifyTheme()
 
 onMounted(() => {
   if(localStorage.getItem("najdUser")) {
-     const user = JSON.parse(localStorage.getItem("najdUser"));
-     authStore.updateUser(user);
-   }
+    const user = JSON.parse(localStorage.getItem("najdUser"))
+
+    authStore.updateUser(user)
+  }
 })
 </script>
 

@@ -1,5 +1,7 @@
+import router from '@/router'
 import axios from '@axios'
 import { defineStore } from 'pinia'
+import { useRoute } from 'vue-router'
 
 export const useCashierStore = defineStore('cashier', {
   state: () => ({
@@ -10,6 +12,7 @@ export const useCashierStore = defineStore('cashier', {
     isCodeSubmitted: false,
     discount: 0,
     order: {},
+    order_payments:"",
     orderList: [],
     orderInfo: {
       products: [],
@@ -18,6 +21,10 @@ export const useCashierStore = defineStore('cashier', {
     orderListPaginated: {
       total: 0,
     },
+    laterOrders: [],
+    selectedOrder: {},
+    ref_no: null,
+    isLoading: false,
   }),
   actions: {
     async addToCart(item) {
@@ -88,7 +95,25 @@ export const useCashierStore = defineStore('cashier', {
       }
 
     },
+    async editOrder(data) {
+      this.isClicked = true
 
+      try {
+        const response = await axios.put(`/cashier-edit-order`, {
+          ...data,
+        })
+
+        this.order = response.data.data
+
+        return response.data
+      } catch (error) {
+        console.error('Error fetching products:', error)
+
+        return error
+      } finally {
+        this.isClicked = false
+      }
+    },
     async createOrder(data) {
       this.isClicked = true
 
@@ -133,6 +158,7 @@ export const useCashierStore = defineStore('cashier', {
         const response = await axios.get(`/cashier-order-details/${data}`)
 
         this.orderInfo = response.data.data
+        this.order_payments = response.data.data.paid_payment_types
 
         return response.data
       } catch (error) {
@@ -277,6 +303,81 @@ export const useCashierStore = defineStore('cashier', {
 
         return error
       }
+    },
+    async getLaterOrders() {
+      try {
+        const response = await axios.get(`/cashier-later-orders`)
+
+        this.laterOrders = response.data.data
+
+        return response.data.data
+      } catch (error) {
+        console.error('Error fetching products:', error)
+        throw error
+      }
+    },
+
+    async openOrderForEdit(data) {
+      try {
+        const response = await axios.get(`/cashier-order-details/${data}`)
+
+        this.selectedOrder = response.data.data
+
+        return response.data.data
+
+      } catch (error) {
+        console.error('Error fetching products:', error)
+        throw error
+      }
+    },
+
+    openOrder (ref_no){
+      this.isLoading = true
+      this.ref_no = ref_no
+
+      this.addQueryString('ref_no' , this.ref_no , '/cashier/categories')
+
+      this.openOrderForEdit(this.ref_no).then(res => {
+        if (res.order) {
+          this.order = res.order
+          this.cart = []
+          let products = res.products
+          for (let index = 0; index < products.length; index++) {
+            const element = products[index]
+
+            let new_item = {
+              cut_id: element.cut?.id,
+              size_id: element.size?.id,
+              preparation_id: element.preparation?.id,
+              price: element.size?.sale_price,
+              total_price: parseFloat(element.size?.sale_price * element.quantity),
+              product_id: element.product_id,
+              name: element.product?.name_ar,
+              quantity: element.quantity,
+              is_Ras: element.is_Ras ? 1 : 0,
+              is_lyh: element.is_lyh ? 1 : 0,
+              is_kwar3: element.is_kwar3 ? 1 : 0,
+              is_karashah: element.is_karashah ? 1 : 0,
+              shalwata: element.shalwata ? 1 : 0,
+            }
+
+            this.cart.push(new_item)
+            this.isLoading = false
+          }
+        }
+      })
+    },
+    resetClient () {
+      this.ref_no = null
+      this.selectedOrder = null
+      this.order = null
+      this.cart = []
+    },
+    addQueryString (key, value , path) {
+      router.push({
+        path,
+        query: { ...useRoute.query, [key]: value }, // Add or update the query parameter
+      })
     },
   },
 })

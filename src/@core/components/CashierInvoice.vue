@@ -214,7 +214,7 @@
     </div>
     <p class="d-flex bold justify-space-between w-100">
       <span>طريقة الدفع</span>
-      <span>{{ cashierStore.orderInfo.order?.payment_type?.name_ar }}</span>
+      <span>{{ cashierStore.order_payments ?? cashierStore.orderInfo.order?.payment_type?.name_ar }}</span>
     </p>
 
     <div class="table">
