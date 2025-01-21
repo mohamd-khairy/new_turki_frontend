@@ -189,6 +189,8 @@ export const useCashierStore = defineStore('cashier', {
     async hasCoupon(data) {
 
       try {
+        data.products = this.cart
+
         const response = await axios.post(`/cashier-discount-code-details`,{
           ...data,
         })

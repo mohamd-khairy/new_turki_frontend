@@ -84,7 +84,11 @@
                 <span>{{ cashierStore.discount }} ريال</span>
               </div>
             </div>
-            <!-- <AppButton type="primary icon-only" title="x" @click="removeDiscount" /> -->
+            <AppButton
+              type="primary icon-only"
+              title="x"
+              @click="removeDiscount"
+            />
           </div>
 
           <button
@@ -220,6 +224,7 @@ const makeDiscount = async () => {
 
 const removeDiscount = () => {
   discountCode.discount_code = ''
+  cashierStore.discount = 0
   cashierStore.isCodeSubmitted = false
 }
 

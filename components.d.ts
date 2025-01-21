@@ -7,7 +7,6 @@ export {}
 
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
-    '[id]': typeof import('./src/@core/components/[id].vue')['default']
     AddBankDialog: typeof import('./src/@core/components/pages/AdditionDialogs/AddBankDialog.vue')['default']
     AddBannerDialog: typeof import('./src/@core/components/pages/AdditionDialogs/AddBannerDialog.vue')['default']
     AddBranchDialog: typeof import('./src/@core/components/pages/AdditionDialogs/AddBranchDialog.vue')['default']
