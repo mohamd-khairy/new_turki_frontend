@@ -199,7 +199,7 @@ const getItems = () => {
 }
 
 onMounted(async () => {
-  await getItems()
+  // await getItems()
 })
 
 

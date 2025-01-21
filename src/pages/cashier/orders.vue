@@ -360,7 +360,10 @@
                     </VBtn>
                   </template>
                 </VTooltip>
-                <VTooltip text=" تعديل الطلب">
+                <VTooltip
+                  v-if="order.paid != 1"
+                  text=" تعديل الطلب"
+                >
                   <template #activator="{ props }">
                     <VBtn
                       v-bind="props"

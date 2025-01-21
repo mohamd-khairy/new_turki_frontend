@@ -40,16 +40,26 @@
             </div>
           </div>
 
+
           <!-- Total Section and Buttons -->
           <div class="total-section">
             <div class="buttons">
               <AppButton
+                v-if="paymentInfo.payment_types.length == 1"
                 class="pay"
                 type="primary"
                 title="تم الدفع"
                 :disabled="!paymentInfo.payment_type_id"
                 :is-loading="cashierStore.isClicked"
                 @click="storePaymentTypes"
+              />
+              <AppButton
+                v-else
+                class="pay"
+                type="primary"
+                title="تم الدفع"
+                :disabled="!paymentInfo.payment_type_id"
+                @click="openPaymentModal"
               />
               <AppButton
                 class="save"
@@ -81,6 +91,50 @@
       </VCol>
     </VRow>
     <CashierLaterOrder />
+
+
+
+
+    <Modal
+      v-model="showPaymentModal"
+      width="700px"
+      :custom-action="true"
+    >
+      <template #content>
+        <VRow>
+          <VCol
+            v-for="item in paymentMethods"
+            :key="item.id"
+            cols="12"
+            md="4"
+          >
+            <VTextField
+              v-if="paymentInfo.payment_types.includes(item.id)"
+              v-model="paymentInfo.prices[item.id]"
+              dirty
+              :name="item.name_ar"
+              type="number"
+              :label="item.name_ar"
+              placeholder="المبلغ المدفوع"
+              class="mb-5"
+            />
+          </VCol>
+        </VRow>
+        <div class="buttons">
+          <AppButton
+            type="primary"
+            title="تم"
+            :disabled="preventMakeOrder"
+            @click="storePaymentTypes"
+          />
+          <AppButton
+            type="close"
+            title="الغاء"
+            @click="resetModal"
+          />
+        </div>
+      </template>
+    </Modal>
   </div>
 </template>
 
@@ -91,10 +145,12 @@ import CashierCart from '@/@core/components/CashierCart.vue'
 import { useCashierStore } from '@/store/Cashier'
 import { computed, onMounted, reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { VRow, VTextField } from 'vuetify/lib/components/index.mjs'
 
 const cashierStore = useCashierStore()
 
 const isLoading = ref(false)
+const showPaymentModal = ref(false)
 const paymentMethods = ref([])
 const router = useRouter()
 
@@ -103,6 +159,27 @@ const paymentInfo = reactive({
   order_ref_no: null,
   comment: '',
   payment_types: [],
+  prices: {},
+})
+
+const openPaymentModal = () => {
+  showPaymentModal.value = true
+}
+
+const filteredObject = () => {
+  return Object.fromEntries(
+    Object.entries(paymentInfo.prices).filter(([key, value]) => {
+      return value !== '' && value !== null && value !== undefined
+    }),
+  )
+}
+
+const resetModal = () => {
+  showPaymentModal.value = false
+}
+
+const preventMakeOrder = computed(() => {
+  return paymentInfo.payment_types.length != Object.keys(filteredObject()).length
 })
 
 const preventPay = computed(() => {
@@ -116,8 +193,8 @@ const preventPay = computed(() => {
 const selectPaymentMethod = methodId => {
   if (paymentInfo?.payment_types?.includes(methodId)) {
     paymentInfo.payment_types = paymentInfo.payment_types?.filter(id => id != methodId)
-  }else{
-    paymentInfo.payment_type_id = methodId
+  } else {
+    paymentInfo.payment_type_id = paymentInfo.payment_types.length > 0 ? paymentInfo.payment_types[0] : methodId
     paymentInfo.payment_types?.push(methodId)
   }
 }
@@ -125,6 +202,10 @@ const selectPaymentMethod = methodId => {
 const storePaymentTypes = async () => {
   isLoading.value = true
   paymentInfo.order_ref_no = cashierStore?.order?.ref_no
+
+  if (paymentInfo.payment_types.length == 1) {
+    paymentInfo.prices[paymentInfo.payment_types[0]] = cashierStore.order?.total_amount_after_discount
+  }
 
   const { code, data } = await cashierStore.storePayment(paymentInfo)
 
@@ -310,6 +391,19 @@ onMounted(async () => {
     flex: 1;
     font-size: 1rem;
     font-weight: 500;
+  }
+}
+
+.button_payments {
+  display: flex;
+  gap: 0.5rem;
+  margin-block-start: 1rem;
+
+  :deep(.v-btn) {
+    flex: 1;
+    block-size: 40px !important;
+    font-size: 1rem;
+    text-align: center;
   }
 }
 
