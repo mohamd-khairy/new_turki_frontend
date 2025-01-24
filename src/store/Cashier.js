@@ -25,6 +25,10 @@ export const useCashierStore = defineStore('cashier', {
     selectedOrder: {},
     ref_no: null,
     isLoading: false,
+    cashierMoneyList: [],
+    cashierMoneyListPaginated: {
+      total: 0,
+    },
   }),
   actions: {
     async addToCart(item) {
@@ -290,20 +294,6 @@ export const useCashierStore = defineStore('cashier', {
       }
     },
 
-    async print(data) {
-
-      try {
-        const response = await axios.post(`/print`,{
-          data: data,
-        })
-
-        return response.data
-      } catch (error) {
-        console.error('Error fetching products:', error)
-
-        return error
-      }
-    },
     async getLaterOrders() {
       try {
         const response = await axios.get(`/cashier-later-orders`)
@@ -331,6 +321,69 @@ export const useCashierStore = defineStore('cashier', {
       }
     },
 
+    async getCashierMoneys(params) {
+      try {
+        this.isLoading = true
+
+        const response = await axios.get(`/cashier-moneys`, { params })
+
+        this.cashierMoneyList = response.data.data.data
+        this.cashierMoneyListPaginated['total'] = response.data.data.last_page
+
+        return response.data
+      } catch (error) {
+        console.error('Error fetching products:', error)
+        throw error
+      } finally {
+        this.isLoading = false
+      }
+    },
+    async storeCashierMoney(data) {
+      this.isClicked = true
+
+      try {
+        const response = await axios.post(`/cashier-moneys`, {
+          ...data,
+        })
+
+        return response.data
+      } catch (error) {
+        console.error('Error fetching products:', error)
+
+        return error
+      } finally {
+        this.isClicked = false
+      }
+    },
+    async editCashierMoney(data) {
+      this.isClicked = true
+
+      try {
+        const response = await axios.put(`/cashier-moneys/${data.id}`, {
+          ...data,
+        })
+
+        this.order = response.data.data
+
+        return response.data
+      } catch (error) {
+        console.error('Error fetching products:', error)
+
+        return error
+      } finally {
+        this.isClicked = false
+      }
+    },
+    async deleteCashierMoney(data) {
+      try {
+        const response = await axios.delete(`/cashier-moneys/${data.id}`)
+
+        return response.data
+      } catch (error) {
+        console.error('Error fetching products:', error)
+        throw error
+      }
+    },
     openOrder (ref_no){
       this.isLoading = true
       this.ref_no = ref_no

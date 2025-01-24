@@ -41,6 +41,35 @@
           </div>
 
 
+
+          <VRow
+            v-if="hasRole('cashier-manager')"
+            class="discount-section"
+          >
+            <VCol
+              cols="6"
+              md="6"
+              sm="12"
+            >
+              <VTextField
+                v-model="paymentInfo.other_discount"
+                dirty
+                type="number"
+                placeholder=" خصم إضافي للعميل"
+                label=" خصم إضافي للعميل"
+                class="mb-5 col-6"
+              />
+            </VCol>
+            <VCol
+              cols="6"
+              md="6"
+              sm="12"
+            >
+              <h2 v-if="paymentInfo.other_discount > 0">
+                الإجمالي بعد الخصم : {{ cashierStore.order.total_amount_after_discount - paymentInfo.other_discount }} ريال
+              </h2>
+            </VCol>
+          </VRow>
           <!-- Total Section and Buttons -->
           <div class="total-section">
             <div class="buttons">
@@ -120,6 +149,7 @@
             />
           </VCol>
         </VRow>
+
         <div class="buttons">
           <AppButton
             type="primary"
@@ -142,6 +172,7 @@
 <script setup>
 import AppButton from '@/@core/components/AppButton.vue'
 import CashierCart from '@/@core/components/CashierCart.vue'
+import { hasRole } from '@/helpers'
 import { useCashierStore } from '@/store/Cashier'
 import { computed, onMounted, reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
@@ -160,6 +191,7 @@ const paymentInfo = reactive({
   comment: '',
   payment_types: [],
   prices: {},
+  other_discount: 0,
 })
 
 const openPaymentModal = () => {
@@ -472,5 +504,9 @@ onMounted(async () => {
   margin-block-end: 1rem;
 
   /* Add spacing between total and buttons */
+}
+
+.discount-section {
+  margin-block-start: 5%;
 }
 </style>
