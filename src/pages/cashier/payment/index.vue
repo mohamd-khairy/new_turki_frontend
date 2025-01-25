@@ -66,7 +66,8 @@
               sm="12"
             >
               <h2 v-if="paymentInfo.other_discount > 0">
-                الإجمالي بعد الخصم : {{ cashierStore.order.total_amount_after_discount - paymentInfo.other_discount }} ريال
+                الإجمالي بعد الخصم : {{ cashierStore.order.total_amount_after_discount - paymentInfo.other_discount }}
+                ريال
               </h2>
             </VCol>
           </VRow>
@@ -132,7 +133,7 @@
       <template #content>
         <VRow>
           <VCol
-            v-for="item in paymentMethods"
+            v-for="item in filteredPaymentMethods()"
             :key="item.id"
             cols="12"
             md="4"
@@ -194,6 +195,12 @@ const paymentInfo = reactive({
   other_discount: 0,
 })
 
+const filteredPaymentMethods = () => {
+  return paymentMethods.value.filter(
+    item => paymentInfo.payment_types.includes(item.id),
+  )
+}
+
 const openPaymentModal = () => {
   showPaymentModal.value = true
 }
@@ -208,6 +215,7 @@ const filteredObject = () => {
 
 const resetModal = () => {
   showPaymentModal.value = false
+
 }
 
 const preventMakeOrder = computed(() => {
