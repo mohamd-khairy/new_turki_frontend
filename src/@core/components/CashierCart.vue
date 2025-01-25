@@ -76,13 +76,13 @@
                 class="mb-3"
               >
                 <span>الخصم</span>
-                <span>{{ cashierStore.discount.toFixed(2) }} ريال</span>
+                <span>{{ cashierStore.discount?.toFixed(2) }} ريال</span>
               </div>
               <div
                 v-if="cashierStore.order?.other_discount > 0"
               >
                 <span>خصم إضافي للعميل</span>
-                <span>{{ cashierStore.order?.other_discount }} ريال</span>
+                <span>{{ cashierStore.order?.other_discount ?? 0 }} ريال</span>
               </div>
             </div>
 
