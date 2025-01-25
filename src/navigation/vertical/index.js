@@ -62,6 +62,12 @@ export default [
     permission: "read-sale-cashier",
   },
   {
+    title: 'عهدة الكاشير',
+    to: { name: 'cashier-cashier-money' },
+    icon: { icon: 'bxs:coupon' },
+    permission: "read-sale-cashier",
+  },
+  {
     title: 'Banners',
     to: { name: 'banners' },
     icon: { icon: 'game-icons:vertical-banner' },

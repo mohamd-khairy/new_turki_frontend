@@ -66,7 +66,7 @@ onMounted(() => {
   })
 
   employeesListStore.fetchCustomers({ pageSize: -1 }).then(response => {
-    customers.value = response.data.data
+    customers.value = response.data.data.data
   })
 })
 
@@ -111,6 +111,8 @@ const onFormSubmit = async () => {
     couponsListStore.storeCoupon(coupon).then(response => {
       emit('update:isAddOpen', false)
       emit('refreshTable')
+      isLoading.value = false
+
       settingsListStore.alertColor = "success"
       settingsListStore.alertMessage = "تم إضافة العنصر بنجاح"
       settingsListStore.isAlertShow = true

@@ -1,87 +1,87 @@
-name: Deploy Build Folder to Server
+# name: Deploy Build Folder to Server
 
-on:
-  push:
-    branches:
-       - dev-working
-      #- live
+# on:
+#   push:
+#     branches:
+#        - dev-working
+#       # - live
 
-jobs:
-  web-deploy:
-    name: 🎉 Deploy
-    runs-on: ubuntu-latest
-    steps:
-    - name: 🚚 Get latest code
-      uses: actions/checkout@v4
+# jobs:
+#   web-deploy:
+#     name: 🎉 Deploy
+#     runs-on: ubuntu-latest
+#     steps:
+#     - name: 🚚 Get latest code
+#       uses: actions/checkout@v4
 
-    - name: Use Node.js 16
-      uses: actions/setup-node@v2
-      with:
-        node-version: '18'
+#     - name: Use Node.js 16
+#       uses: actions/setup-node@v2
+#       with:
+#         node-version: '18'
 
-    - name: ✏️ Update axios.js Base URL
-      run: |
-        # Define the file path
-        FILE_PATH="src/plugins/axios.js"
+#     - name: ✏️ Update axios.js Base URL
+#       run: |
+#         # Define the file path
+#         FILE_PATH="src/plugins/axios.js"
 
-        # Ensure the file exists
-        if [ ! -f "$FILE_PATH" ]; then
-          echo "Error: $FILE_PATH not found!" && exit 1
-        fi
+#         # Ensure the file exists
+#         if [ ! -f "$FILE_PATH" ]; then
+#           echo "Error: $FILE_PATH not found!" && exit 1
+#         fi
 
-        # Update baseURL to production API
-        sed -i "s|baseURL: 'http://new-turki-project-api-v2.test/api/v2'|baseURL: 'https://almaraacompany.com/dashboard/api/v2'|" $FILE_PATH
+#         # Update baseURL to production API
+#         sed -i "s|baseURL: 'http://new-turki-project-api-v2.test/api/v2'|baseURL: 'https://almaraacompany.com/dashboard/api/v2'|" $FILE_PATH
 
-        # Confirm the update
-        echo "Updated $FILE_PATH:"
-        cat $FILE_PATH
+#         # Confirm the update
+#         echo "Updated $FILE_PATH:"
+#         cat $FILE_PATH
 
-    - name: ✏️ Update jsconfig.json Base URL
-      run: |
-          # Define the jsconfig.json file path
-          JSCONFIG_PATH="jsconfig.json"
+#     - name: ✏️ Update jsconfig.json Base URL
+#       run: |
+#           # Define the jsconfig.json file path
+#           JSCONFIG_PATH="jsconfig.json"
 
-          # Ensure the jsconfig.json file exists
-          if [ ! -f "$JSCONFIG_PATH" ]; then
-            echo "Error: $JSCONFIG_PATH not found!" && exit 1
-          fi
+#           # Ensure the jsconfig.json file exists
+#           if [ ! -f "$JSCONFIG_PATH" ]; then
+#             echo "Error: $JSCONFIG_PATH not found!" && exit 1
+#           fi
 
-          # Update baseUrl in jsconfig.json
-          sed -i "s|\"baseUrl\":\".*\"|\"baseUrl\":\"./dashboard-v2/\"|" $JSCONFIG_PATH
+#           # Update baseUrl in jsconfig.json
+#           sed -i "s|\"baseUrl\":\".*\"|\"baseUrl\":\"./dashboard-v2/\"|" $JSCONFIG_PATH
 
-          # Confirm the update
-          echo "Updated $JSCONFIG_PATH:"
-          cat $JSCONFIG_PATH
+#           # Confirm the update
+#           echo "Updated $JSCONFIG_PATH:"
+#           cat $JSCONFIG_PATH
 
-    - name: ✏️ Update Vite Config Base URL
-      run: |
-            # Define the vite.config.js file path
-            VITE_CONFIG_PATH="vite.config.js"
+#     - name: ✏️ Update Vite Config Base URL
+#       run: |
+#             # Define the vite.config.js file path
+#             VITE_CONFIG_PATH="vite.config.js"
 
-            # Ensure the vite.config.js file exists
-            if [ ! -f "$VITE_CONFIG_PATH" ]; then
-              echo "Error: $VITE_CONFIG_PATH not found!" && exit 1
-            fi
+#             # Ensure the vite.config.js file exists
+#             if [ ! -f "$VITE_CONFIG_PATH" ]; then
+#               echo "Error: $VITE_CONFIG_PATH not found!" && exit 1
+#             fi
 
-            # Update base in vite.config.js
-            sed -i "s|base:\"\"|base:\"/dashboard-v2/\"|" $VITE_CONFIG_PATH
+#             # Update base in vite.config.js
+#             sed -i "s|base:\"\"|base:\"/dashboard-v2/\"|" $VITE_CONFIG_PATH
 
-            # Confirm the update
-            echo "Updated $VITE_CONFIG_PATH:"
-            cat $VITE_CONFIG_PATH
+#             # Confirm the update
+#             echo "Updated $VITE_CONFIG_PATH:"
+#             cat $VITE_CONFIG_PATH
 
-    - name: 🔨 Build Project
-      run: |
-        npm install
-        npm run build
+#     - name: 🔨 Build Project
+#       run: |
+#         npm install
+#         npm run build
 
-    - name: 📂 Sync files
-      uses: SamKirkland/FTP-Deploy-Action@v4.3.5
-      with:
-        server: almaraacompany.com
-        username: ${{ secrets.server_master_turki_name }}
-        password: ${{ secrets.server_master_turki_password }}
-        local-dir: ./dist/
-        server-dir: /public_html/dashboard-v2/ # Target directory on the server
-        protocol: ftps
-        port: 21
+#     - name: 📂 Sync files
+#       uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+#       with:
+#         server: almaraacompany.com
+#         username: ${{ secrets.server_master_turki_name }}
+#         password: ${{ secrets.server_master_turki_password }}
+#         local-dir: ./dist/
+#         server-dir: /public_html/dashboard-v2/ # Target directory on the server
+#         protocol: ftps
+#         port: 21

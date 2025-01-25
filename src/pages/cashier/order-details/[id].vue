@@ -191,12 +191,12 @@
                   </h4>
                 </VCol>
                 <VCol
-                  cols="6"
+                  cols="12"
                   class="d-flex align-center gap-3 text-base py-1"
                 >
                   <h4>طريقة الدفع :</h4>
                   <h4>
-                    {{ orderDetails?.order?.payment_type ? orderDetails?.order?.payment_type.name_ar : "لا يوجد" }}
+                    {{ orderDetails?.paid_payment_types ? orderDetails?.paid_payment_types : (rderDetails?.order?.payment_type.name_ar ?? "لا يوجد") }}
                     {{ orderDetails?.order?.using_wallet ? " - المحفظة" : " " }}
                   </h4>
                 </VCol>
@@ -297,7 +297,7 @@
               </h3>
               <VRow class="mb-4">
                 <VCol
-                  cols="4"
+                  cols="3"
                   class="d-flex align-center gap-3 text-base py-1"
                 >
                   <span> المبلغ المسدد :</span>
@@ -320,7 +320,7 @@
                 </VCol>
 
                 <VCol
-                  cols="4"
+                  cols="3"
                   class="d-flex align-center gap-3 text-base py-1"
                 >
                   <span> إجمالي المتبقي : </span>
@@ -330,12 +330,22 @@
                   </span>
                 </VCol>
                 <VCol
-                  cols="4"
+                  cols="3"
                   class="d-flex align-center gap-3 text-base py-1"
                 >
                   <span>الخصم :</span>
                   <span>
                     {{ ConvertToArabicNumbers(orderDetails?.order?.discount_applied) ?? 0 }}
+                    <small>{{ orderCurrency }}</small>
+                  </span>
+                </VCol>
+                <VCol
+                  cols="3"
+                  class="d-flex align-center gap-3 text-base py-1"
+                >
+                  <span>الخصم الاضافي :</span>
+                  <span>
+                    {{ ConvertToArabicNumbers(orderDetails?.order?.other_discount) ?? 0 }}
                     <small>{{ orderCurrency }}</small>
                   </span>
                 </VCol>

@@ -3,7 +3,6 @@ import navItems from '@/navigation/vertical'
 import { useThemeConfig } from '@core/composable/useThemeConfig'
 
 // Components
-import Footer from '@/layouts/components/Footer.vue'
 import NavbarThemeSwitcher from '@/layouts/components/NavbarThemeSwitcher.vue'
 import UserProfile from '@/layouts/components/UserProfile.vue'
 
@@ -38,7 +37,7 @@ const { width: windowWidth } = useWindowSize()
 
         <NavbarThemeSwitcher />
         <VSpacer />
-        
+
 
         <UserProfile />
       </div>
@@ -54,12 +53,7 @@ const { width: windowWidth } = useWindowSize()
       </Transition>
     </RouterView>
 
-    <!-- 👉 Footer -->
-    <template #footer>
-      <Footer />
-    </template>
 
     <!-- 👉 Customizer -->
-     <TheCustomizer />
   </VerticalNavLayout>
 </template>

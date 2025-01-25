@@ -174,7 +174,7 @@
           المجموع الفرعي
         </div>
         <div class="cell price">
-          {{ cashierStore.orderInfo.order?.total_amount_after_tax }} ريال
+          {{ cashierStore.orderInfo.order?.order_subtotal }} ريال
         </div>
       </div>
       <div class="head">
@@ -185,12 +185,26 @@
           {{ cashierStore.orderInfo.order?.tax_fees }} ريال
         </div>
       </div>
-      <div class="head">
+      <div
+        v-if="cashierStore.orderInfo.order?.discount_applied > 0"
+        class="head"
+      >
         <div class="cell description">
           الخصم
         </div>
         <div class="cell price">
           {{ cashierStore.orderInfo.order?.discount_applied }} ريال
+        </div>
+      </div>
+      <div
+        v-if="cashierStore.orderInfo.order?.other_discount > 0"
+        class="head"
+      >
+        <div class="cell description">
+          الخصم الاضافي
+        </div>
+        <div class="cell price">
+          {{ cashierStore.orderInfo.order?.other_discount }} ريال
         </div>
       </div>
       <div class="table">
@@ -214,7 +228,7 @@
     </div>
     <p class="d-flex bold justify-space-between w-100">
       <span>طريقة الدفع</span>
-      <span>{{ cashierStore.orderInfo.order?.payment_type?.name_ar }}</span>
+      <span>{{ cashierStore.order_payments ?? cashierStore.orderInfo.order?.payment_type?.name_ar }}</span>
     </p>
 
     <div class="table">

@@ -1,7 +1,13 @@
 <template>
   <div>
+    <div
+      v-if="isLoading"
+      class="loader-overlay"
+    >
+      <div class="loader" />
+    </div>
     <VRow>
-      <VCol :cols="cashierStore.cart.length > 0 ? 9 : 12">
+      <VCol :cols="cashierStore.cart.length > 0 ? 8 : 12">
         <div class="payment-methods">
           <div class="info">
             <VTextarea
@@ -26,24 +32,18 @@
                 v-for="method in paymentMethods"
                 :key="method.id"
                 class="payment-method-item"
-                :class="{ 'selected': paymentInfo?.payment_type_id === method.id }"
+                :class="{ 'selected': paymentInfo?.payment_types?.includes(method.id) }"
                 @click="selectPaymentMethod(method.id)"
               >
-                <div class="radio-circle">
-                  <div
-                    v-if="paymentInfo?.payment_type_id === method.id"
-                    class="radio-circle-inner"
-                  />
-                </div>
                 <span class="payment-method-name">{{ method.name_ar }}</span>
               </div>
             </div>
           </div>
-
           <!-- Total Section and Buttons -->
           <div class="total-section">
             <div class="buttons">
               <AppButton
+                v-if="paymentInfo.payment_types.length == 1"
                 class="pay"
                 type="primary"
                 title="تم الدفع"
@@ -52,10 +52,30 @@
                 @click="storePaymentTypes"
               />
               <AppButton
+                v-else
+                class="pay"
+                type="primary"
+                title="تم الدفع"
+                :disabled="!paymentInfo.payment_type_id"
+                @click="openPaymentModal"
+              />
+              <AppButton
+                class="save"
+                type="primary"
+                title=" الدفع في وقت اخر"
+                @click="storeForLater"
+              />
+              <AppButton
                 class="cancel"
                 type="close"
-                title="إلغاء"
+                title="حذف الطلب"
                 @click="cancelOrder"
+              />
+              <AppButton
+                class="cancel"
+                type="close"
+                title=" الرجوع"
+                @click="router.go(-1)"
               />
             </div>
           </div>
@@ -63,11 +83,62 @@
       </VCol>
       <VCol
         v-if="cashierStore.cart.length != 0"
-        cols="3"
+        cols="4"
       >
         <CashierCart :is-payment="true" />
       </VCol>
     </VRow>
+    <CashierLaterOrder />
+
+
+
+
+    <Modal
+      v-model="showPaymentModal"
+      width="700px"
+      :custom-action="true"
+    >
+      <template #content>
+        <VCardTitle class="text-h5 d-flex flex-column align-center gap-1 text-center mb-3">
+          <span>
+            اجمالي المبلغ : {{ totalPrice() }}
+          </span>
+        </VCardTitle>
+        <VRow>
+          <VCol
+            v-for="item in filteredPaymentMethods()"
+            :key="item.id"
+            cols="12"
+            md="4"
+          >
+            <VTextField
+              v-if="paymentInfo.payment_types.includes(item.id)"
+              v-model="paymentInfo.prices[item.id]"
+              dirty
+              :name="item.name_ar"
+              type="number"
+              :label="item.name_ar"
+              placeholder="المبلغ المدفوع"
+              class="mb-5"
+            />
+          </VCol>
+        </VRow>
+
+        <div class="buttons">
+          <AppButton
+            type="primary"
+            title="تم"
+            :disabled="preventMakeOrder"
+            @click="storePaymentTypes"
+          />
+          <AppButton
+            type="close"
+            title="الغاء"
+            @click="resetModal"
+          />
+        </div>
+      </template>
+    </Modal>
   </div>
 </template>
 
@@ -76,12 +147,14 @@
 import AppButton from '@/@core/components/AppButton.vue'
 import CashierCart from '@/@core/components/CashierCart.vue'
 import { useCashierStore } from '@/store/Cashier'
-import { computed, onMounted, reactive, ref } from 'vue'
+import { computed, onMounted, reactive, ref, watchEffect } from 'vue'
 import { useRouter } from 'vue-router'
+import { VRow, VTextField } from 'vuetify/lib/components/index.mjs'
 
 const cashierStore = useCashierStore()
 
 const isLoading = ref(false)
+const showPaymentModal = ref(false)
 const paymentMethods = ref([])
 const router = useRouter()
 
@@ -89,6 +162,48 @@ const paymentInfo = reactive({
   payment_type_id: null,
   order_ref_no: null,
   comment: '',
+  payment_types: [],
+  prices: {},
+})
+
+const filteredPaymentMethods = () => {
+  return paymentMethods.value.filter(
+    item => paymentInfo.payment_types.includes(item.id),
+  )
+}
+
+const openPaymentModal = () => {
+  showPaymentModal.value = true
+}
+
+const filteredObject = () => {
+  return Object.fromEntries(
+    Object.entries(paymentInfo.prices).filter(([key, value]) => {
+      return value !== '' && value !== null && value !== undefined
+    }),
+  )
+}
+
+const totalPrice = () => {
+  return Object.values(paymentInfo.prices).reduce((total, value) => total + Number(value), 0)
+}
+
+
+
+watchEffect(() => {
+  totalPrice()
+})
+
+const resetModal = () => {
+  // showPaymentModal.value = false
+  console.log(totalPrice()  , cashierStore.order?.total_amount_after_discount)
+
+
+}
+
+const preventMakeOrder = computed(() => {
+
+  return (paymentInfo.payment_types.length != Object.keys(filteredObject()).length) || (totalPrice() != cashierStore.order?.total_amount_after_discount)
 })
 
 const preventPay = computed(() => {
@@ -99,42 +214,119 @@ const preventPay = computed(() => {
 
 })
 
-
-
-
 const selectPaymentMethod = methodId => {
-  paymentInfo.payment_type_id = methodId
+  if (paymentInfo?.payment_types?.includes(methodId)) {
+    paymentInfo.payment_types = paymentInfo.payment_types?.filter(id => id != methodId)
+  } else {
+    paymentInfo.payment_type_id = paymentInfo.payment_types.length > 0 ? paymentInfo.payment_types[0] : methodId
+    paymentInfo.payment_types?.push(methodId)
+  }
 }
 
 const storePaymentTypes = async () => {
+  isLoading.value = true
   paymentInfo.order_ref_no = cashierStore?.order?.ref_no
+
+  if (paymentInfo.payment_types.length == 1) {
+    paymentInfo.prices[paymentInfo.payment_types[0]] = cashierStore.order?.total_amount_after_discount
+  }
 
   const { code, data } = await cashierStore.storePayment(paymentInfo)
 
-  if (code == 200) router.push(`/cashier/order-details/${data.ref_no}`)
+  if (code == 200) {
+    isLoading.value = false
+    cashierStore.resetClient()
+    router.push(`/cashier/order-details/${data.ref_no}`)
+  }
 }
 
-const cancelOrder = async () => {
-  const { code } = await cashierStore.cancelOrder(cashierStore?.order?.ref_no)
-  if (code == 200) router.push(`/cashier/categories`)
+const storeForLater = async () => {
+  isLoading.value = true
+  paymentInfo.order_ref_no = cashierStore?.order?.ref_no
+  paymentInfo.later = true
 
+  const { code, data } = await cashierStore.storePayment(paymentInfo)
+
+  if (code == 200) {
+    isLoading.value = false
+    cashierStore.resetClient()
+    router.push(`/cashier/categories`)
+  }
+}
+
+
+const cancelOrder = async () => {
+  isLoading.value = true
+
+  const { code } = await cashierStore.cancelOrder(cashierStore?.order?.ref_no)
+  if (code == 200) {
+    isLoading.value = false
+    cashierStore.resetClient()
+    router.push(`/cashier/categories`)
+  }
 }
 
 
 onMounted(async () => {
-
   if (cashierStore.order?.ref_no == undefined) router.go(-1)
   else {
     isLoading.value = true
     paymentMethods.value = await cashierStore.getAllPaymentTypes()
+    paymentInfo.payment_types = cashierStore.order?.payment_types ?? []
+    paymentInfo.payment_type_id = cashierStore.order?.payment_types?.length > 0 ? cashierStore.order?.payment_types[0] : null
     isLoading.value = false
   }
-
-
 })
 </script>
 
 <style lang="scss" scoped>
+.loader-overlay {
+  position: fixed;
+  z-index: 1000;
+
+  /* Ensure it's above other content */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(1px);
+
+  /* Optional: Blur effect */
+  background: rgba(255, 255, 255, 80%);
+
+  /* Semi-transparent white background */
+  block-size: 100%;
+  inline-size: 100%;
+  inset-block-start: 0;
+  inset-inline-start: 0;
+}
+
+/* Loader Spinner */
+.loader {
+  border: 4px solid #f3f3f3;
+
+  /* Light grey */
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+
+  /* Spin animation */
+  block-size: 40px;
+  border-block-start: 4px solid #3498db;
+
+  /* Blue */
+  inline-size: 40px;
+}
+
+/* Spin Animation */
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
 .cart {
   font-size: 1.5rem;
   font-weight: 600;
@@ -144,12 +336,15 @@ onMounted(async () => {
 .payment-methods {
   display: flex;
   flex-direction: column;
-  justify-content: space-between; /* Push the buttons to the bottom */
+  justify-content: space-between;
+
+  /* Push the buttons to the bottom */
   padding: 2rem;
   border-radius: 8px;
   background-color: #f9f9f9;
-  block-size: 80vh; /* Full height */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 10%);
+  block-size: 80vh;
+
+  /* Full height */
   gap: 1.5rem;
 }
 
@@ -223,12 +418,33 @@ onMounted(async () => {
   }
 }
 
+.button_payments {
+  display: flex;
+  gap: 0.5rem;
+  margin-block-start: 1rem;
+
+  :deep(.v-btn) {
+    flex: 1;
+    block-size: 40px !important;
+    font-size: 1rem;
+    text-align: center;
+  }
+}
+
 .buttons {
   display: flex;
-  align-items: center; /* Align buttons vertically */
-  justify-content: space-between; /* Place buttons side-by-side with space between */
-  gap: 1rem; /* Add spacing between the buttons */
-  margin-block-start: auto; /* Push buttons to the bottom of the container */
+  align-items: center;
+
+  /* Align buttons vertically */
+  justify-content: space-between;
+
+  /* Place buttons side-by-side with space between */
+  gap: 1rem;
+
+  /* Add spacing between the buttons */
+  margin-block-start: auto;
+
+  /* Push buttons to the bottom of the container */
 }
 
 .buttons > button {
@@ -259,6 +475,16 @@ onMounted(async () => {
       background-color: rgba(var(--v-theme-primary), 0.8);
     }
   }
+
+  &.save {
+    border: none;
+    background-color: rgb(255 187 1) !important;
+    color: #fff;
+
+    &:hover {
+      background-color: rgba(var(--v-theme-primary), 0.8);
+    }
+  }
 }
 
 .total-section {
@@ -267,6 +493,12 @@ onMounted(async () => {
   justify-content: space-between;
   font-size: 1.2rem;
   font-weight: bold;
-  margin-block-end: 1rem; /* Add spacing between total and buttons */
+  margin-block-end: 1rem;
+
+  /* Add spacing between total and buttons */
+}
+
+.discount-section {
+  margin-block-start: 5%;
 }
 </style>

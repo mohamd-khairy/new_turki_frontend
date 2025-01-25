@@ -1,5 +1,11 @@
 <template>
   <div class="screen-layout">
+    <div
+      v-if="isLoading"
+      class="loader-overlay"
+    >
+      <div class="loader" />
+    </div>
     <VCard
       v-if="!isPayment"
       class="mb-5 pa-5"
@@ -52,6 +58,46 @@
         </div>
         <div class="cart__result">
           <div
+            v-if="cashierStore.isCodeSubmitted || cashierStore.order?.other_discount > 0"
+            class="discount mb-3"
+          >
+            <div
+              class="discount__info"
+            >
+              <div
+                v-if="cashierStore.isCodeSubmitted || cashierStore.order?.other_discount > 0"
+                class=""
+              >
+                <span>السعر قبل الخصم</span>
+                <span>{{ totalPrice.toFixed(2) }} ريال</span>
+              </div>
+              <div
+                v-if="cashierStore.isCodeSubmitted"
+                class="mb-3"
+              >
+                <span>الخصم</span>
+                <span>{{ cashierStore.discount.toFixed(2) }} ريال</span>
+              </div>
+              <div
+                v-if="cashierStore.order?.other_discount > 0"
+              >
+                <span>خصم إضافي للعميل</span>
+                <span>{{ cashierStore.order?.other_discount }} ريال</span>
+              </div>
+            </div>
+
+            <AppButton
+              v-if="cashierStore.isCodeSubmitted"
+              type="primary icon-only"
+              title="x"
+              style="width: 30px;height: 30px;"
+              class="mb-5"
+              @click="removeDiscount"
+            />
+          </div>
+
+
+          <div
             v-if="!cashierStore.isCodeSubmitted && !isPayment"
             class="discount"
           >
@@ -69,35 +115,22 @@
               @click="makeDiscount"
             />
           </div>
-
-          <div
-            v-if="cashierStore.isCodeSubmitted"
-            class="discount"
-          >
-            <div class="discount__info">
-              <div class="">
-                <span>السعر قبل الخصم</span>
-                <span>{{ totalPrice }} ريال</span>
-              </div>
-              <div class="">
-                <span>الخصم</span>
-                <span>{{ cashierStore.discount }} ريال</span>
-              </div>
-            </div>
-            <AppButton
-              type="primary icon-only"
-              title="x"
-              @click="removeDiscount"
-            />
-          </div>
-
           <button
-            v-if="cashierStore.cart.length != 0 && !isPayment"
+            v-if="cashierStore.cart.length != 0 && !isPayment && !isEdit"
             class="total"
             @click="addCustomerInfo"
           >
             <p>الاجمالي</p>
-            <p>{{ totalPriceAfterDiscount.toFixed(2) }} ريال</p>
+
+            <p>{{ finalTotalAmount.toFixed(2) }} ريال</p>
+          </button>
+          <button
+            v-else-if="isEdit"
+            class="total"
+            @click="editOrder"
+          >
+            <p>اكمال الطلب</p>
+            <p>{{ finalTotalAmount.toFixed(2) }} ريال</p>
           </button>
 
           <div
@@ -105,7 +138,7 @@
             class="total"
           >
             <p>الاجمالي</p>
-            <p>{{ totalPriceAfterDiscount.toFixed(2) }} ريال</p>
+            <p>{{ finalTotalAmount.toFixed(2) }} ريال</p>
           </div>
         </div>
       </div>
@@ -168,6 +201,10 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  isEdit:{
+    type: Boolean,
+    default: false,
+  },
 })
 
 const scanValue = ref('')
@@ -194,6 +231,7 @@ const router = useRouter()
 const cashierStore = useCashierStore()
 const totalPrice = computed(() => cashierStore.cart.reduce((acc, item) => acc + item.price * item.quantity, 0))
 const totalPriceAfterDiscount = computed(() => totalPrice.value - cashierStore.discount)
+const finalTotalAmount = computed(() => totalPriceAfterDiscount.value - (cashierStore.order?.other_discount ?? 0))
 const totalQuantity = cashierStore.cart.reduce((total, item) => total + Number(item.quantity), 0)
 const isLoading = ref(false)
 const isCustomerLoading = ref(false)
@@ -241,6 +279,25 @@ const preventMakeOrder = computed(() => {
 
   return mobileSelected || cashierStore.isClicked
 })
+
+const editOrder = async () => {
+
+  isLoading.value = true
+
+  client['ref_no'] = cashierStore.order?.ref_no
+  client["products"] = cashierStore.cart
+  client["total_amount"] = totalPrice
+  client["customer_mobile"] = cashierStore.order?.customer?.mobile
+  client["applied_discount_code"] = discountCode.discount_code
+
+  let { code } = await cashierStore.editOrder(client)
+  if (code == '200') {
+    isLoading.value = false
+    router.push('/cashier/payment')
+    resetModal()
+
+  }
+}
 
 const makeOrder = async () => {
   client["products"] = cashierStore.cart
@@ -297,6 +354,53 @@ onMounted(() => {
 </script>
 
 <style lang='scss' scoped>
+.loader-overlay {
+  position: fixed;
+  z-index: 1000;
+
+  /* Ensure it's above other content */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(1px);
+
+  /* Optional: Blur effect */
+  background: rgba(255, 255, 255, 80%);
+
+  /* Semi-transparent white background */
+  block-size: 100%;
+  inline-size: 100%;
+  inset-block-start: 0;
+  inset-inline-start: 0;
+}
+
+/* Loader Spinner */
+.loader {
+  border: 4px solid #f3f3f3;
+
+  /* Light grey */
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+
+  /* Spin animation */
+  block-size: 40px;
+  border-block-start: 4px solid #3498db;
+
+  /* Blue */
+  inline-size: 40px;
+}
+
+/* Spin Animation */
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
 .screen-layout {
   position: sticky;
   block-size: 80vh;

@@ -234,6 +234,18 @@
         :order-statuses="orderStatuses"
         @refreshTable="getOrders"
       />
+      <EditCashierStatusPaymentDialog
+        v-if="isEditPaymentOpen"
+        v-model:is-edit-open="isEditPaymentOpen"
+        :item="selectedOrder"
+        @refreshTable="getOrders"
+      />
+      <AddOtherPaymnentDialog
+        v-if="isAddOtherDiscountOpen"
+        v-model:is-edit-open="isAddOtherDiscountOpen"
+        :item="selectedOrder"
+        @refreshTable="getOrders"
+      />
       <div class="">
         <VTable
           height="600px"
@@ -354,6 +366,26 @@
                     </VBtn>
                   </template>
                 </VTooltip>
+                <VTooltip
+                  v-if="order.paid != 1"
+                  text=" تعديل الطلب"
+                >
+                  <template #activator="{ props }">
+                    <VBtn
+                      v-bind="props"
+                      icon
+                      variant="plain"
+                      color="default"
+                      size="x-small"
+                      @click="cashierStore.openOrder(order.ref_no)"
+                    >
+                      <VIcon
+                        :size="22"
+                        icon="tabler-edit"
+                      />
+                    </VBtn>
+                  </template>
+                </VTooltip>
                 <VTooltip text="ارجاع الطلب">
                   <template #activator="{ props }">
                     <VBtn
@@ -385,6 +417,26 @@
                     </VBtn>
                   </template>
                 </VTooltip>
+                <VTooltip
+                  v-if="order.paid != 1"
+                  text="خصم إضافي للعميل"
+                >
+                  <template #activator="{ props }">
+                    <VBtn
+                      v-bind="props"
+                      icon
+                      variant="plain"
+                      color="default"
+                      size="x-small"
+                      @click="openAddOtherDiscount(order)"
+                    >
+                      <VIcon
+                        :size="22"
+                        icon="tabler-discount"
+                      />
+                    </VBtn>
+                  </template>
+                </VTooltip>
               </td>
               <td>
                 {{ order.ref_no }}
@@ -404,7 +456,7 @@
                   {{ order.order_state_ar }}
                 </VChip>
               </td>
-              <td>
+              <td @click="openEditPayment(order)">
                 <VChip
                   v-if="order.paid == 1"
                   style="cursor: pointer;"
@@ -414,7 +466,7 @@
                 </VChip>
 
                 <VChip
-                  v-else-if="(order.wallet_amount_used > 0 && order.remain_amount > 0)"
+                  v-else-if="(order.wallet_amount_used > 0 && order.remain_amount > 0) || order.paid == 2"
                   style="cursor: pointer;"
                   class="text-warning"
                 >
@@ -489,7 +541,9 @@
 
 
 <script setup>
+import AddOtherPaymnentDialog from '@/@core/components/pages/EditDialogs/AddOtherPaymnentDialog.vue'
 import EditCashierStatusDialog from '@/@core/components/pages/EditDialogs/EditCashierStatusDialog.vue'
+import EditCashierStatusPaymentDialog from '@/@core/components/pages/EditDialogs/EditCashierStatusPaymentDialog.vue'
 import { useCashierStore } from '@/store/Cashier'
 import { useCitiesStore } from "@/store/Cities"
 import { useCountriesStore } from "@/store/Countries"
@@ -632,11 +686,23 @@ const dataFrom = ref(1)
 const dataTo = ref(1)
 const currentPage = ref(1)
 const isEditOpen = ref(false)
+const isEditPaymentOpen = ref(false)
+const isAddOtherDiscountOpen = ref(false)
 const selectedOrder = ref({})
 const orderStatuses = ref([])
 
 const openEdit = order => {
   isEditOpen.value = true
+  selectedOrder.value = order
+}
+
+const openEditPayment = order => {
+  isEditPaymentOpen.value = true
+  selectedOrder.value = order
+}
+
+const openAddOtherDiscount = order => {
+  isAddOtherDiscountOpen.value = true
   selectedOrder.value = order
 }
 

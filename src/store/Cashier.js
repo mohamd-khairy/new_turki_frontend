@@ -1,5 +1,7 @@
+import router from '@/router'
 import axios from '@axios'
 import { defineStore } from 'pinia'
+import { useRoute } from 'vue-router'
 
 export const useCashierStore = defineStore('cashier', {
   state: () => ({
@@ -9,13 +11,23 @@ export const useCashierStore = defineStore('cashier', {
     isClicked: false,
     isCodeSubmitted: false,
     discount: 0,
+    other_discount: 0,
     order: {},
+    order_payments:"",
     orderList: [],
     orderInfo: {
       products: [],
       order: {},
     },
     orderListPaginated: {
+      total: 0,
+    },
+    laterOrders: [],
+    selectedOrder: {},
+    ref_no: null,
+    isLoading: false,
+    cashierMoneyList: [],
+    cashierMoneyListPaginated: {
       total: 0,
     },
   }),
@@ -88,7 +100,26 @@ export const useCashierStore = defineStore('cashier', {
       }
 
     },
+    async editOrder(data) {
+      this.isClicked = true
 
+      try {
+        const response = await axios.put(`/cashier-edit-order`, {
+          ...data,
+        })
+
+        this.order = response.data.data
+        this.other_discount = this.order.other_discount ?? 0
+
+        return response.data
+      } catch (error) {
+        console.error('Error fetching products:', error)
+
+        return error
+      } finally {
+        this.isClicked = false
+      }
+    },
     async createOrder(data) {
       this.isClicked = true
 
@@ -98,6 +129,7 @@ export const useCashierStore = defineStore('cashier', {
         })
 
         this.order = response.data.data
+        this.other_discount = this.order.other_discount ?? 0
 
         return response.data
       } catch (error) {
@@ -118,6 +150,7 @@ export const useCashierStore = defineStore('cashier', {
 
         this.cart = []
         this.order = {}
+        this.other_discount =0
 
         return response.data
       } catch (error) {
@@ -133,6 +166,8 @@ export const useCashierStore = defineStore('cashier', {
         const response = await axios.get(`/cashier-order-details/${data}`)
 
         this.orderInfo = response.data.data
+        this.order_payments = response.data.data.paid_payment_types
+        this.other_discount = this.orderInfo?.order?.other_discount ?? 0
 
         return response.data
       } catch (error) {
@@ -266,11 +301,57 @@ export const useCashierStore = defineStore('cashier', {
       }
     },
 
-    async print(data) {
+    async getLaterOrders() {
+      try {
+        const response = await axios.get(`/cashier-later-orders`)
+
+        this.laterOrders = response.data.data
+
+        return response.data.data
+      } catch (error) {
+        console.error('Error fetching products:', error)
+        throw error
+      }
+    },
+
+    async openOrderForEdit(data) {
+      try {
+        const response = await axios.get(`/cashier-order-details/${data}`)
+
+        this.selectedOrder = response.data.data
+        this.other_discount = this.selectedOrder.order?.other_discount ?? 0
+
+        return response.data.data
+
+      } catch (error) {
+        console.error('Error fetching products:', error)
+        throw error
+      }
+    },
+
+    async getCashierMoneys(params) {
+      try {
+        this.isLoading = true
+
+        const response = await axios.get(`/cashier-moneys`, { params })
+
+        this.cashierMoneyList = response.data.data.data
+        this.cashierMoneyListPaginated['total'] = response.data.data.last_page
+
+        return response.data
+      } catch (error) {
+        console.error('Error fetching products:', error)
+        throw error
+      } finally {
+        this.isLoading = false
+      }
+    },
+    async storeCashierMoney(data) {
+      this.isClicked = true
 
       try {
-        const response = await axios.post(`/print`,{
-          data: data,
+        const response = await axios.post(`/cashier-moneys`, {
+          ...data,
         })
 
         return response.data
@@ -278,7 +359,87 @@ export const useCashierStore = defineStore('cashier', {
         console.error('Error fetching products:', error)
 
         return error
+      } finally {
+        this.isClicked = false
       }
+    },
+    async editCashierMoney(data) {
+      this.isClicked = true
+
+      try {
+        const response = await axios.put(`/cashier-moneys/${data.id}`, {
+          ...data,
+        })
+
+        this.order = response.data.data
+
+        return response.data
+      } catch (error) {
+        console.error('Error fetching products:', error)
+
+        return error
+      } finally {
+        this.isClicked = false
+      }
+    },
+    async deleteCashierMoney(data) {
+      try {
+        const response = await axios.delete(`/cashier-moneys/${data.id}`)
+
+        return response.data
+      } catch (error) {
+        console.error('Error fetching products:', error)
+        throw error
+      }
+    },
+    openOrder (ref_no){
+      this.isLoading = true
+      this.ref_no = ref_no
+
+      this.addQueryString('ref_no' , this.ref_no , '/cashier/categories')
+
+      this.openOrderForEdit(this.ref_no).then(res => {
+        if (res.order) {
+          this.order = res.order
+          this.cart = []
+          let products = res.products
+          for (let index = 0; index < products.length; index++) {
+            const element = products[index]
+
+            let new_item = {
+              cut_id: element.cut?.id,
+              size_id: element.size?.id,
+              preparation_id: element.preparation?.id,
+              price: element.size?.sale_price,
+              total_price: parseFloat(element.size?.sale_price * element.quantity),
+              product_id: element.product_id,
+              name: element.product?.name_ar,
+              quantity: element.quantity,
+              is_Ras: element.is_Ras ? 1 : 0,
+              is_lyh: element.is_lyh ? 1 : 0,
+              is_kwar3: element.is_kwar3 ? 1 : 0,
+              is_karashah: element.is_karashah ? 1 : 0,
+              shalwata: element.shalwata ? 1 : 0,
+            }
+
+            this.cart.push(new_item)
+            this.isLoading = false
+          }
+        }
+      })
+    },
+    resetClient () {
+      this.ref_no = null
+      this.selectedOrder = null
+      this.order = null
+      this.cart = []
+      this.other_discount = 0
+    },
+    addQueryString (key, value , path) {
+      router.push({
+        path,
+        query: { ...useRoute.query, [key]: value }, // Add or update the query parameter
+      })
     },
   },
 })
