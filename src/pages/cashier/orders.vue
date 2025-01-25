@@ -418,7 +418,7 @@
                   </template>
                 </VTooltip>
                 <VTooltip
-                  v-if="order.paid != 1"
+                  v-if="order.paid != 1 && hasRole('cashier-manager')"
                   text="خصم إضافي للعميل"
                 >
                   <template #activator="{ props }">
@@ -544,6 +544,7 @@
 import AddOtherPaymnentDialog from '@/@core/components/pages/EditDialogs/AddOtherPaymnentDialog.vue'
 import EditCashierStatusDialog from '@/@core/components/pages/EditDialogs/EditCashierStatusDialog.vue'
 import EditCashierStatusPaymentDialog from '@/@core/components/pages/EditDialogs/EditCashierStatusPaymentDialog.vue'
+import { hasRole } from '@/helpers'
 import { useCashierStore } from '@/store/Cashier'
 import { useCitiesStore } from "@/store/Cities"
 import { useCountriesStore } from "@/store/Countries"
