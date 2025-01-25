@@ -345,7 +345,7 @@
                 >
                   <span>الخصم الاضافي :</span>
                   <span>
-                    {{ ConvertToArabicNumbers(orderDetails?.order?.other_discount) ?? 0 }}
+                    {{ ConvertToArabicNumbers(orderDetails?.order?.other_discount ?? 0) ?? 0 }}
                     <small>{{ orderCurrency }}</small>
                   </span>
                 </VCol>
