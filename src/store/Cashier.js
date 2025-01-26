@@ -411,7 +411,7 @@ export const useCashierStore = defineStore('cashier', {
               size_id: element.size?.id,
               preparation_id: element.preparation?.id,
               price: element.size?.sale_price,
-              total_price: parseFloat(element.size?.sale_price * element.quantity),
+              total_price: parseFloat(element.total_price ?? null) ?? parseFloat(element.size?.sale_price * element.quantity),
               product_id: element.product_id,
               name: element.product?.name_ar,
               quantity: element.quantity,
