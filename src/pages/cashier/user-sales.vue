@@ -99,12 +99,14 @@
           >
             {{ locale == 'en' ? paymentType.name_en : paymentType.name_ar }}
           </th>
-          <th
+          <!--
+            <th
             scope="col"
             class="font-weight-semibold"
-          >
+            >
             المرتجع
-          </th>
+            </th>
+          -->
           <th
             scope="col"
             class="font-weight-semibold"
