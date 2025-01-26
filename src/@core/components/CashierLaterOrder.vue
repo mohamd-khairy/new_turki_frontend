@@ -57,9 +57,10 @@ const deleteOrder = async ref_no => {
 
   const { code } = await cashierStore.cancelOrder(ref_no)
   if (code == 200){
-    isLoading.value = false
     cashierStore.laterOrders = cashierStore.laterOrders?.filter(item => item.ref_no !== ref_no)
+    cashierStore.resetClient()
   }
+  isLoading.value = false
 }
 
 const getLaterOrders = async () => {

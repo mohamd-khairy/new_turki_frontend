@@ -421,12 +421,11 @@ export const useCashierStore = defineStore('cashier', {
               is_karashah: element.is_karashah ? 1 : 0,
               shalwata: element.shalwata ? 1 : 0,
             }
-
             this.cart.push(new_item)
-            this.isLoading = false
           }
         }
       })
+      this.isLoading = false
     },
     resetClient () {
       this.ref_no = null

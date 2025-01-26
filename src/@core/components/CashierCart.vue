@@ -292,11 +292,11 @@ const editOrder = async () => {
 
   let { code } = await cashierStore.editOrder(client)
   if (code == '200') {
-    isLoading.value = false
     router.push('/cashier/payment')
     resetModal()
 
   }
+  isLoading.value = false
 }
 
 const makeOrder = async () => {

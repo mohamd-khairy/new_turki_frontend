@@ -198,7 +198,7 @@ onMounted(() => {
               scope="col"
               class="font-weight-semibold"
             >
-              foodics_integrate_id
+              الادوار
             </th>
             <th
               scope="col"
@@ -256,7 +256,7 @@ onMounted(() => {
               </span>
             </td>
             <td>
-              {{ employee.foodics_integrate_id ? employee.foodics_integrate_id : '-' }}
+              {{ employee.display_roles ? employee.display_roles : '-' }}
             </td>
             <td>
               {{ (formatDateTime(employee.created_at).date) }}
