@@ -229,9 +229,9 @@ const enableKeyboard = () => {
 
 const router = useRouter()
 const cashierStore = useCashierStore()
-const totalPrice = computed(() => cashierStore.cart.reduce((acc, item) => acc + item.price * item.quantity, 0))
+const totalPrice = computed(() => cashierStore.cart.reduce((acc, item) => acc + item.total_price, 0))
 const totalPriceAfterDiscount = computed(() => totalPrice.value - cashierStore.discount)
-const finalTotalAmount = computed(() => totalPriceAfterDiscount.value - (cashierStore.order?.other_discount ?? 0))
+const finalTotalAmount = computed(() => parseFloat(totalPriceAfterDiscount.value) - parseFloat(cashierStore.order?.other_discount ?? 0))
 const totalQuantity = cashierStore.cart.reduce((total, item) => total + Number(item.quantity), 0)
 const isLoading = ref(false)
 const isCustomerLoading = ref(false)
