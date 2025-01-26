@@ -1085,7 +1085,7 @@ onMounted(() => {
                 </div>
               </VCard>
               <VCard
-                v-if="hasRole(['admin']) && totalOrdersAmount"
+                v-if="hasRole(['admin' , 'cashier-manager']) && totalOrdersAmount"
                 class="py-3 px-4 w-100 w-sm-auto"
               >
                 <p class="mb-3">
