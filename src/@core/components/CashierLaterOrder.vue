@@ -61,6 +61,7 @@ const deleteOrder = async ref_no => {
     cashierStore.resetClient()
   }
   isLoading.value = false
+  router.push(`/cashier/categories`)
 }
 
 const getLaterOrders = async () => {
