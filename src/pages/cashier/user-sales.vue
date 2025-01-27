@@ -152,7 +152,7 @@
             >
               {{ ConvertToArabicNumbers(user[paymentType.name_en]) }}
             </td>
-            <td>{{ ConvertToArabicNumbers(user.refund) }}</td>
+            <!-- <td>{{ ConvertToArabicNumbers(user.refund) }}</td> -->
             <td>{{ ConvertToArabicNumbers(user.total) }}</td>
           </tr>
         </template>

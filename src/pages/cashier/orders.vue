@@ -20,6 +20,7 @@
               <VCol
                 cols="3"
                 sm="12"
+                lg="3"
                 class="d-flex align-center gap-3"
               >
                 <div class="icon">
@@ -42,6 +43,7 @@
               <VCol
                 cols="3"
                 sm="12"
+                lg="3"
                 class="d-flex align-center gap-3"
               >
                 <div class="icon">
@@ -59,6 +61,7 @@
               <VCol
                 cols="6"
                 sm="12"
+                lg="6"
                 class="d-flex align-center gap-3"
               >
                 <div class="icon">
