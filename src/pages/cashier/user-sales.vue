@@ -143,17 +143,21 @@
             <td>{{ user.date }}</td>
             <td>{{ user.user_name }}</td>
             <td>{{ user.branch_name }}</td>
-            <td>{{ user.order_count }}</td>
+            <td class="font-weight-semibold">
+              {{ user.order_count }}
+            </td>
             <td
               v-for="paymentType in cashierStore.paymentTypes"
               :key="paymentType.id"
               scope="col"
               class="font-weight-semibold"
             >
-              {{ ConvertToArabicNumbers(user[paymentType.name_en]) }}
+              {{ user[paymentType.name_en] }}
             </td>
             <!-- <td>{{ ConvertToArabicNumbers(user.refund) }}</td> -->
-            <td>{{ ConvertToArabicNumbers(user.total) }}</td>
+            <td class="font-weight-semibold">
+              {{ user.total }}
+            </td>
           </tr>
         </template>
       </tbody>

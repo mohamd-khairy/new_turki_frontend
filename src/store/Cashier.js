@@ -319,6 +319,7 @@ export const useCashierStore = defineStore('cashier', {
         const response = await axios.get(`/cashier-order-details/${data}`)
 
         this.selectedOrder = response.data.data
+        this.order = response.data.data
         this.other_discount = this.selectedOrder.order?.other_discount ?? 0
 
         return response.data.data

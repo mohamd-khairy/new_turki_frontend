@@ -195,10 +195,7 @@ watchEffect(() => {
 })
 
 const resetModal = () => {
-  // showPaymentModal.value = false
-  console.log(totalPrice()  , cashierStore.order?.total_amount_after_discount)
-
-
+  showPaymentModal.value = false
 }
 
 const preventMakeOrder = computed(() => {
@@ -230,6 +227,7 @@ const storePaymentTypes = async () => {
   if (paymentInfo.payment_types.length == 1) {
     paymentInfo.prices[paymentInfo.payment_types[0]] = cashierStore.order?.total_amount_after_discount
   }
+
 
   const { code, data } = await cashierStore.storePayment(paymentInfo)
 
@@ -272,9 +270,15 @@ onMounted(async () => {
   else {
     isLoading.value = true
     paymentMethods.value = await cashierStore.getAllPaymentTypes()
-    paymentInfo.payment_types = cashierStore.order?.payment_types ?? []
-    paymentInfo.payment_type_id = cashierStore.order?.payment_types?.length > 0 ? cashierStore.order?.payment_types[0] : null
+    paymentInfo.payment_types = cashierStore.order?.cashier_payments?.map(item => parseInt(item.payment_id)) ?? []
+    paymentInfo.payment_type_id = paymentInfo.payment_types?.length > 0 ? paymentInfo.payment_types[0] : null
     isLoading.value = false
+    paymentInfo.prices = cashierStore.order?.cashier_payments?.reduce((acc, item) => {
+      acc[item.payment_id] = item.payment_value
+
+      return acc
+    }, {}) ?? {}
+
   }
 })
 </script>
