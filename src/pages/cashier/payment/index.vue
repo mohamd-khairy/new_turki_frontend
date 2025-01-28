@@ -200,7 +200,7 @@ const resetModal = () => {
 
 const preventMakeOrder = computed(() => {
 
-  return (paymentInfo.payment_types.length != Object.keys(filteredObject()).length) || (totalPrice() != cashierStore.order?.total_amount_after_discount)
+  return (paymentInfo.payment_types.length != Object.keys(filteredObject()).length)   (totalPrice() != cashierStore.cart.reduce((acc, item) => acc + item.total_price, 0)) //|| (totalPrice() != cashierStore.order?.total_amount_after_discount)
 })
 
 const preventPay = computed(() => {

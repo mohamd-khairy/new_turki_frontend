@@ -226,10 +226,34 @@
         =========================================================
       </p>
     </div>
-    <p class="d-flex bold justify-space-between w-100">
+    <div
+      v-if="cashierStore.orderInfo?.order?.cashier_payments?.length > 1"
+    >
+      <p class="text-center bold w-100">
+        طريقة الدفع
+      </p>
+
+      <h4
+        v-for="item in cashierStore.orderInfo?.order?.cashier_payments"
+        :key="item.id"
+        class="d-flex bold justify-space-between w-100"
+      >
+        <div>{{ item.payment_type?.name_ar }} : </div>
+        <div>
+          {{ item.payment_value }} ريال
+        </div>
+      </h4>
+    </div>
+
+    <p
+      v-else
+      class="d-flex bold justify-space-between w-100"
+    >
       <span>طريقة الدفع</span>
       <span>{{ cashierStore.order_payments ?? cashierStore.orderInfo.order?.payment_type?.name_ar }}</span>
     </p>
+
+
 
     <div class="table">
       <p class="text-center">

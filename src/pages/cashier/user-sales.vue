@@ -50,13 +50,15 @@
       />
       <span class="mx-1">التسويات</span>
       <VSpacer />
-      <VBtn
+      <!--
+        <VBtn
         v-if="!cashierStore.isLoading && cashierStore.usersSales.length > 0"
         prepend-icon="mdi-download"
         @click.stop="downloadPDF"
-      >
+        >
         طبــاعة
-      </VBtn>
+        </VBtn>
+      -->
     </VCardTitle>
     <VTable
       id="table-to-pdf"
@@ -113,6 +115,7 @@
           >
             المجموع
           </th>
+          <th />
         </tr>
       </thead>
       <tbody v-if="cashierStore.isLoading">
@@ -157,6 +160,25 @@
             <!-- <td>{{ ConvertToArabicNumbers(user.refund) }}</td> -->
             <td class="font-weight-semibold">
               {{ user.total }}
+            </td>
+            <td>
+              <VTooltip text="طباعة الفاتورة">
+                <template #activator="{ props }">
+                  <VBtn
+                    v-bind="props"
+                    icon
+                    variant="plain"
+                    color="default"
+                    size="x-small"
+                    @click="printUserSales(user)"
+                  >
+                    <VIcon
+                      :size="22"
+                      icon="iconamoon:invoice-thin"
+                    />
+                  </VBtn>
+                </template>
+              </VTooltip>
             </td>
           </tr>
         </template>
@@ -278,6 +300,59 @@ const downloadPDF = () => {
     })
 
 }
+
+const printUserSales = user => {
+  // Create an HTML template for the PDF content
+  const content = `
+  <h1 class="text-2xl font-weight-semibold text-center mb-5">التسويــات</h1>
+    <div dir="rtl">
+      <p><strong>التاريخ : </strong>  ${user.date} </p>
+      <p> <strong>اسم الموظف : </strong> ${user.user_name}</p>
+      <p> <strong> اسم الفرع :</strong> ${user.branch_name} </p>
+      <p><strong>عدد الطلبات : </strong>${user.order_count}  </p>
+      ${cashierStore.paymentTypes.map(
+    paymentType =>
+      `<p> <strong>${paymentType.name_ar} :</strong> ${user[paymentType.name_en]}</p>`,
+  )
+    .join('')}
+      <p><strong> الاجمالي :</strong> ${user.total}</p>
+    </div>
+  `
+
+  html2pdf()
+    .from(content)
+    .set({
+      margin: 5,
+      filename: 'user_sales.pdf',
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2 },
+      jsPDF: { unit: 'mm', format: [80, 200], orientation: 'portrait' }, // Custom size for thermal printer
+    })
+    .output('blob') // Generate the PDF as a Blob object
+    .then(pdfBlob => {
+      // Create a Blob URL for the PDF
+      const pdfBlobUrl = URL.createObjectURL(pdfBlob)
+      const printIframe = document.createElement('iframe')
+
+      printIframe.style.position = 'absolute'
+      printIframe.style.top = '-1000px'
+      printIframe.style.left = '-1000px'
+      printIframe.src = pdfBlobUrl
+      document.body.appendChild(printIframe)
+
+      printIframe.onload = () => {
+        printIframe.contentWindow.print()
+
+        setTimeout(() => {
+          // document.body.removeChild(printIframe)
+          URL.revokeObjectURL(pdfBlobUrl)
+        }, 500) // Clean up
+      }
+
+    })
+
+}
+
 
 const cashierStore = useCashierStore()
 const { t, locale } = useI18n()
