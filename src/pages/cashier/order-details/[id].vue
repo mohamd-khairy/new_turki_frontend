@@ -454,7 +454,7 @@ const generateAndPrintPdf = () => {
       filename: 'Invoice.pdf',
       image: { type: 'jpeg', quality: 0.98 },
       html2canvas: { scale: 2 },
-      jsPDF: { unit: 'mm', format: [75, 200], orientation: 'portrait' }, // Custom size for thermal printer
+      jsPDF: { unit: 'mm', format: [70, 200], orientation: 'portrait' }, // Custom size for thermal printer
     })
     .output('blob') // Generate the PDF as a Blob object
     .then(pdfBlob => {
