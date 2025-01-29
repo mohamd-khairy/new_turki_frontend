@@ -225,9 +225,11 @@ import { useI18n } from 'vue-i18n'
 const cashierStore = useCashierStore()
 const { t, locale } = useI18n()
 
+const today = new Date()
+
 const filters = reactive({
-  start_date: null,
-  end_date: null,
+  start_date: today.toISOString().split('T')[0],
+  end_date: today.toISOString().split('T')[0],
 })
 
 const isLoading = ref(false)
@@ -236,21 +238,6 @@ const isDeleteOpen = ref(false)
 const isEditOpen = ref(false)
 const selectedMoney = ref({})
 const rowPerPage = ref(10)
-
-const today = new Date()
-const threeWeeksFromToday = new Date(today)
-
-threeWeeksFromToday.setDate(today.getDate() + 21)
-
-const lastDayOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0)
-const formattedToday = today.toISOString().split('T')[0]
-const yesterday = new Date(today)
-
-yesterday.setDate(today.getDate() - 1)
-
-const formattedYesterday = yesterday.toISOString().split('T')[0]
-const formattedThreeWeeksFromToday = threeWeeksFromToday.toISOString().split('T')[0]
-const formattedLastDay = lastDayOfMonth.toISOString().split('T')[0]
 
 
 const paginationData = computed(() => {
