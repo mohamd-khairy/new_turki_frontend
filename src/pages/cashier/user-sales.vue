@@ -357,9 +357,11 @@ const printUserSales = user => {
 const cashierStore = useCashierStore()
 const { t, locale } = useI18n()
 
+const today = new Date()
+
 const filters = reactive({
-  start_date: null,
-  end_date: null,
+  start_date: today.toISOString().split('T')[0],
+  end_date: today.toISOString().split('T')[0],
 })
 
 const isLoading = ref(false)
@@ -387,8 +389,6 @@ const getItems = () => {
 onMounted(async () => {
   // await getItems()
 })
-
-
 
 watchEffect(() => {
   getItems()
