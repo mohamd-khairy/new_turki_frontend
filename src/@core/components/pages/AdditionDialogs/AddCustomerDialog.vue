@@ -2,7 +2,7 @@
 import { useEmployeesStore } from "@/store/Employees"
 import { useRolesStore } from "@/store/Roles"
 import {
-requiredValidator,
+  requiredValidator,
 } from '@validators'
 
 
@@ -39,7 +39,7 @@ const employee = reactive({
   name: null,
   mobile: null,
   address: null,
-  foodics_integrate_id : null,
+  device_token : null,
 
   // mobile_country_code: null,
   // email: null,
@@ -68,7 +68,7 @@ const resetForm = () => {
   employee.mobile = null
   employee.name = null
   employee.address = null
-  employee.foodics_integrate_id = null,
+  employee.device_token = null,
 
   // employee.email = null
   // employee.avatar = {}
@@ -198,8 +198,8 @@ const dialogModelValueUpdate = val => {
               md="6"
             >
               <VTextField
-                v-model="employee.foodics_integrate_id"
-                label="foodics_integrate_id"
+                v-model="employee.device_token"
+                label="device_token"
               />
             </VCol>
 
@@ -225,9 +225,9 @@ const dialogModelValueUpdate = val => {
               :label="t('forms.country_code')"
               :rules="[requiredValidator]"
               />
-              </VCol> 
+              </VCol>
             -->
-            
+
             <!--
               <VCol
               cols="12"
@@ -251,7 +251,7 @@ const dialogModelValueUpdate = val => {
               item-title="ar"
               item-value="alpha3"
               />
-              </VCol> 
+              </VCol>
             -->
             <!--
               <VCol
@@ -279,7 +279,7 @@ const dialogModelValueUpdate = val => {
               prepend-inner-icon="mdi-image"
               :rules="[requiredValidator]"
               />
-              </VCol> 
+              </VCol>
             -->
             <!--
               <VCol
@@ -302,7 +302,7 @@ const dialogModelValueUpdate = val => {
               v-model="employee.is_active"
               :label="t('forms.is_active')"
               />
-              </VCol> 
+              </VCol>
             -->
             <VCol
               cols="12"

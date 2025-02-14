@@ -82,7 +82,7 @@ export const useEmployeesStore = defineStore('EmployeesStore', {
       formData.append("age", data.age)
       formData.append("country_code", data.country_code)
       formData.append("is_active", data.is_active)
-      formData.append("foodics_integrate_id", data.foodics_integrate_id)
+      formData.append("device_token", data.device_token)
       formData.append("branch_id", data.branch_id)
 
       Object.values(data.roles).map((role, index) => {
@@ -104,7 +104,7 @@ export const useEmployeesStore = defineStore('EmployeesStore', {
       formData.append("email", data.email)
       formData.append("mobile", data.mobile)
       formData.append("wallet", data.wallet)
-      formData.append("foodics_integrate_id", data.foodics_integrate_id)
+      formData.append("device_token", data.device_token)
 
       return axios.post(`customers/${data.id}`, formData)
     },

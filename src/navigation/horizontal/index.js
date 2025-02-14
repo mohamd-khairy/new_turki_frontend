@@ -44,6 +44,19 @@ export default [
     ],
   },
   {
+    title: 'الاشعارات',
+    icon: { icon: 'uil:bill' },
+    children: [
+      { title: 'كل الاشعارات', to: 'notifications' },
+      { title: 'السلات المتروكه', to: 'notifications-cart' },
+      { title: 'العملاء القدامي', to: 'notifications-old-customers' },
+      { title: 'العملاء الجدد', to: 'notifications-new-customers' },
+      { title: ' اشعار مخصص', to: 'notifications-push' },
+
+    ],
+    permission: "read-notifications",
+  },
+  {
     title: 'كاشير',
     to: { name: 'cashier-categories' },
     icon: { icon: 'game-icons:vertical-banner' },

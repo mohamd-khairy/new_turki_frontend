@@ -1,76 +1,53 @@
 <script setup>
-import { useEmployeesStore } from "@/store/Employees"
-
-const props = defineProps({
-  isEditOpen: {
-    type: Boolean,
-    required: true,
-  },
-  customer: {
-    type: Object,
-    required: true,
-  },
-})
-
-const emit = defineEmits([
-  'refreshTable',
-  'update:isEditOpen',
-])
-
+import { useNotificationsStore } from "@/store/Notifications"
 import { useSettingsStore } from "@/store/Settings"
 import { useI18n } from "vue-i18n"
+import { VTextarea, VTextField } from "vuetify/lib/components/index.mjs"
 
 const { t } = useI18n()
-const employeesListStore = useEmployeesStore()
+const notificationsListStore = useNotificationsStore()
 const settingsListStore = useSettingsStore()
-const roles = reactive([])
+
 const isLoading = ref(false)
-
-onUpdated(() => {
-  employeeData.id = props.customer.id
-
-  // employeeData.username = props.customer.username
-  employeeData.name = props.customer.name
-  employeeData.email = props.customer.email
-  employeeData.mobile = props.customer.mobile
-  employeeData.wallet = props.customer.wallet
-  employeeData.device_token = props.customer.device_token
-
-})
+const refForm = ref(null)
 
 // Variables
-const employeeData = reactive({
-  id: null,
-  username: null,
-  email: null,
-  mobile: null,
-  wallet: null,
-  device_token: null,
+const notification = reactive({
+  title: null,
+  is_active: null,
+  body: null,
+  config: null,
+  type: 'new_customers',
 })
 
-// Functions
-const resetForm = () => {
-  emit('update:isEditOpen', false)
-}
-
-const refForm = ref(null)
+onMounted(() => {
+  isLoading.value = true
+  notificationsListStore.getOne({ type: notification.type }).then(response => {
+    if (response?.data?.data) {
+      notification.title = response?.data?.data?.title
+      notification.body = response?.data?.data?.body
+      notification.config = response?.data?.data?.config
+      notification.is_active = response?.data?.data?.is_active
+    }
+    isLoading.value = false
+  })
+})
 
 const onFormSubmit = async () => {
   isLoading.value = true
 
   const res = await refForm.value.validate()
   if (res.valid) {
-    employeesListStore.editCustomer(employeeData).then(response => {
-      emit('update:isEditOpen', false)
-      emit('refreshTable')
+    notificationsListStore.updateNotifications(notification).then(response => {
+      isLoading.value = false
+
       settingsListStore.alertColor = "success"
-      settingsListStore.alertMessage = "تم تعديل العنصر بنجاح"
+      settingsListStore.alertMessage = "تم ارسال الاشعار بنجاح"
       settingsListStore.isAlertShow = true
       setTimeout(() => {
         settingsListStore.isAlertShow = false
         settingsListStore.alertMessage = ""
-        isLoading.value = false
-      }, 1000)
+      }, 2000)
     }).catch(error => {
       if (error.response.data.errors) {
         const errs = Object.keys(error.response.data.errors)
@@ -101,34 +78,20 @@ const onFormSubmit = async () => {
     }, 2000)
   }
 }
-
-const dialogModelValueUpdate = val => {
-  emit('update:isEditOpen', val)
-}
 </script>
 
 <template>
-  <VDialog
-    :width="$vuetify.display.smAndDown ? 'auto' : 650 "
-    :model-value="props.isEditOpen"
-    @update:model-value="dialogModelValueUpdate"
-  >
-    <!-- Dialog close btn -->
-    <DialogCloseBtn @click="dialogModelValueUpdate(false)" />
-
-    <VCard
-      class="pa-sm-9 pa-5"
-    >
-      <!-- 👉 Title -->
+  <div>
+    <VCard :loading="isLoading">
       <VCardItem>
         <VCardTitle class="text-h5 d-flex flex-column align-center gap-2 text-center mb-3">
           <VIcon
-            icon="clarity:users-line"
+            icon="bxs:notification"
             size="24"
             color="primary"
           />
           <span class="mx-1 my-1">
-            {{ t('Edit_Customer') }}
+            ارسال اشعار للعملاء الجدد
           </span>
         </VCardTitle>
       </VCardItem>
@@ -137,57 +100,48 @@ const dialogModelValueUpdate = val => {
         <!-- 👉 Form -->
         <VForm
           ref="refForm"
-          @submit.prevent="onFormSubmit"
+          @submit.prevent.stop="onFormSubmit"
         >
           <VRow>
             <VCol
               cols="12"
               lg="12"
-              sm="6"
             >
               <VTextField
-                v-model="employeeData.name"
-                :label="t('forms.name')"
+                v-model="notification.title"
+                label="عنوان الاشعار"
+                :rules="[requiredValidator]"
               />
             </VCol>
+
             <VCol
               cols="12"
               lg="12"
-              sm="6"
             >
-              <VTextField
-                v-model="employeeData.email"
-                :label="t('forms.email')"
+              <VTextarea
+                v-model="notification.body"
+                label="نص الاشعار"
+                :rules="[requiredValidator]"
               />
             </VCol>
             <VCol
-              cols="12"
-              lg="12"
-              sm="6"
+              cols="6"
+              lg="6"
             >
               <VTextField
-                v-model="employeeData.mobile"
-                :label="t('forms.phone')"
+                v-model="notification.config"
+                label="مدة ارسال رسالة الترحيب بعد الانشاء بالدقائق"
+                :rules="[requiredValidator]"
+                type="number"
               />
             </VCol>
             <VCol
-              cols="12"
-              lg="12"
-              sm="6"
+              cols="6"
+              lg="6"
             >
-              <VTextField
-                v-model="employeeData.wallet"
-                :label="t('forms.wallet')"
-              />
-            </VCol>
-            <VCol
-              cols="12"
-              lg="12"
-              md="6"
-            >
-              <VTextField
-                v-model="employeeData.device_token"
-                label="device_token"
+              <VSwitch
+                v-model="notification.is_active"
+                label="تفعيل"
               />
             </VCol>
 
@@ -226,5 +180,5 @@ const dialogModelValueUpdate = val => {
         </VForm>
       </VCardText>
     </VCard>
-  </VDialog>
+  </div>
 </template>

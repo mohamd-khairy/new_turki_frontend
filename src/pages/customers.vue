@@ -305,7 +305,7 @@ onMounted(() => {
               scope="col"
               class="font-weight-semibold"
             >
-              foodics_integrate_id
+              device_token
             </th>
             <th
               scope="col"
@@ -364,7 +364,7 @@ onMounted(() => {
               {{ employee.wallet }}
             </td>
             <td>
-              {{ employee.foodics_integrate_id ? employee.foodics_integrate_id : '-' }}
+              {{ employee.device_token ? employee.device_token : '-' }}
             </td>
             <td>
               {{ (formatDateTime(employee.created_at).date) }}
